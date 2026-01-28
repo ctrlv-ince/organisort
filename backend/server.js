@@ -12,6 +12,7 @@ const { verifyFirebaseToken } = require('./middleware/auth-middleware');
 
 // Import routes
 const authRoutes = require('./routes/auth-routes');
+const userRoutes = require('./routes/user-routes');
 
 // Initialize Firebase
 initializeFirebase();
@@ -29,6 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 
 // Health check endpoint (no auth required)
 app.get('/api/health', (req, res) => {

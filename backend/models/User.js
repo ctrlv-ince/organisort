@@ -35,15 +35,56 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    lastLogin: {
+      type: Date,
+      default: null,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
   {
-    timestamps: true,
+    timestamps: false, // We're managing timestamps manually
     _id: false, // Don't auto-generate MongoDB ObjectId
   }
 );
 
 /**
- * Create a user from Firebase token data
+ * Sync user with Firebase data (upsert operation)
+ * Creates new user or updates existing user with lastLogin timestamp
+ */
+userSchema.statics.syncUser = async function (decodedToken) {
+  try {
+    const uid = decodedToken.uid;
+    const email = decodedToken.email;
+    const displayName = decodedToken.name || '';
+    const photoURL = decodedToken.picture || null;
+
+    const user = await this.findByIdAndUpdate(
+      uid,
+      {
+        _id: uid,
+        email,
+        displayName,
+        photoURL,
+        emailVerified: decodedToken.email_verified || false,
+        lastLogin: new Date(),
+        $setOnInsert: {
+          createdAt: new Date(),
+          isActive: true,
+        },
+      },
+      { upsert: true, new: true }
+    );
+    return user;
+  } catch (error) {
+    throw new Error(`Failed to sync user: ${error.message}`);
+  }
+};
+
+/**
+ * Create a user from Firebase token data (legacy method)
  */
 userSchema.statics.createFromFirebaseToken = async function (decodedToken) {
   try {
@@ -53,6 +94,10 @@ userSchema.statics.createFromFirebaseToken = async function (decodedToken) {
         _id: decodedToken.uid,
         email: decodedToken.email,
         emailVerified: decodedToken.email_verified || false,
+        lastLogin: new Date(),
+        $setOnInsert: {
+          createdAt: new Date(),
+        },
       },
       { upsert: true, new: true }
     );
