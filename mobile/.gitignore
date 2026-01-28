@@ -1,0 +1,31 @@
+# Node
+node_modules/
+npm-debug.*
+package-lock.json
+yarn.lock
+
+# Expo
+.expo/
+.expo-shared/
+dist/
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+build/
+.eas/
+
+# Firebase
+google-services.json
+GoogleService-Info.plist
