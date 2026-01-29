@@ -1,11 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import {
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-} from 'firebase/auth';
-import * as GoogleSignIn from 'expo-google-app-auth';
-import { auth } from '../config/firebaseConfig';
+import { getAuthSafe } from '../config/firebaseConfig';
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import axios from 'axios';
 
 const AuthContext = createContext(undefined);
@@ -43,30 +38,46 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        setUser(firebaseUser);
-        await syncUserToBackend(firebaseUser);
-      } else {
-        setUser(null);
-      }
+    let unsubscribe;
+    const auth = getAuthSafe();
+    if (!auth) {
+      console.warn('[Mobile] Firebase auth not available; skipping auth listener.');
       setLoading(false);
-    });
+      return;
+    }
 
-    return unsubscribe;
+    try {
+      unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        try {
+          if (firebaseUser) {
+            setUser(firebaseUser);
+            await syncUserToBackend(firebaseUser);
+          } else {
+            setUser(null);
+          }
+        } catch (error) {
+          console.error('[Mobile] Error in auth state change handler:', error);
+        } finally {
+          setLoading(false);
+        }
+      });
+    } catch (error) {
+      console.error('[Mobile] Failed to set up auth listener:', error);
+      setLoading(false);
+    }
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   const signInWithGoogle = async () => {
     try {
       setLoading(true);
-      const result = await GoogleSignIn.logInAsync({
-        iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
-        androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
-      });
-
-      if (result.user) {
-        console.log('Google sign-in successful:', result.user.email);
-      }
+      // Note: For mobile, you'll need to use Firebase's native authentication
+      // This is a placeholder - implement proper Google OAuth flow for Expo
+      console.log('Google sign-in requires proper OAuth setup in Expo');
+      throw new Error('Google sign-in not yet configured for mobile');
     } catch (error) {
       console.error('Google sign-in error:', error);
       throw error;
@@ -78,6 +89,8 @@ export const AuthProvider = ({ children }) => {
   const signInWithEmail = async (email, password) => {
     try {
       setLoading(true);
+      const auth = getAuthSafe();
+      if (!auth) throw new Error('Firebase auth not available');
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
       console.error('Email sign-in error:', error);
@@ -90,6 +103,8 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       setLoading(true);
+      const auth = getAuthSafe();
+      if (!auth) throw new Error('Firebase auth not available');
       await signOut(auth);
       setUser(null);
     } catch (error) {

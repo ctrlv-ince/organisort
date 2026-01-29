@@ -16,27 +16,23 @@
     ],
     "ios": {
       "supportsTabletMode": true,
-      "bundleIdentifier": "com.wastedetection.app"
+      "bundleIdentifier": "com.tupt.organicwastedetection"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#2563eb"
       },
-      "package": "com.wastedetection.app"
+      "package": "com.tupt.organicwastedetection"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "Allow the app to access your photos.",
-          "cameraPermission": "Allow the app to access your camera."
-        }
-      ]
-    ],
-    "scheme": "wastedetection"
+    "scheme": "wastedetection",
+    "extra": {
+      "eas": {
+        "projectId": "c2a2fe7b-2e6a-44b9-99b6-4d254e81f31a"
+      }
+    }
   }
 }

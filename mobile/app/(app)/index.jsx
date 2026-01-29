@@ -7,16 +7,35 @@ import {
   ActivityIndicator,
   Alert,
   RefreshControl,
+  StyleSheet,
 } from 'react-native';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
-import { styled } from 'nativewind';
 import axios from 'axios';
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledTouchableOpacity = styled(TouchableOpacity);
-const StyledScrollView = styled(ScrollView);
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#f8fafc' },
+  header: { backgroundColor: '#2563eb', paddingTop: 32, paddingBottom: 24, paddingHorizontal: 24, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 },
+  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
+  title: { fontSize: 30, fontWeight: 'bold', color: 'white' },
+  logoutBtn: { backgroundColor: '#ef4444', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8 },
+  logoutText: { color: 'white', fontWeight: 'bold' },
+  welcomeCard: { backgroundColor: 'rgba(255, 255, 255, 0.2)', borderRadius: 12, padding: 12 },
+  welcomeText: { color: 'white', fontSize: 18, fontWeight: '600' },
+  welcomeSubtext: { color: '#e0e7ff', fontSize: 14, marginTop: 4 },
+  content: { paddingHorizontal: 24, paddingVertical: 24 },
+  card: { backgroundColor: 'white', borderRadius: 12, padding: 24, marginBottom: 24, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 3, elevation: 3 },
+  cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
+  cardIcon: { fontSize: 24, marginRight: 12 },
+  cardTitle: { fontSize: 18, fontWeight: 'bold', color: '#1e293b' },
+  cardRow: { borderBottomWidth: 1, borderBottomColor: '#e2e8f0', paddingBottom: 12, marginBottom: 12 },
+  cardLabel: { fontSize: 12, color: '#64748b', marginBottom: 4 },
+  cardValue: { fontSize: 16, fontWeight: '600', color: '#1e293b' },
+  statusBadge: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20, flexDirection: 'row', alignItems: 'center' },
+  statusText: { fontSize: 14, fontWeight: 'bold' },
+  footerText: { textAlign: 'center', color: '#64748b', fontSize: 14, marginTop: 32, marginBottom: 16 },
+  footerSubtext: { textAlign: 'center', color: '#94a3b8', fontSize: 12 },
+});
 
 export default function HomeScreen() {
   const { user, logout, isAuthenticated } = useAuth();
@@ -25,11 +44,7 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  React.useEffect(() => {
-    if (!isAuthenticated) {
-      router.replace('/(auth)/login');
-    }
-  }, [isAuthenticated]);
+  // Navigation handled by Root layout; avoid navigate-before-mount here
 
   const fetchUserProfile = async () => {
     try {
@@ -78,166 +93,114 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <StyledView className="flex-1 bg-light items-center justify-center">
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="large" color="#2563eb" />
-      </StyledView>
+      </View>
     );
   }
 
   return (
-    <StyledScrollView
-      className="flex-1 bg-light"
+    <ScrollView
+      style={styles.container}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#2563eb" />
       }
     >
-      <StyledView className="bg-gradient-to-b from-primary to-blue-600 px-6 pt-8 pb-6 rounded-b-3xl">
-        <StyledView className="flex-row items-center justify-between mb-6">
-          <StyledText className="text-white text-3xl font-bold">Dashboard</StyledText>
-          <StyledTouchableOpacity
-            onPress={handleLogout}
-            className="bg-danger px-4 py-2 rounded-lg"
-          >
-            <StyledText className="text-white font-bold">Logout</StyledText>
-          </StyledTouchableOpacity>
-        </StyledView>
+      <View style={styles.header}>
+        <View style={styles.headerTop}>
+          <Text style={styles.title}>Dashboard</Text>
+          <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+            <Text style={styles.logoutText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.welcomeCard}>
+          <Text style={styles.welcomeText}>Welcome, {user?.displayName || 'User'}! 👋</Text>
+          <Text style={styles.welcomeSubtext}>Ready to detect waste and make an impact</Text>
+        </View>
+      </View>
 
-        <StyledView className="bg-white bg-opacity-20 rounded-xl px-4 py-3">
-          <StyledText className="text-white text-lg font-semibold">
-            Welcome, {user?.displayName || 'User'}! 👋
-          </StyledText>
-          <StyledText className="text-blue-100 text-sm mt-1">
-            Ready to detect waste and make an impact
-          </StyledText>
-        </StyledView>
-      </StyledView>
+      <View style={styles.content}>
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardIcon}>🔥</Text>
+            <Text style={styles.cardTitle}>Firebase Auth</Text>
+          </View>
+          <View style={styles.cardRow}>
+            <Text style={styles.cardLabel}>Email</Text>
+            <Text style={styles.cardValue}>{user?.email || 'N/A'}</Text>
+          </View>
+          <View style={styles.cardRow}>
+            <Text style={styles.cardLabel}>UID</Text>
+            <Text style={styles.cardValue}>{user?.uid ? user.uid.substring(0, 20) + '...' : 'N/A'}</Text>
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text style={styles.cardLabel}>Email Verified</Text>
+            <View style={[styles.statusBadge, user?.emailVerified ? { backgroundColor: 'rgba(16, 185, 129, 0.2)' } : { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
+              <Text style={[styles.statusText, user?.emailVerified ? { color: '#10b981' } : { color: '#f59e0b' }]}>
+                {user?.emailVerified ? '✓ Yes' : '✗ No'}
+              </Text>
+            </View>
+          </View>
+        </View>
 
-      <StyledView className="px-6 py-6">
-        <StyledView className="bg-white rounded-xl p-6 mb-6 shadow-md">
-          <StyledView className="flex-row items-center mb-4">
-            <StyledText className="text-2xl mr-3">🔥</StyledText>
-            <StyledText className="text-lg font-bold text-dark">Firebase Auth</StyledText>
-          </StyledView>
-
-          <StyledView className="space-y-3">
-            <StyledView className="border-b border-gray-200 pb-3">
-              <StyledText className="text-sm text-gray-600 mb-1">Email</StyledText>
-              <StyledText className="text-base font-semibold text-dark">
-                {user?.email || 'N/A'}
-              </StyledText>
-            </StyledView>
-
-            <StyledView className="border-b border-gray-200 pb-3">
-              <StyledText className="text-sm text-gray-600 mb-1">UID</StyledText>
-              <StyledText className="text-base font-mono text-dark truncate">
-                {user?.uid ? user.uid.substring(0, 20) + '...' : 'N/A'}
-              </StyledText>
-            </StyledView>
-
-            <StyledView className="flex-row items-center justify-between">
-              <StyledText className="text-sm text-gray-600">Email Verified</StyledText>
-              <StyledView
-                className={`px-3 py-1 rounded-full ${
-                  user?.emailVerified ? 'bg-success bg-opacity-20' : 'bg-warning bg-opacity-20'
-                }`}
-              >
-                <StyledText
-                  className={`text-sm font-bold ${user?.emailVerified ? 'text-success' : 'text-warning'}`}
-                >
-                  {user?.emailVerified ? '✓ Yes' : '✗ No'}
-                </StyledText>
-              </StyledView>
-            </StyledView>
-          </StyledView>
-        </StyledView>
-
-        <StyledView className="bg-white rounded-xl p-6 mb-6 shadow-md">
-          <StyledView className="flex-row items-center mb-4">
-            <StyledText className="text-2xl mr-3">💾</StyledText>
-            <StyledText className="text-lg font-bold text-dark">MongoDB Sync</StyledText>
-          </StyledView>
-
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardIcon}>💾</Text>
+            <Text style={styles.cardTitle}>MongoDB Sync</Text>
+          </View>
           {userProfile ? (
-            <StyledView className="space-y-3">
-              <StyledView className="border-b border-gray-200 pb-3">
-                <StyledText className="text-sm text-gray-600 mb-1">Display Name</StyledText>
-                <StyledText className="text-base font-semibold text-dark">
-                  {userProfile.displayName || 'Not set'}
-                </StyledText>
-              </StyledView>
-
-              <StyledView className="border-b border-gray-200 pb-3">
-                <StyledText className="text-sm text-gray-600 mb-1">Last Login</StyledText>
-                <StyledText className="text-base font-semibold text-dark">
-                  {new Date(userProfile.lastLogin).toLocaleString()}
-                </StyledText>
-              </StyledView>
-
-              <StyledView className="border-b border-gray-200 pb-3">
-                <StyledText className="text-sm text-gray-600 mb-1">Account Created</StyledText>
-                <StyledText className="text-base font-semibold text-dark">
-                  {new Date(userProfile.createdAt).toLocaleString()}
-                </StyledText>
-              </StyledView>
-
-              <StyledView className="flex-row items-center justify-between">
-                <StyledText className="text-sm text-gray-600">Account Status</StyledText>
-                <StyledView
-                  className={`px-3 py-1 rounded-full ${
-                    userProfile.isActive ? 'bg-success bg-opacity-20' : 'bg-danger bg-opacity-20'
-                  }`}
-                >
-                  <StyledText
-                    className={`text-sm font-bold ${
-                      userProfile.isActive ? 'text-success' : 'text-danger'
-                    }`}
-                  >
+            <>
+              <View style={styles.cardRow}>
+                <Text style={styles.cardLabel}>Display Name</Text>
+                <Text style={styles.cardValue}>{userProfile.displayName || 'Not set'}</Text>
+              </View>
+              <View style={styles.cardRow}>
+                <Text style={styles.cardLabel}>Last Login</Text>
+                <Text style={styles.cardValue}>{new Date(userProfile.lastLogin).toLocaleString()}</Text>
+              </View>
+              <View style={styles.cardRow}>
+                <Text style={styles.cardLabel}>Account Created</Text>
+                <Text style={styles.cardValue}>{new Date(userProfile.createdAt).toLocaleString()}</Text>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text style={styles.cardLabel}>Account Status</Text>
+                <View style={[styles.statusBadge, userProfile.isActive ? { backgroundColor: 'rgba(16, 185, 129, 0.2)' } : { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
+                  <Text style={[styles.statusText, userProfile.isActive ? { color: '#10b981' } : { color: '#ef4444' }]}>
                     {userProfile.isActive ? '● Active' : '● Inactive'}
-                  </StyledText>
-                </StyledView>
-              </StyledView>
-            </StyledView>
+                  </Text>
+                </View>
+              </View>
+            </>
           ) : (
-            <StyledView className="items-center justify-center py-6">
+            <View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 24 }}>
               <ActivityIndicator color="#2563eb" size="small" />
-              <StyledText className="text-gray-600 mt-3">Syncing...</StyledText>
-            </StyledView>
+              <Text style={[styles.cardLabel, { marginTop: 12 }]}>Syncing...</Text>
+            </View>
           )}
-        </StyledView>
+        </View>
 
-        <StyledView className="bg-white rounded-xl p-6 shadow-md">
-          <StyledView className="flex-row items-center mb-4">
-            <StyledText className="text-2xl mr-3">⚙️</StyledText>
-            <StyledText className="text-lg font-bold text-dark">System Status</StyledText>
-          </StyledView>
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardIcon}>⚙️</Text>
+            <Text style={styles.cardTitle}>System Status</Text>
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <Text style={styles.cardLabel}>Firebase Connected</Text>
+            <Text style={{ fontSize: 24 }}>✅</Text>
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <Text style={styles.cardLabel}>Backend Synced</Text>
+            <Text style={{ fontSize: 24 }}>{userProfile ? '✅' : '⏳'}</Text>
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text style={styles.cardLabel}>Mobile App</Text>
+            <Text style={{ fontSize: 24 }}>✅</Text>
+          </View>
+        </View>
 
-          <StyledView className="space-y-3">
-            <StyledView className="flex-row items-center justify-between">
-              <StyledText className="text-gray-700">Firebase Connected</StyledText>
-              <StyledText className="text-2xl">✅</StyledText>
-            </StyledView>
-
-            <StyledView className="flex-row items-center justify-between">
-              <StyledText className="text-gray-700">Backend Synced</StyledText>
-              <StyledText className="text-2xl">{userProfile ? '✅' : '⏳'}</StyledText>
-            </StyledView>
-
-            <StyledView className="flex-row items-center justify-between">
-              <StyledText className="text-gray-700">Mobile App</StyledText>
-              <StyledText className="text-2xl">✅</StyledText>
-            </StyledView>
-          </StyledView>
-        </StyledView>
-
-        <StyledView className="items-center mt-8 mb-4">
-          <StyledText className="text-gray-600 text-sm text-center">
-            Waste Detection Admin Panel v1.0.0
-          </StyledText>
-          <StyledText className="text-gray-400 text-xs mt-2">
-            Firebase + MongoDB Synced
-          </StyledText>
-        </StyledView>
-      </StyledView>
-    </StyledScrollView>
+        <Text style={styles.footerText}>Waste Detection Admin Panel v1.0.0</Text>
+        <Text style={styles.footerSubtext}>Firebase + MongoDB Synced</Text>
+      </View>
+    </ScrollView>
   );
 }
