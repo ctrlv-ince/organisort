@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,46 +7,65 @@ import {
   Alert,
   KeyboardAvoidingView,
   ScrollView,
+  StyleSheet,
+  TextInput,
 } from 'react-native';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
-import { styled } from 'nativewind';
-import { Svg, Path, Circle } from 'react-native-svg';
+import * as AuthSession from 'expo-auth-session';
+import * as Google from 'expo-auth-session/providers/google';
+import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { auth } from '@/src/config/firebaseConfig';
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledTouchableOpacity = styled(TouchableOpacity);
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#2563eb' },
+  scrollContent: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 32 },
+  logoContainer: { width: 96, height: 96, backgroundColor: 'white', borderRadius: 48, alignItems: 'center', justifyContent: 'center', marginBottom: 32, alignSelf: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 5 },
+  logo: { fontSize: 48 },
+  title: { fontSize: 36, fontWeight: 'bold', color: 'white', marginBottom: 8, textAlign: 'center' },
+  subtitle: { fontSize: 18, color: '#bfdbfe', textAlign: 'center', marginBottom: 48 },
+  card: { backgroundColor: 'white', borderRadius: 24, paddingHorizontal: 24, paddingVertical: 32, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 12, elevation: 5, marginBottom: 24 },
+  cardTitle: { fontSize: 20, fontWeight: 'bold', color: '#1e293b', marginBottom: 24, textAlign: 'center' },
+  inputGroup: { marginBottom: 16 },
+  label: { fontSize: 14, fontWeight: '600', color: '#475569', marginBottom: 8 },
+  input: { borderWidth: 2, borderColor: '#d1d5db', borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12, backgroundColor: '#f8fafc', color: '#1e293b', fontSize: 16 },
+  error: { color: '#ef4444', fontSize: 12, marginTop: 4 },
+  button: { width: '100%', paddingVertical: 16, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
+  buttonPrimary: { backgroundColor: '#2563eb' },
+  buttonDisabled: { backgroundColor: '#d1d5db' },
+  buttonText: { color: 'white', fontWeight: 'bold', fontSize: 18 },
+  divider: { flexDirection: 'row', alignItems: 'center', marginBottom: 24 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: '#d1d5db' },
+  dividerText: { color: '#9ca3af', marginHorizontal: 12, fontSize: 14 },
+  googleButton: { width: '100%', paddingVertical: 16, borderRadius: 8, borderWidth: 2, borderColor: '#2563eb', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', backgroundColor: 'white' },
+  googleText: { color: '#2563eb', fontWeight: 'bold', fontSize: 16 },
+  footer: { textAlign: 'center', color: 'white', fontSize: 12 },
+});
 
 export default function LoginScreen() {
-  const { signInWithGoogle, signInWithEmail, loading, isAuthenticated } = useAuth();
+  const { signInWithEmail, loading } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailLoading, setEmailLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
-  React.useEffect(() => {
-    if (isAuthenticated && !loading) {
-      router.replace('/(app)');
-    }
-  }, [isAuthenticated, loading]);
+  const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
 
-  const handleGoogleSignIn = async () => {
-    try {
-      setGoogleLoading(true);
-      await signInWithGoogle();
-      router.replace('/(app)');
-    } catch (error) {
-      console.error('Google sign-in failed:', error);
-      Alert.alert('Sign-In Error', 'Failed to sign in with Google. Please try again.');
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    // expoClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_EXPO,
+    // iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_WEB,
+    redirectUri,
+  });
 
   const handleEmailSignIn = async () => {
-    if (!email || !password) {
-      Alert.alert('Validation Error', 'Please enter email and password');
+    const newErrors = {};
+    if (!email) newErrors.email = 'Email is required';
+    if (!password) newErrors.password = 'Password is required';
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
@@ -55,96 +74,127 @@ export default function LoginScreen() {
       await signInWithEmail(email, password);
       router.replace('/(app)');
     } catch (error) {
-      console.error('Email sign-in failed:', error);
-      Alert.alert('Sign-In Error', 'Invalid email or password. Please try again.');
+      Alert.alert('Sign-In Error', error.message || 'Invalid email or password');
     } finally {
       setEmailLoading(false);
     }
   };
 
+  const handleGoogleSignIn = () => {
+    // Trigger the expo-auth-session Google prompt
+    if (!request) {
+      Alert.alert('Google Sign-In', 'Google Auth not configured');
+      return;
+    }
+    promptAsync();
+  };
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { id_token, access_token } = response.params || {};
+      if (!id_token && !access_token) {
+        Alert.alert('Google Sign-In', 'No token returned from Google');
+        return;
+      }
+
+      (async () => {
+        try {
+          setEmailLoading(true);
+          const credential = GoogleAuthProvider.credential(id_token, access_token);
+          await signInWithCredential(auth, credential);
+          router.replace('/(app)');
+        } catch (err) {
+          console.error('Google sign-in error:', err);
+          Alert.alert('Google Sign-In Error', err.message || String(err));
+        } finally {
+          setEmailLoading(false);
+        }
+      })();
+    }
+  }, [response]);
+
   return (
-    <KeyboardAvoidingView behavior="padding" className="flex-1 bg-gradient-to-b from-primary to-blue-600">
-      <ScrollView contentContainerClassName="flex-grow" bounces={false}>
-        <StyledView className="flex-1 items-center justify-center px-6 pt-16">
-          <StyledView className="w-24 h-24 bg-white rounded-full items-center justify-center mb-8 shadow-lg">
-            <StyledText className="text-4xl">♻️</StyledText>
-          </StyledView>
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Logo */}
+        <View style={styles.logoContainer}>
+          <Text style={styles.logo}>♻️</Text>
+        </View>
 
-          <StyledText className="text-4xl font-bold text-white mb-2 text-center">
-            Waste Detection
-          </StyledText>
-          <StyledText className="text-lg text-blue-100 text-center mb-12">
-            Smart waste classification & management
-          </StyledText>
+        {/* Header */}
+        <Text style={styles.title}>OrganiSort</Text>
+        <Text style={styles.subtitle}>Waste Detection App</Text>
 
-          <StyledView className="w-full bg-white rounded-2xl px-6 py-8 shadow-xl">
-            <StyledText className="text-xl font-bold text-dark mb-6 text-center">
-              Sign In
-            </StyledText>
+        {/* Sign In Card */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Sign In</Text>
 
-            <StyledView className="mb-4">
-              <StyledText className="text-sm font-semibold text-gray-700 mb-2">Email</StyledText>
-              <StyledView className="border-2 border-gray-300 rounded-lg px-4 py-3 bg-light">
-                <StyledText className="text-gray-600">
-                  {email || 'Enter your email'}
-                </StyledText>
-              </StyledView>
-            </StyledView>
+          {/* Email Input */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="user@example.com"
+              placeholderTextColor="#9ca3af"
+              keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
+              editable={!emailLoading}
+            />
+            {errors.email && <Text style={styles.error}>{errors.email}</Text>}
+          </View>
 
-            <StyledView className="mb-6">
-              <StyledText className="text-sm font-semibold text-gray-700 mb-2">Password</StyledText>
-              <StyledView className="border-2 border-gray-300 rounded-lg px-4 py-3 bg-light">
-                <StyledText className="text-gray-600">••••••••</StyledText>
-              </StyledView>
-            </StyledView>
+          {/* Password Input */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="••••••••"
+              placeholderTextColor="#9ca3af"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+              editable={!emailLoading}
+            />
+            {errors.password && <Text style={styles.error}>{errors.password}</Text>}
+          </View>
 
-            <StyledTouchableOpacity
-              onPress={handleEmailSignIn}
-              disabled={emailLoading || loading}
-              className={`w-full py-4 rounded-lg mb-6 flex-row items-center justify-center ${
-                emailLoading || loading ? 'bg-gray-300' : 'bg-primary'
-              }`}
-            >
-              {emailLoading ? (
-                <ActivityIndicator color="white" size="small" />
-              ) : (
-                <StyledText className="text-white font-bold text-lg">Sign In with Email</StyledText>
-              )}
-            </StyledTouchableOpacity>
+          {/* Sign In Button */}
+          <TouchableOpacity
+            style={[
+              styles.button,
+              styles.buttonPrimary,
+              (emailLoading || loading) && styles.buttonDisabled
+            ]}
+            onPress={handleEmailSignIn}
+            disabled={emailLoading || loading}
+          >
+            {emailLoading || loading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text style={styles.buttonText}>Sign In</Text>
+            )}
+          </TouchableOpacity>
 
-            <StyledView className="flex-row items-center mb-6">
-              <StyledView className="flex-1 h-px bg-gray-300" />
-              <StyledText className="text-gray-500 px-3">or</StyledText>
-              <StyledView className="flex-1 h-px bg-gray-300" />
-            </StyledView>
+          {/* Divider */}
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>OR</Text>
+            <View style={styles.dividerLine} />
+          </View>
 
-            <StyledTouchableOpacity
-              onPress={handleGoogleSignIn}
-              disabled={googleLoading || loading}
-              className={`w-full py-4 rounded-lg flex-row items-center justify-center border-2 ${
-                googleLoading || loading ? 'border-gray-300 bg-gray-100' : 'border-primary bg-white'
-              }`}
-            >
-              {googleLoading ? (
-                <ActivityIndicator color="#2563eb" size="small" />
-              ) : (
-                <>
-                  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <Circle cx="12" cy="12" r="11" stroke="#2563eb" strokeWidth="1" />
-                    <Path d="M8 12L10.5 14.5L16 8" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" />
-                  </Svg>
-                  <StyledText className="text-primary font-bold text-lg ml-3">
-                    Sign in with Google
-                  </StyledText>
-                </>
-              )}
-            </StyledTouchableOpacity>
-          </StyledView>
+          {/* Google Button */}
+          <TouchableOpacity
+            style={styles.googleButton}
+            onPress={handleGoogleSignIn}
+          >
+            <Text style={{ fontSize: 24, marginRight: 12 }}>🔵</Text>
+            <Text style={styles.googleText}>Sign in with Google</Text>
+          </TouchableOpacity>
+        </View>
 
-          <StyledText className="text-white text-center mt-12 text-sm">
-            By signing in, you agree to our Terms of Service
-          </StyledText>
-        </StyledView>
+        {/* Footer */}
+        <Text style={styles.footer}>© 2024 OrganiSort • Waste Detection AI</Text>
       </ScrollView>
     </KeyboardAvoidingView>
   );

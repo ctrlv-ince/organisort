@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Favicon for web -->
+<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="96" cy="96" r="96" fill="#2563eb"/>
+  <g transform="translate(96, 96)" fill="white">
+    <path d="M0,-60 L52,30 L-26,30 Z" transform="rotate(0)"/>
+    <path d="M0,-60 L52,30 L-26,30 Z" transform="rotate(120)"/>
+    <path d="M0,-60 L52,30 L-26,30 Z" transform="rotate(240)"/>
+  </g>
+</svg>

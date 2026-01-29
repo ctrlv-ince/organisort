@@ -16,5 +16,14 @@ if (!firebaseConfig.apiKey) {
 }
 
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+
+export function getAuthSafe() {
+  try {
+    return getAuth(app);
+  } catch (err) {
+    console.warn('[Firebase] getAuth failed (native modules may not be ready):', err && err.message ? err.message : err);
+    return null;
+  }
+}
+
 export default app;
