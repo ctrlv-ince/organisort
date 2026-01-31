@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../config/firebaseConfig';
 
 /**
@@ -91,6 +91,25 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
+   * Register with email and password
+   */
+  const register = async (email, password) => {
+    try {
+      setError(null);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const firebaseUser = userCredential.user;
+      const idToken = await firebaseUser.getIdToken();
+      // Sync to backend (role:user by default)
+      await syncUserToBackend(firebaseUser, idToken);
+      setUser(firebaseUser);
+      return firebaseUser;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  };
+
+  /**
    * Logout user
    */
   const logout = async () => {
@@ -136,6 +155,7 @@ export const AuthProvider = ({ children }) => {
     login,
     googleLogin,
     logout,
+    register,
     isAuthenticated: !!user,
   };
 
