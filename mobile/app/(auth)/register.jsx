@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -12,10 +12,6 @@ import {
 } from 'react-native';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
-import * as AuthSession from 'expo-auth-session';
-import *as Google from 'expo-auth-session/providers/google';
-import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
-import { auth } from '@/src/config/firebaseConfig';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#2563eb' },
@@ -34,84 +30,40 @@ const styles = StyleSheet.create({
   buttonPrimary: { backgroundColor: '#2563eb' },
   buttonDisabled: { backgroundColor: '#d1d5db' },
   buttonText: { color: 'white', fontWeight: 'bold', fontSize: 18 },
-  divider: { flexDirection: 'row', alignItems: 'center', marginBottom: 24 },
-  dividerLine: { flex: 1, height: 1, backgroundColor: '#d1d5db' },
-  dividerText: { color: '#9ca3af', marginHorizontal: 12, fontSize: 14 },
-  googleButton: { width: '100%', paddingVertical: 16, borderRadius: 8, borderWidth: 2, borderColor: '#2563eb', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', backgroundColor: 'white' },
-  googleText: { color: '#2563eb', fontWeight: 'bold', fontSize: 16 },
   footer: { textAlign: 'center', color: 'white', fontSize: 12 },
 });
 
-export default function LoginScreen() {
-  const { signInWithEmail, loading } = useAuth();
+export default function RegisterScreen() {
+  const { registerWithEmail, loading } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [emailLoading, setEmailLoading] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [formLoading, setFormLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
-
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    // expoClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_EXPO,
-    // iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
-    androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_WEB,
-    redirectUri,
-  });
-
-  const handleEmailSignIn = async () => {
+  const handleRegister = async () => {
     const newErrors = {};
     if (!email) newErrors.email = 'Email is required';
     if (!password) newErrors.password = 'Password is required';
+    if (!confirmPassword) newErrors.confirmPassword = 'Confirm Password is required';
+    if (password !== confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
     try {
-      setEmailLoading(true);
-      await signInWithEmail(email, password);
+      setFormLoading(true);
+      await registerWithEmail(email, password);
       router.replace('/(app)');
     } catch (error) {
-      Alert.alert('Sign-In Error', error.message || 'Invalid email or password');
+      Alert.alert('Registration Error', error.message || 'Registration failed');
     } finally {
-      setEmailLoading(false);
+      setFormLoading(false);
     }
   };
-
-  const handleGoogleSignIn = () => {
-    // Trigger the expo-auth-session Google prompt
-    if (!request) {
-      Alert.alert('Google Sign-In', 'Google Auth not configured');
-      return;
-    }
-    promptAsync();
-  };
-
-  useEffect(() => {
-    if (response?.type === 'success') {
-      const { id_token, access_token } = response.params || {};
-      if (!id_token && !access_token) {
-        Alert.alert('Google Sign-In', 'No token returned from Google');
-        return;
-      }
-
-      (async () => {
-        try {
-          setEmailLoading(true);
-          const credential = GoogleAuthProvider.credential(id_token, access_token);
-          await signInWithCredential(auth, credential);
-          router.replace('/(app)');
-        } catch (err) {
-          console.error('Google sign-in error:', err);
-          Alert.alert('Google Sign-In Error', err.message || String(err));
-        } finally {
-          setEmailLoading(false);
-        }
-      })();
-    }
-  }, [response]);
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -125,9 +77,9 @@ export default function LoginScreen() {
         <Text style={styles.title}>OrganiSort</Text>
         <Text style={styles.subtitle}>Waste Detection App</Text>
 
-        {/* Sign In Card */}
+        {/* Register Card */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Sign In</Text>
+          <Text style={styles.cardTitle}>Register</Text>
 
           {/* Email Input */}
           <View style={styles.inputGroup}>
@@ -139,7 +91,7 @@ export default function LoginScreen() {
               keyboardType="email-address"
               value={email}
               onChangeText={setEmail}
-              editable={!emailLoading}
+              editable={!formLoading}
             />
             {errors.email && <Text style={styles.error}>{errors.email}</Text>}
           </View>
@@ -154,46 +106,45 @@ export default function LoginScreen() {
               secureTextEntry
               value={password}
               onChangeText={setPassword}
-              editable={!emailLoading}
+              editable={!formLoading}
             />
             {errors.password && <Text style={styles.error}>{errors.password}</Text>}
           </View>
 
-          {/* Sign In Button */}
+          {/* Confirm Password Input */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Confirm Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="••••••••"
+              placeholderTextColor="#9ca3af"
+              secureTextEntry
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              editable={!formLoading}
+            />
+            {errors.confirmPassword && <Text style={styles.error}>{errors.confirmPassword}</Text>}
+          </View>
+
+          {/* Register Button */}
           <TouchableOpacity
             style={[
               styles.button,
               styles.buttonPrimary,
-              (emailLoading || loading) && styles.buttonDisabled
+              (formLoading || loading) && styles.buttonDisabled
             ]}
-            onPress={handleEmailSignIn}
-            disabled={emailLoading || loading}
+            onPress={handleRegister}
+            disabled={formLoading || loading}
           >
-            {emailLoading || loading ? (
+            {formLoading || loading ? (
               <ActivityIndicator color="white" />
             ) : (
-              <Text style={styles.buttonText}>Sign In</Text>
+              <Text style={styles.buttonText}>Register</Text>
             )}
           </TouchableOpacity>
 
-          {/* Divider */}
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>OR</Text>
-            <View style={styles.dividerLine} />
-          </View>
-
-          {/* Google Button */}
-          <TouchableOpacity
-            style={styles.googleButton}
-            onPress={handleGoogleSignIn}
-          >
-            <Text style={{ fontSize: 24, marginRight: 12 }}>🔵</Text>
-            <Text style={styles.googleText}>Sign in with Google</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => router.replace("/(auth)/register")}>
-            <Text style={[styles.footer, { color: "#bfdbfe", textDecorationLine: "underline" }]}>Don't have an account? Register</Text>
+          <TouchableOpacity onPress={() => router.replace('/(auth)/login')}>
+            <Text style={[styles.footer, { color: '#bfdbfe', textDecorationLine: 'underline' }]}>Already have an account? Sign In</Text>
           </TouchableOpacity>
         </View>
 
