@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { getAuthSafe } from '../config/firebaseConfig';
-import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import axios from 'axios';
 
 const AuthContext = createContext(undefined);
@@ -100,6 +100,21 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const registerWithEmail = async (email, password) => {
+    try {
+      setLoading(true);
+      const auth = getAuthSafe();
+      if (!auth) throw new Error('Firebase auth not available');
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await syncUserToBackend(userCredential.user);
+    } catch (error) {
+      console.error('Email registration error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = async () => {
     try {
       setLoading(true);
@@ -120,6 +135,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     signInWithGoogle,
     signInWithEmail,
+    registerWithEmail,
     logout,
     isAuthenticated: !!user,
   };
