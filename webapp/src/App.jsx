@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import AdminDashboard from './pages/Dashboard';
 import UserDashboard from './pages/UserDashboard';
 import { useAuth } from './context/AuthContext';
@@ -63,6 +64,7 @@ const RoleBasedDashboard = () => {
  * Main application with routing
  * Routes:
  * - /login: Public login page
+ * - /register: Public registration page
  * - /dashboard: Protected dashboard (requires auth)
  * - /: Redirects to /dashboard
  */
@@ -73,6 +75,7 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
           {/* Protected Routes */}
           <Route
