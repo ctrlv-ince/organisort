@@ -148,9 +148,21 @@ const Login = () => {
             {loading ? 'Signing in...' : 'Sign in with Google'}
           </button>
 
+          {/* Registration Link */}
+          <p className="text-center text-sm text-gray-600 mt-6">
+            First time?{' '}
+            <a
+              href="/register"
+              className="text-blue-700 hover:underline"
+            >
+              Create an account
+            </a>
+            .
+          </p>
+
           {/* Footer Text */}
           <p className="text-center text-sm text-gray-600 mt-6">
-            First time? Google will create an account for you.
+            Google will create an account for you.
           </p>
         </div>
       </div>
