@@ -59,8 +59,8 @@ const Login = () => {
       <div className="w-full max-w-md">
         {/* Logo/Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">Waste Detection</h1>
-          <p className="text-gray-600">Admin Panel</p>
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">OrganiSort</h1>
+          <p className="text-gray-600">Waste Detection App</p>
         </div>
 
         {/* Login Card */}

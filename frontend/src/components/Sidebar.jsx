@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 
 /**
  * Sidebar Component
- * Navigation menu for dashboard
+ * Navigation menu for admin dashboard
  */
 const Sidebar = ({ activeTab, setActiveTab }) => {
   const [isOpen, setIsOpen] = useState(false);

@@ -4,11 +4,10 @@ import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 
 /**
- * Dashboard Page
- * Main application page after login
- * Shows user info and various dashboard sections
+ * Admin Dashboard Page
+ * Admin-only dashboard with waste logs and analytics
  */
-const Dashboard = () => {
+const AdminDashboard = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('home');
   const [userData, setUserData] = useState(null);
@@ -191,4 +190,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default AdminDashboard;
