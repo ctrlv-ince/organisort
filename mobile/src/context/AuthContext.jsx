@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
           const response = await apiClient.get('/api/users/me');
           
           // Update the user state with the user data from the response
-          setUser(response.data.data);
+                    setUser(response.data);
           
         } else {
           setUser(null);
@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
       console.log('Token stored in AsyncStorage:', response.data.token);
       
       // Update the user state with the user data from the response
-      setUser(response.data.data);
+                setUser(response.data);
     } catch (error) {
       console.error('Email sign-in error:', error);
       throw error;
@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }) => {
       await AsyncStorage.setItem('token', response.data.token);
       
       // Update the user state with the user data from the response
-      setUser(response.data.data);
+                setUser(response.data);
     } catch (error) {
       console.error('Email registration error:', error);
       throw error;
@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {
+  const logout = async (router) => {
     setLoading(true);
     // Immediately clear local authentication state
     await AsyncStorage.removeItem('token');
@@ -100,6 +100,9 @@ export const AuthProvider = ({ children }) => {
       console.error('Server logout failed:', error);
     } finally {
       setLoading(false);
+      if (router) {
+        router.replace('/(auth)/login');
+      }
     }
   };
 

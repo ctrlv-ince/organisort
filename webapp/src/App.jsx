@@ -40,7 +40,7 @@ const RoleBasedDashboard = () => {
 
         if (response.ok) {
           const data = await response.json();
-          setUserRole(data.data.role || 'user');
+          setUserRole(data.role || 'user');
         } else {
           setUserRole('user');
         }

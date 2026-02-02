@@ -14,8 +14,8 @@ function RootLayoutNav() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setOnUnauthorized(logout);
-  }, [logout]);
+    setOnUnauthorized(() => logout(router));
+  }, [logout, router]);
 
   useEffect(() => {
     const timer = setTimeout(() => setHydrated(true), 100);
