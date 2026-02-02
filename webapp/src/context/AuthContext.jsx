@@ -1,11 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../config/firebaseConfig';
+import axios from 'axios';
 
 /**
  * AuthContext
  * Manages authentication state and provides auth functions to the entire app
- * Also handles sync to MongoDB backend after login
+ * Uses backend API for authentication instead of Firebase
  */
 const AuthContext = createContext();
 
@@ -17,53 +16,27 @@ export const AuthProvider = ({ children }) => {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   /**
-   * Sync user to MongoDB backend
-   * Called after successful Firebase login
-   */
-  const syncUserToBackend = async (firebaseUser, idToken) => {
-    try {
-      const response = await fetch(`${API_URL}/api/users/sync`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName || '',
-          photoURL: firebaseUser.photoURL || null,
-          emailVerified: firebaseUser.emailVerified || false,
-        }),
-      });
-
-      if (!response.ok) {
-        console.warn('Failed to sync user to backend:', response.statusText);
-      } else {
-        console.log('✅ User synced to MongoDB');
-      }
-    } catch (err) {
-      console.error('❌ Error syncing user:', err);
-    }
-  };
-
-  /**
    * Login with email and password
    */
   const login = async (email, password) => {
     try {
       setError(null);
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const firebaseUser = userCredential.user;
-      const idToken = await firebaseUser.getIdToken();
+      
+      // Use custom API endpoint for email/password authentication
+      const response = await axios.post(`${API_URL}/api/auth/login`, {
+        email,
+        password,
+      });
 
-      // Sync to backend
-      await syncUserToBackend(firebaseUser, idToken);
-
-      setUser(firebaseUser);
-      return firebaseUser;
+      // Store the JWT token in localStorage for API calls
+      localStorage.setItem('token', response.data.token);
+      
+      // Update the user state with the user data from the response
+      setUser(response.data.data);
+      setError(null);
+      return response.data.data;
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.error || 'Login failed');
       throw err;
     }
   };
@@ -74,16 +47,11 @@ export const AuthProvider = ({ children }) => {
   const googleLogin = async () => {
     try {
       setError(null);
-      const provider = new GoogleAuthProvider();
-      const userCredential = await signInWithPopup(auth, provider);
-      const firebaseUser = userCredential.user;
-      const idToken = await firebaseUser.getIdToken();
-
-      // Sync to backend
-      await syncUserToBackend(firebaseUser, idToken);
-
-      setUser(firebaseUser);
-      return firebaseUser;
+      // For web, we'll use the backend's Google OAuth endpoint
+      // This would typically redirect to Google OAuth and then back to the app
+      // For now, we'll simulate the flow
+      console.log('Google login requires OAuth setup with backend');
+      throw new Error('Google login not yet configured for web');
     } catch (err) {
       setError(err.message);
       throw err;
@@ -96,15 +64,22 @@ export const AuthProvider = ({ children }) => {
   const register = async (email, password) => {
     try {
       setError(null);
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const firebaseUser = userCredential.user;
-      const idToken = await firebaseUser.getIdToken();
-      // Sync to backend (role:user by default)
-      await syncUserToBackend(firebaseUser, idToken);
-      setUser(firebaseUser);
-      return firebaseUser;
+      
+      // Use custom API endpoint for registration
+      const response = await axios.post(`${API_URL}/api/auth/register`, {
+        email,
+        password,
+      });
+
+      // Store the JWT token in localStorage for API calls
+      localStorage.setItem('token', response.data.token);
+      
+      // Update the user state with the user data from the response
+      setUser(response.data.data);
+      setError(null);
+      return response.data.data;
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.error || 'Registration failed');
       throw err;
     }
   };
@@ -115,7 +90,20 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       setError(null);
-      await signOut(auth);
+      
+      // Call logout endpoint to invalidate token
+      const token = localStorage.getItem('token');
+      if (token) {
+        await axios.post(`${API_URL}/api/auth/logout`, {}, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+      }
+      
+      // Clear the token from localStorage
+      localStorage.removeItem('token');
       setUser(null);
       console.log('✅ User logged out');
     } catch (err) {
@@ -125,27 +113,38 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
-   * Track auth state changes with Firebase onAuthStateChanged
+   * Track auth state changes with backend
    */
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        try {
-          const idToken = await firebaseUser.getIdToken();
-          // Sync on every auth state change (handles token refresh)
-          await syncUserToBackend(firebaseUser, idToken);
-          setUser(firebaseUser);
-        } catch (err) {
-          console.error('Error in auth state change:', err);
-          setUser(firebaseUser); // Still set user even if sync fails
-        }
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
+    const checkAuthStatus = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          // Verify the token with the backend
+          const response = await axios.get(`${API_URL}/api/auth/me`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
 
-    return unsubscribe;
+          if (response.status === 200) {
+            setUser(response.data.data);
+          } else {
+            throw new Error('Invalid token');
+          }
+        } else {
+          setUser(null);
+        }
+      } catch (err) {
+        console.error('Error checking auth status:', err);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuthStatus();
   }, []);
 
   const value = {

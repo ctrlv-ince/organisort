@@ -19,12 +19,15 @@ const UserDashboard = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        if (!user) return;
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setLoading(false);
+          return;
+        }
 
-        const idToken = await user.getIdToken();
         const response = await fetch(`${API_URL}/api/users/me`, {
           headers: {
-            'Authorization': `Bearer ${idToken}`,
+            'Authorization': `Bearer ${token}`,
           },
         });
 
@@ -43,7 +46,7 @@ const UserDashboard = () => {
     };
 
     fetchUserProfile();
-  }, [user]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">

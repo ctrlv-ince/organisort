@@ -12,10 +12,6 @@ import {
 } from 'react-native';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
-import * as AuthSession from 'expo-auth-session';
-import *as Google from 'expo-auth-session/providers/google';
-import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
-import { auth } from '@/src/config/firebaseConfig';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#2563eb' },
@@ -43,22 +39,12 @@ const styles = StyleSheet.create({
 });
 
 export default function LoginScreen() {
-  const { signInWithEmail, loading } = useAuth();
+  const { signInWithEmail, signInWithGoogle, loading } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailLoading, setEmailLoading] = useState(false);
   const [errors, setErrors] = useState({});
-
-  const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
-
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    // expoClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_EXPO,
-    // iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
-    androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_WEB,
-    redirectUri,
-  });
 
   const handleEmailSignIn = async () => {
     const newErrors = {};
@@ -80,38 +66,18 @@ export default function LoginScreen() {
     }
   };
 
-  const handleGoogleSignIn = () => {
-    // Trigger the expo-auth-session Google prompt
-    if (!request) {
-      Alert.alert('Google Sign-In', 'Google Auth not configured');
-      return;
+  const handleGoogleSignIn = async () => {
+    try {
+      setEmailLoading(true);
+      await signInWithGoogle();
+      router.replace('/(app)');
+    } catch (error) {
+      console.error('Google sign-in error:', error);
+      Alert.alert('Google Sign-In Error', error.message || 'Google sign-in failed');
+    } finally {
+      setEmailLoading(false);
     }
-    promptAsync();
   };
-
-  useEffect(() => {
-    if (response?.type === 'success') {
-      const { id_token, access_token } = response.params || {};
-      if (!id_token && !access_token) {
-        Alert.alert('Google Sign-In', 'No token returned from Google');
-        return;
-      }
-
-      (async () => {
-        try {
-          setEmailLoading(true);
-          const credential = GoogleAuthProvider.credential(id_token, access_token);
-          await signInWithCredential(auth, credential);
-          router.replace('/(app)');
-        } catch (err) {
-          console.error('Google sign-in error:', err);
-          Alert.alert('Google Sign-In Error', err.message || String(err));
-        } finally {
-          setEmailLoading(false);
-        }
-      })();
-    }
-  }, [response]);
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
