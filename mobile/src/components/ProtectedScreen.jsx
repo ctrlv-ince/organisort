@@ -1,12 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { styled } from 'nativewind';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
-
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledTouchableOpacity = styled(TouchableOpacity);
 
 /**
  * Protected Screen Wrapper Component
@@ -21,26 +16,44 @@ export const ProtectedScreen = ({ children }) => {
     if (!loading && !isAuthenticated) {
       router.replace('/(auth)/login');
     }
-  }, [isAuthenticated, loading]);
+  }, [isAuthenticated, loading, router]);
 
   if (loading) {
     return (
-      <StyledView className="flex-1 items-center justify-center bg-light">
+      <View style={styles.container}>
         <ActivityIndicator size="large" color="#2563eb" />
-        <StyledText className="text-gray-600 mt-4">Loading...</StyledText>
-      </StyledView>
+        <Text style={styles.text}>Loading...</Text>
+      </View>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <StyledView className="flex-1 items-center justify-center bg-light">
-        <StyledText className="text-gray-600 text-lg mb-4">Redirecting to login...</StyledText>
-      </StyledView>
+      <View style={styles.container}>
+        <Text style={styles.redirectText}>Redirecting to login...</Text>
+      </View>
     );
   }
 
   return <>{children}</>;
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f8f9fa', // Equivalent to bg-light
+  },
+  text: {
+    color: '#6c757d', // Equivalent to text-gray-600
+    marginTop: 16, // mt-4
+  },
+  redirectText: {
+    color: '#6c757d', // Equivalent to text-gray-600
+    fontSize: 18, // text-lg
+    marginBottom: 16, // mb-4
+  },
+});
 
 export default ProtectedScreen;

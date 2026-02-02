@@ -38,7 +38,7 @@ const AdminDashboard = () => {
 
         if (response.ok) {
           const data = await response.json();
-          setUserData(data.data);
+          setUserData(data);
           console.log('✅ User profile fetched:', data.data);
         } else {
           console.warn('Failed to fetch user profile');

@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
  */
 const Sidebar = ({ activeTab, setActiveTab }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { logout } = useAuth();
 
   const navItems = [
     { id: 'home', label: 'Home', icon: '🏠' },
@@ -26,35 +27,48 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 
       {/* Sidebar */}
       <div
-        className={`fixed md:relative w-64 h-screen bg-gray-900 text-white transform transition-transform duration-300 z-30 ${
+        className={`fixed md:relative w-64 h-screen bg-gray-900 text-white flex flex-col justify-between transform transition-transform duration-300 z-30 ${
           isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
-        {/* Sidebar Header */}
-        <div className="p-6 border-b border-gray-700">
-          <h2 className="text-2xl font-bold">Dashboard</h2>
+        <div>
+          {/* Sidebar Header */}
+          <div className="p-6 border-b border-gray-700">
+            <h2 className="text-2xl font-bold">Dashboard</h2>
+          </div>
+
+          {/* Navigation Items */}
+          <nav className="py-6">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActiveTab(item.id);
+                  setIsOpen(false);
+                }}
+                className={`w-full text-left px-6 py-3 transition-colors ${
+                  activeTab === item.id
+                    ? 'bg-primary text-white border-l-4 border-white'
+                    : 'text-gray-300 hover:bg-gray-800'
+                }`}
+              >
+                <span className="text-xl mr-3">{item.icon}</span>
+                {item.label}
+              </button>
+            ))}
+          </nav>
         </div>
 
-        {/* Navigation Items */}
-        <nav className="py-6">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => {
-                setActiveTab(item.id);
-                setIsOpen(false);
-              }}
-              className={`w-full text-left px-6 py-3 transition-colors ${
-                activeTab === item.id
-                  ? 'bg-primary text-white border-l-4 border-white'
-                  : 'text-gray-300 hover:bg-gray-800'
-              }`}
-            >
-              <span className="text-xl mr-3">{item.icon}</span>
-              {item.label}
-            </button>
-          ))}
-        </nav>
+        {/* Logout Button */}
+        <div className="p-6 border-t border-gray-700">
+          <button
+            onClick={logout}
+            className="w-full text-left px-6 py-3 transition-colors text-red-400 hover:bg-red-900"
+          >
+            <span className="text-xl mr-3">🚪</span>
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* Mobile Overlay */}

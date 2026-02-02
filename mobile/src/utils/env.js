@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 export const validateEnv = () => {
   const requiredVars = [
     'EXPO_PUBLIC_FIREBASE_API_KEY',
@@ -16,7 +18,9 @@ export const validateEnv = () => {
 };
 
 export const getApiUrl = () => {
-  return process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
+  if (process.env.EXPO_PUBLIC_API_URL) {
+    return process.env.EXPO_PUBLIC_API_URL;
+  }
 };
 
 export const getFirebaseConfig = () => {

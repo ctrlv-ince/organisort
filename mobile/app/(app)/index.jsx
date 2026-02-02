@@ -54,9 +54,9 @@ export default function HomeScreen() {
     try {
       if (!user) return;
       
-      const response = await apiClient.get('/api/auth/me');
+      const response = await apiClient.get('/api/users/me');
 
-      setUserProfile(response.data.data);
+      setUserProfile(response.data);
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
       setError('Failed to fetch user profile. Please check your authentication and try again.');
