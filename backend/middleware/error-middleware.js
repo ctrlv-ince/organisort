@@ -4,6 +4,9 @@
  */
 const errorHandler = (err, req, res, next) => {
   console.error('❌ Error:', err);
+  console.error('❌ Error name:', err.name);
+  console.error('❌ Error code:', err.code);
+  console.error('❌ Error stack:', err.stack);
 
   // Default error response
   let statusCode = err.statusCode || 500;

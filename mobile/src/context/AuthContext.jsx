@@ -1,74 +1,42 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { getAuthSafe } from '../config/firebaseConfig';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
-import axios from 'axios';
+import apiClient from '@/src/utils/apiClient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AuthContext = createContext(undefined);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const syncUserToBackend = async (firebaseUser) => {
-    try {
-      const idToken = await firebaseUser.getIdToken();
-      const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
-
-      const response = await axios.post(
-        `${API_URL}/api/users/sync`,
-        {
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName || '',
-          photoURL: firebaseUser.photoURL || null,
-          emailVerified: firebaseUser.emailVerified || false,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      console.log('[Mobile] User synced to backend:', response.data);
-    } catch (error) {
-      console.error('[Mobile] Failed to sync user to backend:', error);
-    }
-  };
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    let unsubscribe;
-    const auth = getAuthSafe();
-    if (!auth) {
-      console.warn('[Mobile] Firebase auth not available; skipping auth listener.');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-        try {
-          if (firebaseUser) {
-            setUser(firebaseUser);
-            await syncUserToBackend(firebaseUser);
-          } else {
-            setUser(null);
-          }
-        } catch (error) {
-          console.error('[Mobile] Error in auth state change handler:', error);
-        } finally {
-          setLoading(false);
+    const checkAuthStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        console.log('Token retrieved in checkAuthStatus:', token);
+        if (token) {
+          // Verify the token with the backend
+          const response = await apiClient.get('/api/auth/me');
+          
+          // Update the user state with the user data from the response
+          setUser(response.data.data);
+          
+          // Check if user is admin
+          setIsAdmin(response.data.data.role === 'admin');
+        } else {
+          setUser(null);
+          setIsAdmin(false);
         }
-      });
-    } catch (error) {
-      console.error('[Mobile] Failed to set up auth listener:', error);
-      setLoading(false);
-    }
-
-    return () => {
-      if (unsubscribe) unsubscribe();
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+        setUser(null);
+        setIsAdmin(false);
+      } finally {
+        setLoading(false);
+      }
     };
+
+    checkAuthStatus();
   }, []);
 
   const signInWithGoogle = async () => {
@@ -89,9 +57,15 @@ export const AuthProvider = ({ children }) => {
   const signInWithEmail = async (email, password) => {
     try {
       setLoading(true);
-      const auth = getAuthSafe();
-      if (!auth) throw new Error('Firebase auth not available');
-      await signInWithEmailAndPassword(auth, email, password);
+      const response = await apiClient.post('/api/auth/login', { email, password });
+      
+      // Store the JWT token in AsyncStorage for API calls
+      await AsyncStorage.setItem('token', response.data.token);
+      console.log('Token stored in AsyncStorage:', response.data.token);
+      
+      // Update the user state with the user data from the response
+      setUser(response.data.data);
+      setIsAdmin(response.data.data.role === 'admin');
     } catch (error) {
       console.error('Email sign-in error:', error);
       throw error;
@@ -103,10 +77,14 @@ export const AuthProvider = ({ children }) => {
   const registerWithEmail = async (email, password) => {
     try {
       setLoading(true);
-      const auth = getAuthSafe();
-      if (!auth) throw new Error('Firebase auth not available');
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await syncUserToBackend(userCredential.user);
+      const response = await apiClient.post('/api/auth/register', { email, password });
+      
+      // Store the JWT token in AsyncStorage for API calls
+      await AsyncStorage.setItem('token', response.data.token);
+      
+      // Update the user state with the user data from the response
+      setUser(response.data.data);
+      setIsAdmin(response.data.data.role === 'admin');
     } catch (error) {
       console.error('Email registration error:', error);
       throw error;
@@ -116,15 +94,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
+    setLoading(true);
+    // Immediately clear local authentication state
+    await AsyncStorage.removeItem('token');
+    setUser(null);
+    setIsAdmin(false);
+
     try {
-      setLoading(true);
-      const auth = getAuthSafe();
-      if (!auth) throw new Error('Firebase auth not available');
-      await signOut(auth);
-      setUser(null);
+      // Attempt to log out from the server, but don't let it block client-side logout
+      await apiClient.post('/api/auth/logout');
     } catch (error) {
-      console.error('Logout error:', error);
-      throw error;
+      // Log if server logout fails, but local state is already cleared
+      console.error('Server logout failed:', error);
     } finally {
       setLoading(false);
     }
@@ -133,6 +114,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     loading,
+    isAdmin,
     signInWithGoogle,
     signInWithEmail,
     registerWithEmail,

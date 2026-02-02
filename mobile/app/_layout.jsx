@@ -3,13 +3,19 @@ import { Slot, useRouter, useSegments } from 'expo-router';
 import { AuthProvider, useAuth } from '@/src/context/AuthContext';
 import * as SplashScreen from 'expo-splash-screen';
 
+import { setOnUnauthorized } from '@/src/utils/apiClient';
+
 SplashScreen.preventAutoHideAsync();
 
 function RootLayoutNav() {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, logout } = useAuth();
   const segments = useSegments();
   const router = useRouter();
   const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setOnUnauthorized(logout);
+  }, [logout]);
 
   useEffect(() => {
     const timer = setTimeout(() => setHydrated(true), 100);

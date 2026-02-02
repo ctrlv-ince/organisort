@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   Text,
@@ -11,7 +12,7 @@ import {
 } from 'react-native';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
-import axios from 'axios';
+import apiClient from '@/src/utils/apiClient';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
@@ -35,6 +36,8 @@ const styles = StyleSheet.create({
   statusText: { fontSize: 14, fontWeight: 'bold' },
   footerText: { textAlign: 'center', color: '#64748b', fontSize: 14, marginTop: 32, marginBottom: 16 },
   footerSubtext: { textAlign: 'center', color: '#94a3b8', fontSize: 12 },
+  logoutBtn: { backgroundColor: '#2563eb', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 8, marginTop: 16 },
+  logoutText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
 });
 
 export default function HomeScreen() {
@@ -43,25 +46,20 @@ export default function HomeScreen() {
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(null);
 
   // Navigation handled by Root layout; avoid navigate-before-mount here
 
   const fetchUserProfile = async () => {
     try {
       if (!user) return;
+      
+      const response = await apiClient.get('/api/auth/me');
 
-      const idToken = await user.getIdToken();
-      const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
-
-      const response = await axios.get(`${API_URL}/api/users/me`, {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
-
-      setUserProfile(response.data);
+      setUserProfile(response.data.data);
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
+      setError('Failed to fetch user profile. Please check your authentication and try again.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -95,6 +93,19 @@ export default function HomeScreen() {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="large" color="#2563eb" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
+        <Text style={{ fontSize: 16, color: '#dc2626', textAlign: 'center', marginBottom: 16 }}>
+          {error}
+        </Text>
+        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
       </View>
     );
   }

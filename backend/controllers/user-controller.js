@@ -6,74 +6,46 @@ const User = require('../models/User');
  */
 
 /**
- * Sync user with Firebase Auth data
- * Creates a new user or updates existing user's lastLogin
+ * Get current user profile and sync Firebase users.
  * 
- * Requires: Authentication middleware (req.user)
+ * This function handles both Firebase and non-Firebase users.
+ * If the user is authenticated via Firebase, it performs an "upsert" operation:
+ *  - If the user exists, it updates their `lastLogin` time.
+ *  - If the user does not exist, it creates a new user document in MongoDB.
  * 
- * Process:
- * 1. Extract uid, email, name from Firebase decoded token
- * 2. Check if user exists in MongoDB
- * 3. If exists, update lastLogin timestamp
- * 4. If doesn't exist, create new user document
- */
-const syncUser = async (req, res, next) => {
-  try {
-    const { uid, email, displayName, photoURL, emailVerified } = req.body;
-
-    // Validate required fields
-    if (!uid || !email) {
-      return res.status(400).json({
-        success: false,
-        error: 'uid and email are required',
-      });
-    }
-
-    // Perform upsert: update if exists, create if doesn't
-    const user = await User.findByIdAndUpdate(
-      uid,
-      {
-        _id: uid,
-        email: email.toLowerCase().trim(),
-        displayName: displayName || '',
-        photoURL: photoURL || null,
-        emailVerified: emailVerified || false,
-        lastLogin: new Date(),
-        isActive: true,
-      },
-      {
-        upsert: true, // Create if doesn't exist
-        new: true,    // Return updated document
-        runValidators: true,
-      }
-    );
-
-    res.status(200).json({
-      success: true,
-      message: 'User synced successfully',
-      data: user,
-    });
-  } catch (error) {
-    // Handle duplicate key error
-    if (error.code === 11000) {
-      return res.status(409).json({
-        success: false,
-        error: 'Email already in use',
-      });
-    }
-    next(error);
-  }
-};
-
-/**
- * Get current user profile
- * Requires: Authentication middleware (req.user.uid)
+ * If the user is authenticated via custom JWT, it retrieves the user's
+ * profile from the database.
+ * 
+ * Requires: `unifiedAuth` middleware (attaches `req.user`).
  */
 const getCurrentUser = async (req, res, next) => {
   try {
-    const { uid } = req.user;
+    const { isFirebase, ...userData } = req.user;
 
-    const user = await User.findById(uid);
+    let user;
+    if (isFirebase) {
+      // For Firebase users, perform an upsert
+      user = await User.findOneAndUpdate(
+        { _id: userData.uid },
+        {
+          $set: {
+            email: userData.email,
+            displayName: userData.displayName || '',
+            photoURL: userData.photoURL || null,
+            emailVerified: userData.emailVerified || false,
+            lastLogin: new Date(),
+          },
+          $setOnInsert: {
+            _id: userData.uid,
+            createdAt: new Date(),
+          },
+        },
+        { upsert: true, new: true, runValidators: true }
+      );
+    } else {
+      // For non-Firebase users, just find the user
+      user = await User.findById(userData._id);
+    }
 
     if (!user) {
       return res.status(404).json({
@@ -93,12 +65,14 @@ const getCurrentUser = async (req, res, next) => {
 
 /**
  * Update user profile
- * Requires: Authentication middleware (req.user.uid)
+ * Requires: Authentication middleware (req.user)
  */
 const updateUserProfile = async (req, res, next) => {
   try {
-    const { uid } = req.user;
+    const { isFirebase, ...userData } = req.user;
     const { displayName, photoURL } = req.body;
+
+    const userId = isFirebase ? userData.uid : userData._id;
 
     // Build update object with only provided fields
     const updateData = {};
@@ -106,7 +80,7 @@ const updateUserProfile = async (req, res, next) => {
     if (photoURL !== undefined) updateData.photoURL = photoURL;
 
     const user = await User.findByIdAndUpdate(
-      uid,
+      userId,
       updateData,
       { new: true, runValidators: true }
     );
@@ -134,9 +108,10 @@ const updateUserProfile = async (req, res, next) => {
  */
 const getUserStats = async (req, res, next) => {
   try {
-    const { uid } = req.user;
+    const { isFirebase, ...userData } = req.user;
+    const userId = isFirebase ? userData.uid : userData._id;
 
-    const user = await User.findById(uid);
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({
@@ -166,7 +141,6 @@ const getUserStats = async (req, res, next) => {
 };
 
 module.exports = {
-  syncUser,
   getCurrentUser,
   updateUserProfile,
   getUserStats,

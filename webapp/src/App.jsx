@@ -24,10 +24,17 @@ const RoleBasedDashboard = () => {
       try {
         if (!user) return;
 
-        const idToken = await user.getIdToken();
+        // Get token from localStorage instead of from user object
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setUserRole('user');
+          setLoading(false);
+          return;
+        }
+
         const response = await fetch(`${API_URL}/api/users/me`, {
           headers: {
-            'Authorization': `Bearer ${idToken}`,
+            'Authorization': `Bearer ${token}`,
           },
         });
 

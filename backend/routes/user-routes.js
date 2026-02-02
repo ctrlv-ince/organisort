@@ -1,7 +1,6 @@
 const express = require('express');
-const { verifyFirebaseToken } = require('../middleware/auth-middleware');
+const { unifiedAuth } = require('../middleware/auth-middleware');
 const {
-  syncUser,
   getCurrentUser,
   updateUserProfile,
   getUserStats,
@@ -10,24 +9,12 @@ const {
 const router = express.Router();
 
 /**
- * POST /api/users/sync
- * Sync Firebase user to MongoDB (upsert operation)
- * 
- * Called immediately after Firebase login on client
- * Updates lastLogin timestamp if user exists
- * Creates new document if user doesn't exist
- * 
- * Requires: Bearer token in Authorization header
- */
-router.post('/sync', verifyFirebaseToken, syncUser);
-
-/**
  * GET /api/users/me
  * Get current authenticated user profile
  * 
  * Requires: Bearer token in Authorization header
  */
-router.get('/me', verifyFirebaseToken, getCurrentUser);
+router.get('/me', unifiedAuth, getCurrentUser);
 
 /**
  * PUT /api/users/profile
@@ -36,7 +23,7 @@ router.get('/me', verifyFirebaseToken, getCurrentUser);
  * Requires: Bearer token in Authorization header
  * Body: { displayName?, photoURL? }
  */
-router.put('/profile', verifyFirebaseToken, updateUserProfile);
+router.put('/profile', unifiedAuth, updateUserProfile);
 
 /**
  * GET /api/users/stats
@@ -44,6 +31,6 @@ router.put('/profile', verifyFirebaseToken, updateUserProfile);
  * 
  * Requires: Bearer token in Authorization header
  */
-router.get('/stats', verifyFirebaseToken, getUserStats);
+router.get('/stats', unifiedAuth, getUserStats);
 
 module.exports = router;
