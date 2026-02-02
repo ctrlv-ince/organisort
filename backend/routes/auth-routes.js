@@ -3,9 +3,6 @@ const { protect } = require("../middleware/auth-middleware");
 const {
   registerUser,
   loginUser,
-  getCurrentUser,
-  syncFirebaseUser,
-  updateUserProfile,
 } = require("../controllers/auth-controller");
 
 const router = express.Router();
@@ -23,27 +20,6 @@ router.post("/register", registerUser);
  * Public route (no authentication required)
  */
 router.post("/login", loginUser);
-
-/**
- * POST /api/auth/sync
- * Sync Firebase user to MongoDB (for Google OAuth)
- * No authentication required (called after Firebase signup/login)
- */
-router.post("/sync", syncFirebaseUser);
-
-/**
- * GET /api/auth/me
- * Get current user profile
- * Requires: Bearer token (either Firebase or custom JWT)
- */
-router.get("/me", protect, getCurrentUser);
-
-/**
- * PUT /api/auth/profile
- * Update current user profile
- * Requires: Bearer token (either Firebase or custom JWT)
- */
-router.put("/profile", protect, updateUserProfile);
 
 /**
  * POST /api/auth/logout

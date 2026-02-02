@@ -121,7 +121,7 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem('token');
         if (token) {
           // Verify the token with the backend
-          const response = await axios.get(`${API_URL}/api/auth/me`, {
+          const response = await axios.get(`${API_URL}/api/users/me`, {
             headers: {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',

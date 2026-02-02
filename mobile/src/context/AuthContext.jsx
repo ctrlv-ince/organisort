@@ -7,7 +7,6 @@ const AuthContext = createContext(undefined);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const checkAuthStatus = async () => {
@@ -16,21 +15,17 @@ export const AuthProvider = ({ children }) => {
         console.log('Token retrieved in checkAuthStatus:', token);
         if (token) {
           // Verify the token with the backend
-          const response = await apiClient.get('/api/auth/me');
+          const response = await apiClient.get('/api/users/me');
           
           // Update the user state with the user data from the response
           setUser(response.data.data);
           
-          // Check if user is admin
-          setIsAdmin(response.data.data.role === 'admin');
         } else {
           setUser(null);
-          setIsAdmin(false);
         }
       } catch (error) {
         console.error('Error checking auth status:', error);
         setUser(null);
-        setIsAdmin(false);
       } finally {
         setLoading(false);
       }
@@ -65,7 +60,6 @@ export const AuthProvider = ({ children }) => {
       
       // Update the user state with the user data from the response
       setUser(response.data.data);
-      setIsAdmin(response.data.data.role === 'admin');
     } catch (error) {
       console.error('Email sign-in error:', error);
       throw error;
@@ -84,7 +78,6 @@ export const AuthProvider = ({ children }) => {
       
       // Update the user state with the user data from the response
       setUser(response.data.data);
-      setIsAdmin(response.data.data.role === 'admin');
     } catch (error) {
       console.error('Email registration error:', error);
       throw error;
@@ -98,7 +91,6 @@ export const AuthProvider = ({ children }) => {
     // Immediately clear local authentication state
     await AsyncStorage.removeItem('token');
     setUser(null);
-    setIsAdmin(false);
 
     try {
       // Attempt to log out from the server, but don't let it block client-side logout
@@ -114,7 +106,6 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     loading,
-    isAdmin,
     signInWithGoogle,
     signInWithEmail,
     registerWithEmail,
