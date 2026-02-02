@@ -1,21 +1,41 @@
-import React from 'react';
-import { Slot, useSegments } from 'expo-router';
+import React, { useEffect } from 'react';
+import { Slot, useSegments, useRouter } from 'expo-router';
 import { useAuth } from '@/src/context/AuthContext';
-import { useRouter } from 'expo-router';
+import LoadingSpinner from '@/src/components/LoadingSpinner';
 
 export default function AppLayout() {
-  const { isAdmin } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
   const segments = useSegments();
 
-  // Redirect non-admin users to regular dashboard
-  React.useEffect(() => {
-    const inAdminGroup = segments.includes('admin');
-
-    if (inAdminGroup && !isAdmin) {
-      router.replace('/');
+  useEffect(() => {
+    // Wait until authentication status is determined
+    if (loading) {
+      return;
     }
-  }, [segments, isAdmin]);
 
+    const inAppGroup = segments[0] === '(app)';
+
+    if (inAppGroup) {
+      // If user data is available, check role
+      if (user) {
+        if (user.role === 'admin') {
+          router.replace('/(app)/admin');
+        } else {
+          router.replace('/(app)');
+        }
+      } else {
+        // If no user, redirect to login
+        router.replace('/(auth)/login');
+      }
+    }
+  }, [user, loading, segments, router]);
+
+  // Show a loading screen while we determine auth status
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  // Render the currently active route
   return <Slot />;
 }
