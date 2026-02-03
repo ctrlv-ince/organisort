@@ -9,75 +9,341 @@ import {
   Alert,
   RefreshControl,
   StyleSheet,
+  Image,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
 import apiClient from '@/src/utils/apiClient';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
-  header: { backgroundColor: '#2563eb', paddingTop: 32, paddingBottom: 24, paddingHorizontal: 24, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 },
-  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
+  header: { 
+    backgroundColor: '#10b981', 
+    paddingTop: 32, 
+    paddingBottom: 24, 
+    paddingHorizontal: 24, 
+    borderBottomLeftRadius: 24, 
+    borderBottomRightRadius: 24 
+  },
+  headerTop: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    marginBottom: 24 
+  },
   title: { fontSize: 30, fontWeight: 'bold', color: 'white' },
-  logoutBtn: { backgroundColor: '#ef4444', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8 },
+  logoutBtn: { 
+    backgroundColor: 'rgba(255, 255, 255, 0.2)', 
+    paddingHorizontal: 16, 
+    paddingVertical: 8, 
+    borderRadius: 8 
+  },
   logoutText: { color: 'white', fontWeight: 'bold' },
-  welcomeCard: { backgroundColor: 'rgba(255, 255, 255, 0.2)', borderRadius: 12, padding: 12 },
+  welcomeCard: { 
+    backgroundColor: 'rgba(255, 255, 255, 0.2)', 
+    borderRadius: 12, 
+    padding: 12 
+  },
   welcomeText: { color: 'white', fontSize: 18, fontWeight: '600' },
-  welcomeSubtext: { color: '#e0e7ff', fontSize: 14, marginTop: 4 },
+  welcomeSubtext: { color: '#d1fae5', fontSize: 14, marginTop: 4 },
   content: { paddingHorizontal: 24, paddingVertical: 24 },
-  card: { backgroundColor: 'white', borderRadius: 12, padding: 24, marginBottom: 24, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 3, elevation: 3 },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
-  cardIcon: { fontSize: 24, marginRight: 12 },
-  cardTitle: { fontSize: 18, fontWeight: 'bold', color: '#1e293b' },
-  cardRow: { borderBottomWidth: 1, borderBottomColor: '#e2e8f0', paddingBottom: 12, marginBottom: 12 },
-  cardLabel: { fontSize: 12, color: '#64748b', marginBottom: 4 },
-  cardValue: { fontSize: 16, fontWeight: '600', color: '#1e293b' },
-  statusBadge: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20, flexDirection: 'row', alignItems: 'center' },
-  statusText: { fontSize: 14, fontWeight: 'bold' },
-  footerText: { textAlign: 'center', color: '#64748b', fontSize: 14, marginTop: 32, marginBottom: 16 },
-  footerSubtext: { textAlign: 'center', color: '#94a3b8', fontSize: 12 },
-  logoutBtn: { backgroundColor: '#2563eb', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 8, marginTop: 16 },
-  logoutText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
+  
+  // Stats Cards
+  statsContainer: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    marginBottom: 24 
+  },
+  statCard: { 
+    backgroundColor: 'white', 
+    borderRadius: 12, 
+    padding: 16, 
+    flex: 1, 
+    marginHorizontal: 4,
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 1 }, 
+    shadowOpacity: 0.1, 
+    shadowRadius: 3, 
+    elevation: 3 
+  },
+  statIcon: { fontSize: 28, marginBottom: 8 },
+  statValue: { fontSize: 24, fontWeight: 'bold', color: '#1e293b' },
+  statLabel: { fontSize: 12, color: '#64748b', marginTop: 4 },
+  
+  // Action Buttons
+  actionSection: { marginBottom: 24 },
+  sectionTitle: { 
+    fontSize: 20, 
+    fontWeight: 'bold', 
+    color: '#1e293b', 
+    marginBottom: 16 
+  },
+  actionButtons: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    gap: 12 
+  },
+  actionButton: { 
+    flex: 1, 
+    backgroundColor: 'white', 
+    borderRadius: 12, 
+    padding: 20, 
+    alignItems: 'center',
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowOpacity: 0.1, 
+    shadowRadius: 4, 
+    elevation: 4,
+    borderWidth: 2,
+    borderColor: '#10b981'
+  },
+  actionIcon: { fontSize: 48, marginBottom: 12 },
+  actionText: { 
+    fontSize: 16, 
+    fontWeight: '600', 
+    color: '#1e293b', 
+    textAlign: 'center' 
+  },
+  
+  // History Section
+  historyCard: { 
+    backgroundColor: 'white', 
+    borderRadius: 12, 
+    padding: 20, 
+    marginBottom: 16,
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 1 }, 
+    shadowOpacity: 0.1, 
+    shadowRadius: 3, 
+    elevation: 3 
+  },
+  historyItem: { 
+    flexDirection: 'row', 
+    paddingVertical: 12, 
+    borderBottomWidth: 1, 
+    borderBottomColor: '#e2e8f0' 
+  },
+  historyImage: { 
+    width: 60, 
+    height: 60, 
+    borderRadius: 8, 
+    marginRight: 12,
+    backgroundColor: '#e2e8f0'
+  },
+  historyInfo: { flex: 1 },
+  historyType: { 
+    fontSize: 16, 
+    fontWeight: '600', 
+    color: '#1e293b', 
+    marginBottom: 4 
+  },
+  historyDate: { fontSize: 12, color: '#64748b', marginBottom: 4 },
+  historyConfidence: { 
+    fontSize: 12, 
+    color: '#10b981', 
+    fontWeight: '600' 
+  },
+  
+  emptyState: { 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    paddingVertical: 40 
+  },
+  emptyIcon: { fontSize: 64, marginBottom: 16, opacity: 0.5 },
+  emptyText: { fontSize: 16, color: '#64748b', textAlign: 'center' },
+  
+  viewAllButton: { 
+    backgroundColor: '#10b981', 
+    paddingVertical: 12, 
+    borderRadius: 8, 
+    alignItems: 'center', 
+    marginTop: 12 
+  },
+  viewAllText: { color: 'white', fontWeight: '600', fontSize: 14 },
+  
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  loadingText: {
+    color: 'white',
+    marginTop: 12,
+    fontSize: 16,
+    fontWeight: '600',
+  },
 });
 
 export default function HomeScreen() {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout } = useAuth();
   const router = useRouter();
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
-
-  // Navigation handled by Root layout; avoid navigate-before-mount here
+  const [detectionHistory, setDetectionHistory] = useState([]);
+  const [stats, setStats] = useState({
+    totalDetections: 0,
+    organicWaste: 0,
+    recyclable: 0,
+  });
+  const [detecting, setDetecting] = useState(false);
 
   const fetchUserProfile = async () => {
     try {
       if (!user) return;
       
       const response = await apiClient.get('/api/users/me');
-
       setUserProfile(response.data);
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
       setError('Failed to fetch user profile. Please check your authentication and try again.');
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
     }
   };
 
+  const fetchDetectionHistory = async () => {
+    try {
+      const response = await apiClient.get('/api/detections/history');
+      setDetectionHistory(response.data.slice(0, 5)); // Show only recent 5
+      
+      // Calculate stats
+      const total = response.data.length;
+      const organic = response.data.filter(d => d.category === 'organic').length;
+      const recyclable = response.data.filter(d => d.category === 'recyclable').length;
+      
+      setStats({
+        totalDetections: total,
+        organicWaste: organic,
+        recyclable: recyclable,
+      });
+    } catch (error) {
+      console.error('Failed to fetch detection history:', error);
+    }
+  };
+
+  const fetchData = async () => {
+    setLoading(true);
+    await Promise.all([fetchUserProfile(), fetchDetectionHistory()]);
+    setLoading(false);
+    setRefreshing(false);
+  };
+
   useEffect(() => {
-    fetchUserProfile();
+    fetchData();
   }, [user]);
 
   const handleRefresh = () => {
     setRefreshing(true);
-    fetchUserProfile();
+    fetchData();
+  };
+
+  const requestPermissions = async () => {
+    const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
+    const { status: mediaStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+    if (cameraStatus !== 'granted' || mediaStatus !== 'granted') {
+      Alert.alert(
+        'Permissions Required',
+        'Please grant camera and media library permissions to use this feature.',
+        [{ text: 'OK' }]
+      );
+      return false;
+    }
+    return true;
+  };
+
+  const processImage = async (imageUri) => {
+    setDetecting(true);
+    try {
+      // Create form data for image upload
+      const formData = new FormData();
+      formData.append('image', {
+        uri: imageUri,
+        type: 'image/jpeg',
+        name: 'waste-image.jpg',
+      });
+
+      const response = await apiClient.post('/api/detections/analyze', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Show result
+      Alert.alert(
+        'Detection Complete',
+        `Type: ${response.data.wasteType}\nCategory: ${response.data.category}\nConfidence: ${(response.data.confidence * 100).toFixed(1)}%`,
+        [
+          {
+            text: 'OK',
+            onPress: () => fetchData(), // Refresh data
+          },
+        ]
+      );
+    } catch (error) {
+      console.error('Detection failed:', error);
+      Alert.alert(
+        'Detection Failed',
+        'Failed to analyze the image. Please try again.',
+        [{ text: 'OK' }]
+      );
+    } finally {
+      setDetecting(false);
+    }
+  };
+
+  const handleTakePhoto = async () => {
+    const hasPermission = await requestPermissions();
+    if (!hasPermission) return;
+
+    try {
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      if (!result.canceled) {
+        await processImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error('Camera error:', error);
+      Alert.alert('Error', 'Failed to open camera. Please try again.');
+    }
+  };
+
+  const handleUploadPhoto = async () => {
+    const hasPermission = await requestPermissions();
+    if (!hasPermission) return;
+
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      if (!result.canceled) {
+        await processImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      Alert.alert('Error', 'Failed to select image. Please try again.');
+    }
   };
 
   const handleLogout = async () => {
     Alert.alert('Logout', 'Are you sure you want to log out?', [
-      { text: 'Cancel', onPress: () => {}, style: 'cancel' },
+      { text: 'Cancel', style: 'cancel' },
       {
         text: 'Logout',
         onPress: async () => {
@@ -89,10 +355,14 @@ export default function HomeScreen() {
     ]);
   };
 
+  const handleViewAllHistory = () => {
+    router.push('/history');
+  };
+
   if (loading) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size="large" color="#2563eb" />
+        <ActivityIndicator size="large" color="#10b981" />
       </View>
     );
   }
@@ -103,7 +373,10 @@ export default function HomeScreen() {
         <Text style={{ fontSize: 16, color: '#dc2626', textAlign: 'center', marginBottom: 16 }}>
           {error}
         </Text>
-        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+        <TouchableOpacity 
+          style={[styles.logoutBtn, { backgroundColor: '#10b981' }]} 
+          onPress={handleLogout}
+        >
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
       </View>
@@ -111,107 +384,121 @@ export default function HomeScreen() {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#2563eb" />
-      }
-    >
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <Text style={styles.title}>Dashboard</Text>
-          <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-            <Text style={styles.logoutText}>Logout</Text>
-          </TouchableOpacity>
+    <>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#10b981" />
+        }
+      >
+        <View style={styles.header}>
+          <View style={styles.headerTop}>
+            <Text style={styles.title}>Dashboard</Text>
+            <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+              <Text style={styles.logoutText}>Logout</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.welcomeCard}>
+            <Text style={styles.welcomeText}>Welcome, {user?.displayName || 'User'}! 👋</Text>
+            <Text style={styles.welcomeSubtext}>Start detecting waste and make an impact</Text>
+          </View>
         </View>
-        <View style={styles.welcomeCard}>
-          <Text style={styles.welcomeText}>Welcome, {user?.displayName || 'User'}! 👋</Text>
-          <Text style={styles.welcomeSubtext}>Ready to detect waste and make an impact</Text>
-        </View>
-      </View>
 
-      <View style={styles.content}>
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardIcon}>🔥</Text>
-            <Text style={styles.cardTitle}>Firebase Auth</Text>
-          </View>
-          <View style={styles.cardRow}>
-            <Text style={styles.cardLabel}>Email</Text>
-            <Text style={styles.cardValue}>{user?.email || 'N/A'}</Text>
-          </View>
-          <View style={styles.cardRow}>
-            <Text style={styles.cardLabel}>UID</Text>
-            <Text style={styles.cardValue}>{user?.uid ? user.uid.substring(0, 20) + '...' : 'N/A'}</Text>
-          </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text style={styles.cardLabel}>Email Verified</Text>
-            <View style={[styles.statusBadge, user?.emailVerified ? { backgroundColor: 'rgba(16, 185, 129, 0.2)' } : { backgroundColor: 'rgba(245, 158, 11, 0.2)' }]}>
-              <Text style={[styles.statusText, user?.emailVerified ? { color: '#10b981' } : { color: '#f59e0b' }]}>
-                {user?.emailVerified ? '✓ Yes' : '✗ No'}
-              </Text>
+        <View style={styles.content}>
+          {/* Stats Cards */}
+          <View style={styles.statsContainer}>
+            <View style={styles.statCard}>
+              <Text style={styles.statIcon}>📊</Text>
+              <Text style={styles.statValue}>{stats.totalDetections}</Text>
+              <Text style={styles.statLabel}>Total Scans</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statIcon}>🌱</Text>
+              <Text style={styles.statValue}>{stats.organicWaste}</Text>
+              <Text style={styles.statLabel}>Organic</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statIcon}>♻️</Text>
+              <Text style={styles.statValue}>{stats.recyclable}</Text>
+              <Text style={styles.statLabel}>Recyclable</Text>
             </View>
           </View>
-        </View>
 
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardIcon}>💾</Text>
-            <Text style={styles.cardTitle}>MongoDB Sync</Text>
+          {/* Detection Actions */}
+          <View style={styles.actionSection}>
+            <Text style={styles.sectionTitle}>Detect Waste</Text>
+            <View style={styles.actionButtons}>
+              <TouchableOpacity style={styles.actionButton} onPress={handleTakePhoto}>
+                <Text style={styles.actionIcon}>📷</Text>
+                <Text style={styles.actionText}>Take Photo</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.actionButton} onPress={handleUploadPhoto}>
+                <Text style={styles.actionIcon}>🖼️</Text>
+                <Text style={styles.actionText}>Upload Photo</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          {userProfile ? (
-            <>
-              <View style={styles.cardRow}>
-                <Text style={styles.cardLabel}>Display Name</Text>
-                <Text style={styles.cardValue}>{userProfile.displayName || 'Not set'}</Text>
-              </View>
-              <View style={styles.cardRow}>
-                <Text style={styles.cardLabel}>Last Login</Text>
-                <Text style={styles.cardValue}>{new Date(userProfile.lastLogin).toLocaleString()}</Text>
-              </View>
-              <View style={styles.cardRow}>
-                <Text style={styles.cardLabel}>Account Created</Text>
-                <Text style={styles.cardValue}>{new Date(userProfile.createdAt).toLocaleString()}</Text>
-              </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={styles.cardLabel}>Account Status</Text>
-                <View style={[styles.statusBadge, userProfile.isActive ? { backgroundColor: 'rgba(16, 185, 129, 0.2)' } : { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
-                  <Text style={[styles.statusText, userProfile.isActive ? { color: '#10b981' } : { color: '#ef4444' }]}>
-                    {userProfile.isActive ? '● Active' : '● Inactive'}
+
+          {/* Recent Detection History */}
+          <View style={styles.actionSection}>
+            <Text style={styles.sectionTitle}>Recent Detections</Text>
+            <View style={styles.historyCard}>
+              {detectionHistory.length > 0 ? (
+                <>
+                  {detectionHistory.map((item, index) => (
+                    <View 
+                      key={item._id || index} 
+                      style={[
+                        styles.historyItem, 
+                        index === detectionHistory.length - 1 && { borderBottomWidth: 0 }
+                      ]}
+                    >
+                      <Image 
+                        source={{ uri: item.imageUrl }} 
+                        style={styles.historyImage}
+                        resizeMode="cover"
+                      />
+                      <View style={styles.historyInfo}>
+                        <Text style={styles.historyType}>
+                          {item.wasteType || 'Unknown'}
+                        </Text>
+                        <Text style={styles.historyDate}>
+                          {new Date(item.createdAt).toLocaleDateString()} at{' '}
+                          {new Date(item.createdAt).toLocaleTimeString()}
+                        </Text>
+                        <Text style={styles.historyConfidence}>
+                          Confidence: {(item.confidence * 100).toFixed(1)}%
+                        </Text>
+                      </View>
+                    </View>
+                  ))}
+                  <TouchableOpacity 
+                    style={styles.viewAllButton} 
+                    onPress={handleViewAllHistory}
+                  >
+                    <Text style={styles.viewAllText}>View All History</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyIcon}>🔍</Text>
+                  <Text style={styles.emptyText}>
+                    No detections yet.{'\n'}Start by taking or uploading a photo!
                   </Text>
                 </View>
-              </View>
-            </>
-          ) : (
-            <View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 24 }}>
-              <ActivityIndicator color="#2563eb" size="small" />
-              <Text style={[styles.cardLabel, { marginTop: 12 }]}>Syncing...</Text>
+              )}
             </View>
-          )}
-        </View>
-
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardIcon}>⚙️</Text>
-            <Text style={styles.cardTitle}>System Status</Text>
-          </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <Text style={styles.cardLabel}>Firebase Connected</Text>
-            <Text style={{ fontSize: 24 }}>✅</Text>
-          </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <Text style={styles.cardLabel}>Backend Synced</Text>
-            <Text style={{ fontSize: 24 }}>{userProfile ? '✅' : '⏳'}</Text>
-          </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text style={styles.cardLabel}>Mobile App</Text>
-            <Text style={{ fontSize: 24 }}>✅</Text>
           </View>
         </View>
+      </ScrollView>
 
-        <Text style={styles.footerText}>Waste Detection Admin Panel v1.0.0</Text>
-        <Text style={styles.footerSubtext}>Firebase + MongoDB Synced</Text>
-      </View>
-    </ScrollView>
+      {/* Loading Overlay during detection */}
+      {detecting && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#10b981" />
+          <Text style={styles.loadingText}>Analyzing image...</Text>
+        </View>
+      )}
+    </>
   );
 }
