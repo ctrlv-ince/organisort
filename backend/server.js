@@ -12,6 +12,7 @@ const { errorHandler } = require("./middleware/error-middleware");
 // Import routes
 const authRoutes = require("./routes/auth-routes");
 const userRoutes = require("./routes/user-routes");
+const detectionRoutes = require("./routes/detection-routes");
 
 // Initialize Firebase
 initializeFirebase();
@@ -30,6 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/detections", detectionRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);

@@ -10,6 +10,7 @@ import {
   RefreshControl,
   StyleSheet,
   Image,
+  Modal,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '@/src/context/AuthContext';
@@ -179,6 +180,105 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+
+  // Results Modal
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.9)',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    paddingTop: 50,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  closeButton: {
+    backgroundColor: '#ef4444',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  modalContent: {
+    flex: 1,
+    padding: 20,
+  },
+  resultImage: {
+    width: '100%',
+    height: 400,
+    borderRadius: 12,
+    marginBottom: 20,
+    resizeMode: 'contain',
+  },
+  resultsCard: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+  },
+  resultsSummary: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 20,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
+  },
+  summaryItem: {
+    alignItems: 'center',
+  },
+  summaryValue: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#10b981',
+  },
+  summaryLabel: {
+    fontSize: 12,
+    color: '#64748b',
+    marginTop: 4,
+  },
+  detectionsList: {
+    marginTop: 10,
+  },
+  detectionItem: {
+    backgroundColor: '#f8fafc',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 10,
+    borderLeftWidth: 4,
+    borderLeftColor: '#10b981',
+  },
+  detectionClass: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1e293b',
+    marginBottom: 4,
+  },
+  detectionConfidence: {
+    fontSize: 14,
+    color: '#64748b',
+  },
+  saveButton: {
+    backgroundColor: '#10b981',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  saveButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 });
 
 export default function HomeScreen() {
@@ -195,6 +295,8 @@ export default function HomeScreen() {
     recyclable: 0,
   });
   const [detecting, setDetecting] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [detectionResults, setDetectionResults] = useState(null);
 
   const fetchUserProfile = async () => {
     try {
@@ -236,9 +338,7 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
-    if (user) {
-      fetchData();
-    }
+    fetchData();
   }, [user]);
 
   const handleRefresh = () => {
@@ -266,38 +366,80 @@ export default function HomeScreen() {
     try {
       // Create form data for image upload
       const formData = new FormData();
+      const filename = imageUri.split('/').pop();
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : 'image/jpeg';
+
       formData.append('image', {
         uri: imageUri,
-        type: 'image/jpeg',
-        name: 'waste-image.jpg',
+        type: type,
+        name: filename || 'photo.jpg',
       });
 
+      console.log('Sending image to backend for detection...');
+
+      // Call your Node.js backend (which will proxy to Flask)
       const response = await apiClient.post('/api/detections/analyze', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      // Show result
-      Alert.alert(
-        'Detection Complete',
-        `Type: ${response.data.wasteType}\nCategory: ${response.data.category}\nConfidence: ${(response.data.confidence * 100).toFixed(1)}%`,
-        [
-          {
-            text: 'OK',
-            onPress: () => fetchData(), // Refresh data
-          },
-        ]
-      );
+      console.log('Detection response:', response.data);
+
+      if (!response.data.success) {
+        throw new Error(response.data.error || 'Detection failed');
+      }
+
+      // Store results and show modal
+      setDetectionResults({
+        ...response.data,
+        originalImage: imageUri,
+      });
+      setShowResults(true);
+
     } catch (error) {
       console.error('Detection failed:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to analyze the image. Please try again.';
       Alert.alert(
         'Detection Failed',
-        'Failed to analyze the image. Please try again.',
+        errorMessage,
         [{ text: 'OK' }]
       );
     } finally {
       setDetecting(false);
+    }
+  };
+
+  const saveDetection = async () => {
+    try {
+      if (!detectionResults) return;
+
+      // Save to your backend
+      const response = await apiClient.post('/api/detections/save', {
+        detections: detectionResults.detections,
+        summary: detectionResults.summary,
+        annotatedImage: detectionResults.annotated_image,
+        imageDimensions: detectionResults.image_dimensions,
+      });
+
+      Alert.alert(
+        'Success',
+        'Detection saved successfully!',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              setShowResults(false);
+              setDetectionResults(null);
+              fetchData(); // Refresh data
+            },
+          },
+        ]
+      );
+    } catch (error) {
+      console.error('Failed to save detection:', error);
+      Alert.alert('Error', 'Failed to save detection. Please try again.');
     }
   };
 
@@ -349,7 +491,8 @@ export default function HomeScreen() {
       {
         text: 'Logout',
         onPress: async () => {
-          await logout(router);
+          await logout();
+          router.replace('/(auth)/login');
         },
         style: 'destructive',
       },
@@ -500,6 +643,86 @@ export default function HomeScreen() {
           <Text style={styles.loadingText}>Analyzing image...</Text>
         </View>
       )}
+
+      {/* Results Modal */}
+      <Modal
+        visible={showResults}
+        animationType="slide"
+        onRequestClose={() => setShowResults(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Detection Results</Text>
+            <TouchableOpacity 
+              style={styles.closeButton}
+              onPress={() => {
+                setShowResults(false);
+                setDetectionResults(null);
+              }}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView style={styles.modalContent}>
+            {detectionResults && (
+              <>
+                {/* Annotated Image */}
+                <Image
+                  source={{ uri: detectionResults.annotated_image }}
+                  style={styles.resultImage}
+                />
+
+                {/* Results Card */}
+                <View style={styles.resultsCard}>
+                  <View style={styles.resultsSummary}>
+                    <View style={styles.summaryItem}>
+                      <Text style={styles.summaryValue}>
+                        {detectionResults.summary?.total_detections || 0}
+                      </Text>
+                      <Text style={styles.summaryLabel}>Found</Text>
+                    </View>
+                    <View style={styles.summaryItem}>
+                      <Text style={styles.summaryValue}>
+                        {detectionResults.summary?.highest_confidence 
+                          ? (detectionResults.summary.highest_confidence * 100).toFixed(0)
+                          : 0}%
+                      </Text>
+                      <Text style={styles.summaryLabel}>Confidence</Text>
+                    </View>
+                  </View>
+
+                  {/* Detections List */}
+                  {detectionResults.detections && detectionResults.detections.length > 0 ? (
+                    <View style={styles.detectionsList}>
+                      <Text style={[styles.sectionTitle, { fontSize: 16, marginBottom: 12 }]}>
+                        Detected Items:
+                      </Text>
+                      {detectionResults.detections.map((detection, index) => (
+                        <View key={index} style={styles.detectionItem}>
+                          <Text style={styles.detectionClass}>
+                            {detection.class}
+                          </Text>
+                          <Text style={styles.detectionConfidence}>
+                            Confidence: {(detection.confidence * 100).toFixed(1)}%
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  ) : (
+                    <Text style={styles.emptyText}>No waste detected in this image.</Text>
+                  )}
+
+                  {/* Save Button */}
+                  <TouchableOpacity style={styles.saveButton} onPress={saveDetection}>
+                    <Text style={styles.saveButtonText}>Save to History</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
+          </ScrollView>
+        </View>
+      </Modal>
     </>
   );
 }
