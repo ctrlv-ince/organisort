@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
           const response = await apiClient.get('/api/users/me');
           
           // Update the user state with the user data from the response
-                    setUser(response.data);
+          setUser(response.data);
           
         } else {
           setUser(null);
@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
       console.log('Token stored in AsyncStorage:', response.data.token);
       
       // Update the user state with the user data from the response
-                setUser(response.data);
+      setUser(response.data);
     } catch (error) {
       console.error('Email sign-in error:', error);
       throw error;
@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }) => {
       await AsyncStorage.setItem('token', response.data.token);
       
       // Update the user state with the user data from the response
-                setUser(response.data);
+      setUser(response.data);
     } catch (error) {
       console.error('Email registration error:', error);
       throw error;
@@ -88,18 +88,19 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async (router) => {
     setLoading(true);
-    // Immediately clear local authentication state
-    await AsyncStorage.removeItem('token');
-    setUser(null);
-
+    
     try {
-      // Attempt to log out from the server, but don't let it block client-side logout
+      // Call the server logout FIRST (while token is still in AsyncStorage)
       await apiClient.post('/api/auth/logout');
     } catch (error) {
-      // Log if server logout fails, but local state is already cleared
+      // Log if server logout fails, but continue with client-side logout
       console.error('Server logout failed:', error);
     } finally {
+      // Always clear local authentication state regardless of server response
+      await AsyncStorage.removeItem('token');
+      setUser(null);
       setLoading(false);
+      
       if (router) {
         router.replace('/(auth)/login');
       }

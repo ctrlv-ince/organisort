@@ -236,7 +236,9 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
-    fetchData();
+    if (user) {
+      fetchData();
+    }
   }, [user]);
 
   const handleRefresh = () => {
@@ -347,8 +349,7 @@ export default function HomeScreen() {
       {
         text: 'Logout',
         onPress: async () => {
-          await logout();
-          router.replace('/(auth)/login');
+          await logout(router);
         },
         style: 'destructive',
       },
