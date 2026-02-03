@@ -11,6 +11,7 @@ import {
   StyleSheet,
   Image,
   Modal,
+  Platform,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '@/src/context/AuthContext';
@@ -199,7 +200,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   closeButton: {
-    backgroundColor: '#ef4444',
+    backgroundColor: '#10b981',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
@@ -267,18 +268,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#64748b',
   },
-  saveButton: {
-    backgroundColor: '#10b981',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  saveButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
 });
 
 export default function HomeScreen() {
@@ -312,13 +301,16 @@ export default function HomeScreen() {
 
   const fetchDetectionHistory = async () => {
     try {
-      const response = await apiClient.get('/api/detections/history');
-      setDetectionHistory(response.data.slice(0, 5)); // Show only recent 5
+      const response = await apiClient.get('/api/detections/history?limit=5');
+      
+      // Handle both array and object responses
+      const detectionData = response.data.detections || response.data;
+      setDetectionHistory(Array.isArray(detectionData) ? detectionData : []);
       
       // Calculate stats
-      const total = response.data.length;
-      const organic = response.data.filter(d => d.category === 'organic').length;
-      const recyclable = response.data.filter(d => d.category === 'recyclable').length;
+      const total = detectionData.length;
+      const organic = detectionData.filter(d => d.category === 'organic').length;
+      const recyclable = detectionData.filter(d => d.category === 'recyclable').length;
       
       setStats({
         totalDetections: total,
@@ -364,28 +356,34 @@ export default function HomeScreen() {
   const processImage = async (imageUri) => {
     setDetecting(true);
     try {
+      console.log('Processing image:', imageUri);
+
       // Create form data for image upload
       const formData = new FormData();
-      const filename = imageUri.split('/').pop();
-      const match = /\.(\w+)$/.exec(filename);
-      const type = match ? `image/${match[1]}` : 'image/jpeg';
+      
+      const uriParts = imageUri.split('.');
+      const fileType = uriParts[uriParts.length - 1];
+      const fileName = `photo_${Date.now()}.${fileType}`;
 
-      formData.append('image', {
-        uri: imageUri,
-        type: type,
-        name: filename || 'photo.jpg',
-      });
+      const file = {
+        uri: Platform.OS === 'ios' ? imageUri.replace('file://', '') : imageUri,
+        type: `image/${fileType}`,
+        name: fileName,
+      };
+
+      formData.append('image', file);
 
       console.log('Sending image to backend for detection...');
 
-      // Call your Node.js backend (which will proxy to Flask)
+      // Call your Node.js backend (it will save automatically and proxy to Flask)
       const response = await apiClient.post('/api/detections/analyze', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+        timeout: 30000,
       });
 
-      console.log('Detection response:', response.data);
+      console.log('Detection response received');
 
       if (!response.data.success) {
         throw new Error(response.data.error || 'Detection failed');
@@ -398,48 +396,25 @@ export default function HomeScreen() {
       });
       setShowResults(true);
 
+      // Refresh history after successful detection
+      await fetchDetectionHistory();
+
     } catch (error) {
       console.error('Detection failed:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to analyze the image. Please try again.';
-      Alert.alert(
-        'Detection Failed',
-        errorMessage,
-        [{ text: 'OK' }]
-      );
+      
+      let errorMessage = 'Failed to analyze the image. ';
+      
+      if (error.response) {
+        errorMessage += `Server error: ${error.response.data?.message || error.response.status}`;
+      } else if (error.request) {
+        errorMessage += 'No response from server. Please check your network connection.';
+      } else {
+        errorMessage += error.message;
+      }
+      
+      Alert.alert('Detection Failed', errorMessage, [{ text: 'OK' }]);
     } finally {
       setDetecting(false);
-    }
-  };
-
-  const saveDetection = async () => {
-    try {
-      if (!detectionResults) return;
-
-      // Save to your backend
-      const response = await apiClient.post('/api/detections/save', {
-        detections: detectionResults.detections,
-        summary: detectionResults.summary,
-        annotatedImage: detectionResults.annotated_image,
-        imageDimensions: detectionResults.image_dimensions,
-      });
-
-      Alert.alert(
-        'Success',
-        'Detection saved successfully!',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              setShowResults(false);
-              setDetectionResults(null);
-              fetchData(); // Refresh data
-            },
-          },
-        ]
-      );
-    } catch (error) {
-      console.error('Failed to save detection:', error);
-      Alert.alert('Error', 'Failed to save detection. Please try again.');
     }
   };
 
@@ -449,7 +424,7 @@ export default function HomeScreen() {
 
     try {
       const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
@@ -470,7 +445,7 @@ export default function HomeScreen() {
 
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
@@ -598,7 +573,7 @@ export default function HomeScreen() {
                       ]}
                     >
                       <Image 
-                        source={{ uri: item.imageUrl }} 
+                        source={{ uri: item.annotated_image || item.imageUrl }} 
                         style={styles.historyImage}
                         resizeMode="cover"
                       />
@@ -611,7 +586,7 @@ export default function HomeScreen() {
                           {new Date(item.createdAt).toLocaleTimeString()}
                         </Text>
                         <Text style={styles.historyConfidence}>
-                          Confidence: {(item.confidence * 100).toFixed(1)}%
+                          {item.summary?.total_detections || 0} items detected
                         </Text>
                       </View>
                     </View>
@@ -652,7 +627,7 @@ export default function HomeScreen() {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Detection Results</Text>
+            <Text style={styles.modalTitle}>Detection Complete! ✅</Text>
             <TouchableOpacity 
               style={styles.closeButton}
               onPress={() => {
@@ -660,7 +635,7 @@ export default function HomeScreen() {
                 setDetectionResults(null);
               }}
             >
-              <Text style={styles.closeButtonText}>Close</Text>
+              <Text style={styles.closeButtonText}>Done</Text>
             </TouchableOpacity>
           </View>
 
@@ -708,15 +683,13 @@ export default function HomeScreen() {
                           </Text>
                         </View>
                       ))}
+                      <Text style={[styles.emptyText, { marginTop: 16, fontSize: 14 }]}>
+                        ✅ Detection saved to history automatically
+                      </Text>
                     </View>
                   ) : (
                     <Text style={styles.emptyText}>No waste detected in this image.</Text>
                   )}
-
-                  {/* Save Button */}
-                  <TouchableOpacity style={styles.saveButton} onPress={saveDetection}>
-                    <Text style={styles.saveButtonText}>Save to History</Text>
-                  </TouchableOpacity>
                 </View>
               </>
             )}
