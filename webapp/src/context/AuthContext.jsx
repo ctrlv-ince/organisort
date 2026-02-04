@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       
       // Use custom API endpoint for email/password authentication
-      const response = await axios.post(`${API_URL}/api/users/login`, {
+      const response = await axios.post(`${API_URL}/api/auth/login`, {
         email,
         password,
       });
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       
       // Use custom API endpoint for registration
-      const response = await axios.post(`${API_URL}/api/users/register`, {
+      const response = await axios.post(`${API_URL}/api/auth/register`, {
         email,
         password,
       });
@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }) => {
       // Call logout endpoint to invalidate token
       const token = localStorage.getItem('token');
       if (token) {
-        await axios.post(`${API_URL}/api/users/logout`, {}, {
+        await axios.post(`${API_URL}/api/auth/logout`, {}, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
