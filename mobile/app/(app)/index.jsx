@@ -536,11 +536,11 @@ export default function HomeScreen() {
               <Text style={styles.statValue}>{stats.organicWaste}</Text>
               <Text style={styles.statLabel}>Organic</Text>
             </View>
-            <View style={styles.statCard}>
+            {/* <View style={styles.statCard}>
               <Text style={styles.statIcon}>♻️</Text>
               <Text style={styles.statValue}>{stats.recyclable}</Text>
               <Text style={styles.statLabel}>Recyclable</Text>
-            </View>
+            </View> */}
           </View>
 
           {/* Detection Actions */}

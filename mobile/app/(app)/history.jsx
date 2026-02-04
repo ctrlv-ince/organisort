@@ -409,10 +409,10 @@ export default function HistoryScreen() {
                 <Text style={styles.statValue}>{stats.organic}</Text>
                 <Text style={styles.statLabel}>Organic</Text>
               </View>
-              <View style={styles.statCard}>
+              {/* <View style={styles.statCard}>
                 <Text style={styles.statValue}>{stats.recyclable}</Text>
                 <Text style={styles.statLabel}>Recyclable</Text>
-              </View>
+              </View> */}
             </View>
           )}
 

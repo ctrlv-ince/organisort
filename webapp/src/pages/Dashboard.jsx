@@ -4,8 +4,8 @@ import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 
 /**
- * Admin Dashboard Page
- * Admin-only dashboard with waste logs and analytics
+ * Admin Dashboard Page - Organic Waste Detection
+ * Admin dashboard for waste management system and analytics
  */
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -23,7 +23,6 @@ const AdminDashboard = () => {
       try {
         if (!user) return;
 
-        // Get token from localStorage instead of from user object
         const token = localStorage.getItem('token');
         if (!token) {
           setLoading(false);
@@ -54,7 +53,7 @@ const AdminDashboard = () => {
   }, [user]);
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gradient-to-br from-green-50 to-amber-50">
       {/* Sidebar */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
@@ -70,123 +69,296 @@ const AdminDashboard = () => {
             {activeTab === 'home' && (
               <div className="space-y-6">
                 {/* Welcome Section */}
-                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg shadow-lg p-8 text-white">
-                  <h1 className="text-4xl font-bold mb-2">
-                    Welcome, {user?.displayName || user?.email}!
-                  </h1>
-                  <p className="text-blue-100">
-                    You're logged in and synced to the database. Ready to detect waste! 🚀
-                  </p>
+                <div className="bg-gradient-to-r from-green-700 to-green-900 rounded-lg shadow-xl p-8 text-white relative overflow-hidden">
+                  {/* Decorative pattern */}
+                  <div className="absolute top-0 right-0 opacity-10 text-9xl">♻️</div>
+                  <div className="relative z-10">
+                    <h1 className="text-4xl font-bold mb-2">
+                      Welcome, {user?.displayName || user?.email}!
+                    </h1>
+                    <p className="text-green-100 text-lg">
+                      OrganiSort Admin Portal - Waste Management System
+                    </p>
+                    <p className="text-green-200 mt-2">
+                      Managing organic waste detection and sustainability 🌱
+                    </p>
+                  </div>
+                </div>
+
+                {/* Quick Stats Cards */}
+                <div className="grid md:grid-cols-3 gap-6">
+                  {/* Total Users */}
+                  <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-600">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-600 font-medium">Total Users</p>
+                        <p className="text-3xl font-bold text-green-700 mt-1">0</p>
+                      </div>
+                      <div className="bg-green-100 p-4 rounded-full">
+                        <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Waste Detections */}
+                  <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-amber-600">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-600 font-medium">Waste Detections</p>
+                        <p className="text-3xl font-bold text-amber-700 mt-1">0</p>
+                      </div>
+                      <div className="bg-amber-100 p-4 rounded-full">
+                        <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* System Accuracy */}
+                  <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-600">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-600 font-medium">AI Accuracy</p>
+                        <p className="text-3xl font-bold text-blue-700 mt-1">--</p>
+                      </div>
+                      <div className="bg-blue-100 p-4 rounded-full">
+                        <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* User Info Cards */}
                 <div className="grid md:grid-cols-2 gap-6">
-                  {/* Firebase Info */}
-                  <div className="bg-white rounded-lg shadow p-6">
-                    <h2 className="text-lg font-semibold text-gray-800 mb-4">Firebase Auth</h2>
+                  {/* Account Information */}
+                  <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-green-600">
+                    <div className="flex items-center mb-4">
+                      <div className="bg-green-100 p-2 rounded-lg mr-3">
+                        <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                      <h2 className="text-lg font-semibold text-gray-800">Account Information</h2>
+                    </div>
                     <div className="space-y-3">
                       <div>
-                        <p className="text-sm text-gray-600">Email</p>
-                        <p className="text-gray-800 font-medium break-all">{user?.email}</p>
+                        <p className="text-sm text-gray-600 font-medium">Email Address</p>
+                        <p className="text-gray-800 break-all">{user?.email}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600">Firebase UID</p>
-                        <p className="text-gray-800 font-medium font-mono text-xs break-all">
+                        <p className="text-sm text-gray-600 font-medium">User ID</p>
+                        <p className="text-gray-800 font-mono text-xs break-all bg-gray-50 p-2 rounded">
                           {user?.uid}
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600">Email Verified</p>
-                        <p className="text-gray-800 font-medium">
-                          {user?.emailVerified ? '✅ Yes' : '❌ No'}
-                        </p>
+                        <p className="text-sm text-gray-600 font-medium">Verification Status</p>
+                        <div className="flex items-center mt-1">
+                          {user?.emailVerified ? (
+                            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                              ✅ Verified
+                            </span>
+                          ) : (
+                            <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+                              ⚠️ Pending Verification
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* MongoDB Sync Info */}
-                  <div className="bg-white rounded-lg shadow p-6">
-                    <h2 className="text-lg font-semibold text-gray-800 mb-4">MongoDB Sync</h2>
+                  {/* Database Sync Status */}
+                  <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-amber-600">
+                    <div className="flex items-center mb-4">
+                      <div className="bg-amber-100 p-2 rounded-lg mr-3">
+                        <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                        </svg>
+                      </div>
+                      <h2 className="text-lg font-semibold text-gray-800">Database Synchronization</h2>
+                    </div>
                     {loading ? (
-                      <div className="flex items-center justify-center h-24">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      <div className="flex items-center justify-center h-32">
+                        <div className="relative">
+                          <div className="animate-spin rounded-full h-12 w-12 border-4 border-green-200 border-t-green-600"></div>
+                          <span className="text-sm text-gray-600 mt-2 block text-center">Syncing...</span>
+                        </div>
                       </div>
                     ) : userData ? (
                       <div className="space-y-3">
                         <div>
-                          <p className="text-sm text-gray-600">Display Name</p>
-                          <p className="text-gray-800 font-medium">
+                          <p className="text-sm text-gray-600 font-medium">Display Name</p>
+                          <p className="text-gray-800">
                             {userData.displayName || '(Not set)'}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">Account Created</p>
-                          <p className="text-gray-800 font-medium">
-                            {new Date(userData.createdAt).toLocaleDateString()}
+                          <p className="text-sm text-gray-600 font-medium">Admin Since</p>
+                          <p className="text-gray-800">
+                            {new Date(userData.createdAt).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">Last Login</p>
-                          <p className="text-gray-800 font-medium">
-                            {new Date(userData.lastLogin).toLocaleString()}
+                          <p className="text-sm text-gray-600 font-medium">Last Activity</p>
+                          <p className="text-gray-800">
+                            {new Date(userData.lastLogin).toLocaleString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
                           </p>
                         </div>
-                        <div className="pt-2 border-t border-gray-200">
-                          <p className="text-xs text-green-600 font-semibold">
-                            ✅ Successfully synced to database!
-                          </p>
+                        <div className="pt-3 border-t border-gray-200">
+                          <div className="flex items-center">
+                            <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                            <p className="text-sm text-green-700 font-semibold">
+                              Successfully synchronized
+                            </p>
+                          </div>
                         </div>
                       </div>
                     ) : (
-                      <p className="text-gray-500">No data found</p>
+                      <div className="text-center py-8">
+                        <p className="text-gray-500">No synchronization data available</p>
+                      </div>
                     )}
                   </div>
                 </div>
 
-                {/* Status Indicators */}
-                <div className="bg-white rounded-lg shadow p-6">
-                  <h2 className="text-lg font-semibold text-gray-800 mb-4">System Status</h2>
+                {/* System Status Panel */}
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <h2 className="text-lg font-semibold text-gray-800 mb-6 flex items-center">
+                    <div className="bg-blue-100 p-2 rounded-lg mr-3">
+                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    System Health Status
+                  </h2>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse"></div>
+                        <span className="text-gray-700 font-medium">Authentication</span>
+                      </div>
+                      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold">
+                        ACTIVE
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse"></div>
+                        <span className="text-gray-700 font-medium">Backend API</span>
+                      </div>
+                      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold">
+                        ACTIVE
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse"></div>
+                        <span className="text-gray-700 font-medium">Database</span>
+                      </div>
+                      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold">
+                        SYNCED
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Recent Activity */}
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <div className="bg-purple-100 p-2 rounded-lg mr-3">
+                      <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    Recent Activity
+                  </h2>
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-700">Firebase Authentication</span>
-                      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                        Connected ✅
-                      </span>
+                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                      <p className="text-sm text-gray-700">Logged in successfully</p>
+                      <span className="ml-auto text-xs text-gray-500">Just now</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-700">Backend API</span>
-                      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                        Connected ✅
-                      </span>
+                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                      <p className="text-sm text-gray-700">Database synchronized</p>
+                      <span className="ml-auto text-xs text-gray-500">2 min ago</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-700">MongoDB Database</span>
-                      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                        Synced ✅
-                      </span>
+                    <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                      <div className="w-2 h-2 bg-amber-500 rounded-full mr-3"></div>
+                      <p className="text-sm text-gray-700">Profile data loaded</p>
+                      <span className="ml-auto text-xs text-gray-500">5 min ago</span>
                     </div>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Waste Logs Tab */}
+            {/* Logs Tab */}
             {activeTab === 'logs' && (
-              <div className="bg-white rounded-lg shadow p-6">
-                <h1 className="text-2xl font-bold text-gray-800 mb-4">Waste Logs</h1>
-                <p className="text-gray-600">
-                  Waste detection logs will appear here. Coming soon! 🔨
-                </p>
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <div className="flex items-center mb-6">
+                  <div className="bg-green-100 p-3 rounded-lg mr-4">
+                    <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h1 className="text-3xl font-bold text-gray-800">Activity Logs</h1>
+                    <p className="text-gray-600 mt-1">Monitor waste detection activities and system events</p>
+                  </div>
+                </div>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
+                  <span className="text-6xl mb-4 block">📋</span>
+                  <p className="text-gray-600 text-lg">
+                    Activity logging system coming soon
+                  </p>
+                  <p className="text-gray-500 mt-2">
+                    Track user activities, detections, and system events
+                  </p>
+                </div>
               </div>
             )}
 
             {/* Analytics Tab */}
             {activeTab === 'analytics' && (
-              <div className="bg-white rounded-lg shadow p-6">
-                <h1 className="text-2xl font-bold text-gray-800 mb-4">Analytics</h1>
-                <p className="text-gray-600">
-                  Analytics dashboard will appear here. Coming soon! 📈
-                </p>
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <div className="flex items-center mb-6">
+                  <div className="bg-blue-100 p-3 rounded-lg mr-4">
+                    <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h1 className="text-3xl font-bold text-gray-800">Waste Analytics</h1>
+                    <p className="text-gray-600 mt-1">Detection insights and performance metrics</p>
+                  </div>
+                </div>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
+                  <span className="text-6xl mb-4 block">📊</span>
+                  <p className="text-gray-600 text-lg">
+                    Analytics dashboard under development
+                  </p>
+                  <p className="text-gray-500 mt-2">
+                    View detection statistics, user engagement, and AI model performance
+                  </p>
+                </div>
               </div>
             )}
           </div>
