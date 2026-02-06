@@ -8,7 +8,7 @@ const {
   deleteDetection,
   getDetectionStats,
 } = require('../controllers/detection-controller');
-const { protect } = require('../middleware/auth-middleware');
+const { unifiedAuth } = require('../middleware/auth-middleware');
 
 // Configure multer for in-memory file storage
 const storage = multer.memoryStorage();
@@ -32,7 +32,7 @@ const upload = multer({
  * @desc    Analyze an image to detect waste type
  * @access  Private (requires Bearer token)
  */
-router.post('/analyze', protect, upload.single('image'), analyzeImage);
+router.post('/analyze', unifiedAuth, upload.single('image'), analyzeImage);
 
 /**
  * @route   GET /api/detections/history
@@ -41,27 +41,27 @@ router.post('/analyze', protect, upload.single('image'), analyzeImage);
  * @query   page - Page number (default: 1)
  * @query   limit - Items per page (default: 50)
  */
-router.get('/history', protect, getDetectionHistory);
+router.get('/history', unifiedAuth, getDetectionHistory);
 
 /**
  * @route   GET /api/detections/stats
  * @desc    Get detection statistics for the logged-in user
  * @access  Private
  */
-router.get('/stats', protect, getDetectionStats);
+router.get('/stats', unifiedAuth, getDetectionStats);
 
 /**
  * @route   GET /api/detections/:id
  * @desc    Get a single detection by ID
  * @access  Private
  */
-router.get('/:id', protect, getDetectionById);
+router.get('/:id', unifiedAuth, getDetectionById);
 
 /**
  * @route   DELETE /api/detections/:id
  * @desc    Delete a detection
  * @access  Private
  */
-router.delete('/:id', protect, deleteDetection);
+router.delete('/:id', unifiedAuth, deleteDetection);
 
 module.exports = router;

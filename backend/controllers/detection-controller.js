@@ -77,15 +77,18 @@ const getDetectionHistory = asyncHandler(async (req, res) => {
   const limit = parseInt(req.query.limit) || 50;
   const skip = (page - 1) * limit;
 
+  // Build query based on user role
+  const query = req.user.role === 'admin' ? {} : { user: req.user.id };
+
   // Fetch detections with pagination
-  const detections = await Detection.find({ user: req.user.id })
+  const detections = await Detection.find(query)
     .sort({ createdAt: -1 }) // Most recent first
     .limit(limit)
     .skip(skip)
     .select('-__v'); // Exclude version key
 
   // Get total count for pagination info
-  const total = await Detection.countDocuments({ user: req.user.id });
+  const total = await Detection.countDocuments(query);
 
   res.json({
     detections,
@@ -109,8 +112,8 @@ const getDetectionById = asyncHandler(async (req, res) => {
     throw new Error('Detection not found');
   }
 
-  // Make sure user owns this detection
-  if (detection.user.toString() !== req.user.id) {
+  // Make sure user owns this detection or is an admin
+  if (detection.user.toString() !== req.user.id && req.user.role !== 'admin') {
     res.status(403);
     throw new Error('Not authorized to view this detection');
   }
@@ -129,8 +132,8 @@ const deleteDetection = asyncHandler(async (req, res) => {
     throw new Error('Detection not found');
   }
 
-  // Make sure user owns this detection
-  if (detection.user.toString() !== req.user.id) {
+  // Make sure user owns this detection or is an admin
+  if (detection.user.toString() !== req.user.id && req.user.role !== 'admin') {
     res.status(403);
     throw new Error('Not authorized to delete this detection');
   }
@@ -144,10 +147,10 @@ const deleteDetection = asyncHandler(async (req, res) => {
 // @route   GET /api/detections/stats
 // @access  Private
 const getDetectionStats = asyncHandler(async (req, res) => {
-  const userId = req.user.id;
+  const query = req.user.role === 'admin' ? {} : { user: req.user.id };
 
-  // Get all detections for the user
-  const detections = await Detection.find({ user: userId });
+  // Get all detections based on query
+  const detections = await Detection.find(query);
 
   // Calculate statistics
   const stats = {
@@ -164,31 +167,85 @@ const getDetectionStats = asyncHandler(async (req, res) => {
 
   // Count by category and waste type
   detections.forEach((detection) => {
+    // Determine category - use the pre-saved category if available, otherwise calculate it
+    let category = detection.category;
+    let wasteType = detection.wasteType;
+    
+    // If category/wasteType weren't set by pre-save hook, calculate them from detections array
+    if (!category || category === 'unknown' || !wasteType || wasteType === 'Unknown') {
+      if (detection.detections && detection.detections.length > 0) {
+        // Get the detection with highest confidence
+        const topDetection = detection.detections.reduce((prev, current) => 
+          (prev.confidence > current.confidence) ? prev : current
+        );
+        
+        wasteType = topDetection.class;
+        
+        // Determine category from class name
+        const className = topDetection.class.toLowerCase();
+        if (className.includes('organic')) {
+          category = 'organic';
+        } else if (className.includes('recycl') && !className.includes('non')) {
+          category = 'recyclable';
+        } else if (className.includes('non-recycl')) {
+          category = 'non-recyclable';
+        } else {
+          category = 'unknown';
+        }
+      }
+    }
+    
     // Category stats
-    if (stats.byCategory[detection.category] !== undefined) {
-      stats.byCategory[detection.category]++;
+    if (category && stats.byCategory[category] !== undefined) {
+      stats.byCategory[category]++;
+    } else {
+      stats.byCategory['unknown']++;
     }
 
     // Waste type stats
-    if (detection.wasteType) {
-      stats.byWasteType[detection.wasteType] = 
-        (stats.byWasteType[detection.wasteType] || 0) + 1;
+    if (wasteType) {
+      stats.byWasteType[wasteType] = (stats.byWasteType[wasteType] || 0) + 1;
     }
   });
 
   // Get recent activity (last 7 days)
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  
-  const recentDetections = await Detection.find({
-    user: userId,
-    createdAt: { $gte: sevenDaysAgo },
-  }).select('createdAt category');
 
-  stats.recentActivity = recentDetections.map(d => ({
-    date: d.createdAt.toISOString().split('T')[0],
-    category: d.category,
-  }));
+  const recentDetectionsQuery = {
+    ...query,
+    createdAt: { $gte: sevenDaysAgo },
+  };
+  
+  const recentDetections = await Detection.find(recentDetectionsQuery).select('createdAt category detections');
+
+  stats.recentActivity = recentDetections.map(d => {
+    let category = d.category;
+    
+    // Fallback if category wasn't set
+    if (!category || category === 'unknown') {
+      if (d.detections && d.detections.length > 0) {
+        const topDetection = d.detections.reduce((prev, current) => 
+          (prev.confidence > current.confidence) ? prev : current
+        );
+        const className = topDetection.class.toLowerCase();
+        if (className.includes('organic')) {
+          category = 'organic';
+        } else if (className.includes('recycl') && !className.includes('non')) {
+          category = 'recyclable';
+        } else if (className.includes('non-recycl')) {
+          category = 'non-recyclable';
+        } else {
+          category = 'unknown';
+        }
+      }
+    }
+    
+    return {
+      date: d.createdAt.toISOString().split('T')[0],
+      category: category || 'unknown',
+    };
+  });
 
   res.json(stats);
 });

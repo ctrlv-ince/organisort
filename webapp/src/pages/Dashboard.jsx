@@ -9,17 +9,29 @@ import Sidebar from '../components/Sidebar';
  */
 const AdminDashboard = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTab] = useState('users');
   const [userData, setUserData] = useState(null);
+  const [stats, setStats] = useState({
+    totalDetections: 0,
+    byCategory: {
+      organic: 0,
+      recyclable: 0,
+      'non-recyclable': 0,
+      unknown: 0,
+    },
+    byWasteType: {},
+    recentActivity: [],
+  });
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   /**
-   * Fetch user profile from backend
+   * Fetch user profile and stats from backend
    */
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchData = async () => {
       try {
         if (!user) return;
 
@@ -29,27 +41,59 @@ const AdminDashboard = () => {
           return;
         }
 
-        const response = await fetch(`${API_URL}/api/users/me`, {
+        // Fetch user profile
+        const userResponse = await fetch(`${API_URL}/api/users/me`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          setUserData(data.data);
-          console.log('✅ User profile fetched:', data.data);
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setUserData(userData.data);
+          console.log('✅ User profile fetched:', userData.data);
         } else {
           console.warn('Failed to fetch user profile');
         }
+
+        // Fetch all users
+        const usersResponse = await fetch(`${API_URL}/api/users/stats/detections`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (usersResponse.ok) {
+          const usersData = await usersResponse.json();
+          setUsers(usersData.data);
+          console.log('✅ All users fetched:', usersData.data);
+        } else {
+          console.warn('Failed to fetch all users');
+        }
+
+        // Fetch detection stats
+        const statsResponse = await fetch(`${API_URL}/api/detections/stats`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setStats(statsData);
+          console.log('✅ Detection stats fetched:', statsData);
+        } else {
+          console.warn('Failed to fetch detection stats');
+        }
+
       } catch (err) {
-        console.error('Error fetching profile:', err);
+        console.error('Error fetching data:', err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserProfile();
+    fetchData();
   }, [user]);
 
   return (
@@ -92,7 +136,7 @@ const AdminDashboard = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-gray-600 font-medium">Total Users</p>
-                        <p className="text-3xl font-bold text-green-700 mt-1">0</p>
+                        <p className="text-3xl font-bold text-green-700 mt-1">{users.length}</p>
                       </div>
                       <div className="bg-green-100 p-4 rounded-full">
                         <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,7 +151,7 @@ const AdminDashboard = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-gray-600 font-medium">Waste Detections</p>
-                        <p className="text-3xl font-bold text-amber-700 mt-1">0</p>
+                        <p className="text-3xl font-bold text-amber-700 mt-1">{stats.totalDetections}</p>
                       </div>
                       <div className="bg-amber-100 p-4 rounded-full">
                         <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

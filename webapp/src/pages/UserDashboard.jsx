@@ -11,14 +11,15 @@ const UserDashboard = () => {
   const { user, logout } = useAuth();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [detections, setDetections] = useState([]);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   /**
-   * Fetch user profile from backend
+   * Fetch user profile and detection history from backend
    */
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -26,27 +27,45 @@ const UserDashboard = () => {
           return;
         }
 
-        const response = await fetch(`${API_URL}/api/users/me`, {
+        // Fetch user profile
+        const userResponse = await fetch(`${API_URL}/api/users/me`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
         });
 
-        if (response.ok) {
-          const data = await response.json();
+        if (userResponse.ok) {
+          const data = await userResponse.json();
           setUserData(data.data);
           console.log('✅ User profile fetched:', data.data);
         } else {
           console.warn('Failed to fetch user profile');
         }
+
+        // Fetch detection history
+        const detectionsResponse = await fetch(`${API_URL}/api/detections/history`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (detectionsResponse.ok) {
+          const detectionsData = await detectionsResponse.json();
+          const detectionData = detectionsData.detections || detectionsData;
+          setDetections(detectionData);
+          console.log('✅ Detection history fetched:', detectionData);
+        } else {
+          console.warn('Failed to fetch detection history');
+        }
+
       } catch (err) {
-        console.error('Error fetching profile:', err);
+        console.error('Error fetching data:', err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserProfile();
+    fetchData();
   }, []);
 
   return (
@@ -85,7 +104,7 @@ const UserDashboard = () => {
                 </svg>
               </div>
             </div>
-            <div className="text-4xl font-bold text-green-700 mb-2">0</div>
+            <div className="text-4xl font-bold text-green-700 mb-2">{detections.length}</div>
             <p className="text-gray-700 font-semibold">Waste Detections</p>
             <p className="text-sm text-gray-500 mt-1">Detections this month</p>
             <div className="mt-4 pt-4 border-t border-gray-200">
