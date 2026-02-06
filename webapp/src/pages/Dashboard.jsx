@@ -37,7 +37,7 @@ const AdminDashboard = () => {
 
         if (response.ok) {
           const data = await response.json();
-          setUserData(data);
+          setUserData(data.data);
           console.log('✅ User profile fetched:', data.data);
         } else {
           console.warn('Failed to fetch user profile');
@@ -74,7 +74,7 @@ const AdminDashboard = () => {
                   <div className="absolute top-0 right-0 opacity-10 text-9xl">♻️</div>
                   <div className="relative z-10">
                     <h1 className="text-4xl font-bold mb-2">
-                      Welcome, {user?.displayName || user?.email}!
+                      Welcome, {userData?.displayName || userData?.email}!
                     </h1>
                     <p className="text-green-100 text-lg">
                       OrganiSort Admin Portal - Waste Management System
@@ -149,18 +149,18 @@ const AdminDashboard = () => {
                     <div className="space-y-3">
                       <div>
                         <p className="text-sm text-gray-600 font-medium">Email Address</p>
-                        <p className="text-gray-800 break-all">{user?.email}</p>
+                        <p className="text-gray-800 break-all">{userData?.email}</p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-600 font-medium">User ID</p>
                         <p className="text-gray-800 font-mono text-xs break-all bg-gray-50 p-2 rounded">
-                          {user?.uid}
+                          {userData?._id}
                         </p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-600 font-medium">Verification Status</p>
                         <div className="flex items-center mt-1">
-                          {user?.emailVerified ? (
+                          {userData?.emailVerified ? (
                             <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
                               ✅ Verified
                             </span>
