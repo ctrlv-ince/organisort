@@ -2,15 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-/**
- * Login Page - Organic Waste Detection
- * Features:
- * - Email/Password login
- * - Sign in with Google button
- * - Error handling
- * - Auto-redirect to dashboard if already logged in
- * - UCAP-inspired green/brown theme
- */
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

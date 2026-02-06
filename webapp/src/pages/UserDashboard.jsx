@@ -34,7 +34,7 @@ const UserDashboard = () => {
 
         if (response.ok) {
           const data = await response.json();
-          setUserData(data);
+          setUserData(data.data);
           console.log('✅ User profile fetched:', data.data);
         } else {
           console.warn('Failed to fetch user profile');
@@ -62,7 +62,7 @@ const UserDashboard = () => {
           <div className="absolute top-0 right-0 opacity-10 text-9xl">♻️</div>
           <div className="relative z-10">
             <h1 className="text-4xl font-bold mb-2">
-              Welcome, {user?.displayName || user?.email?.split('@')[0]}! 👋
+              Welcome, {userData?.displayName || userData?.email?.split('@')[0]}! 👋
             </h1>
             <p className="text-green-100 text-lg">
               Start detecting waste and contributing to a sustainable future 🌱
@@ -154,12 +154,12 @@ const UserDashboard = () => {
                 <div className="space-y-3">
                   <div>
                     <p className="text-sm text-gray-600 font-medium">Email Address</p>
-                    <p className="text-gray-800 break-all">{user?.email}</p>
+                    <p className="text-gray-800 break-all">{userData?.email}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600 font-medium">Verification Status</p>
                     <div className="flex items-center mt-1">
-                      {user?.emailVerified ? (
+                      {userData?.emailVerified ? (
                         <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold flex items-center">
                           <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -176,7 +176,7 @@ const UserDashboard = () => {
                   <div>
                     <p className="text-sm text-gray-600 font-medium">User ID</p>
                     <p className="text-xs text-gray-500 font-mono bg-white p-2 rounded mt-1 break-all">
-                      {user?.uid?.substring(0, 20)}...
+                      {userData?._id?.substring(0, 20)}...
                     </p>
                   </div>
                 </div>
