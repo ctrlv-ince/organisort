@@ -86,15 +86,22 @@ const unifiedAuth = async (req, res, next) => {
     const firebaseAuth = getFirebaseAuth();
     const decodedToken = await firebaseAuth.verifyIdToken(token);
 
-    // If Firebase token is valid, attach user info and proceed
+    // If Firebase token is valid, also fetch the user from our database
+    // to get the role and other MongoDB-specific details.
+    const user = await User.findById(decodedToken.uid);
+
+    // Combine Firebase data with MongoDB data
     req.user = {
+      ...(user ? user.toObject() : {}), // Spread user doc if it exists
+      id: decodedToken.uid, // Explicitly set id for consistency
       uid: decodedToken.uid,
       email: decodedToken.email,
       displayName: decodedToken.name || decodedToken.displayName,
       photoURL: decodedToken.picture,
       emailVerified: decodedToken.email_verified || false,
-      isFirebase: true, // Flag to indicate Firebase user
+      isFirebase: true,
     };
+
     return next();
   } catch (firebaseError) {
     // If Firebase verification fails, try to verify as a custom JWT
@@ -111,6 +118,7 @@ const unifiedAuth = async (req, res, next) => {
 
       req.user = {
         ...user.toObject(),
+        id: user._id.toString(), // Explicitly set id for consistency
         isFirebase: false, // Flag to indicate non-Firebase user
       };
       return next();
@@ -128,7 +136,36 @@ const unifiedAuth = async (req, res, next) => {
   }
 };
 
+/**
+ * Admin authorization middleware
+ * Checks if the authenticated user has admin role
+ * Must be used AFTER unifiedAuth or protect middleware
+ * 
+ * Usage: router.get('/admin-route', unifiedAuth, adminOnly, controllerFunction);
+ */
+const adminOnly = async (req, res, next) => {
+  // Check if user exists (should be set by unifiedAuth or protect middleware)
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      error: 'Not authenticated. Please log in.',
+    });
+  }
+
+  // Check if user has admin role
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      error: 'Access denied. Admin privileges required.',
+    });
+  }
+
+  // User is admin, proceed to next middleware/controller
+  next();
+};
+
 module.exports = {
   protect,
   unifiedAuth,
+  admin: adminOnly, // Export as 'admin' to match the import in user-routes.js
 };

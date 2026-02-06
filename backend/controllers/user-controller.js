@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Detection = require('../models/Detection');
 
 /**
  * User Controller
@@ -140,8 +141,54 @@ const getUserStats = async (req, res, next) => {
   }
 };
 
+const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.find({});
+    res.json({
+      success: true,
+      data: users,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getAllUsersWithDetectionCount = async (req, res, next) => {
+  try {
+    const usersWithDetectionCount = await User.aggregate([
+      {
+        $lookup: {
+          from: 'detections',
+          localField: '_id',
+          foreignField: 'user',
+          as: 'detections',
+        },
+      },
+      {
+        $addFields: {
+          detectionCount: { $size: '$detections' },
+        },
+      },
+      {
+        $project: {
+          detections: 0, 
+        },
+      },
+    ]);
+
+    res.json({
+      success: true,
+      data: usersWithDetectionCount,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getCurrentUser,
   updateUserProfile,
   getUserStats,
+  getAllUsers,
+  getAllUsersWithDetectionCount,
 };

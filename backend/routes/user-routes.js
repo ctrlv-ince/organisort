@@ -1,12 +1,22 @@
 const express = require('express');
-const { unifiedAuth } = require('../middleware/auth-middleware');
+const { unifiedAuth, admin } = require('../middleware/auth-middleware');
 const {
   getCurrentUser,
   updateUserProfile,
   getUserStats,
+  getAllUsers,
+  getAllUsersWithDetectionCount,
 } = require('../controllers/user-controller');
 
 const router = express.Router();
+
+router.get('/', unifiedAuth, admin, getAllUsers);
+router.get(
+  '/stats/detections',
+  unifiedAuth,
+  admin,
+  getAllUsersWithDetectionCount
+);
 
 /**
  * GET /api/users/me
