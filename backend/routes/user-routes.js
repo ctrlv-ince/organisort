@@ -6,6 +6,8 @@ const {
   getUserStats,
   getAllUsers,
   getAllUsersWithDetectionCount,
+  updateUserRole,
+  deleteUser,
 } = require('../controllers/user-controller');
 
 const router = express.Router();
@@ -17,6 +19,9 @@ router.get(
   admin,
   getAllUsersWithDetectionCount
 );
+
+router.put('/:id/role', unifiedAuth, admin, updateUserRole);
+router.delete('/:id', unifiedAuth, admin, deleteUser);
 
 /**
  * GET /api/users/me

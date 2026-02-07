@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
+import ActivityLogs from './ActivityLogs';
+import UsersPage from './UsersPage';
 
 /**
  * Admin Dashboard Page - Organic Waste Detection
@@ -9,7 +11,7 @@ import Sidebar from '../components/Sidebar';
  */
 const AdminDashboard = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('users');
+  const [activeTab, setActiveTab] = useState('home');
   const [userData, setUserData] = useState(null);
   const [stats, setStats] = useState({
     totalDetections: 0,
@@ -354,31 +356,11 @@ const AdminDashboard = () => {
               </div>
             )}
 
+            {/* Users Tab */}
+            {activeTab === 'users' && <UsersPage />}
+
             {/* Logs Tab */}
-            {activeTab === 'logs' && (
-              <div className="bg-white rounded-lg shadow-md p-8">
-                <div className="flex items-center mb-6">
-                  <div className="bg-green-100 p-3 rounded-lg mr-4">
-                    <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h1 className="text-3xl font-bold text-gray-800">Activity Logs</h1>
-                    <p className="text-gray-600 mt-1">Monitor waste detection activities and system events</p>
-                  </div>
-                </div>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
-                  <span className="text-6xl mb-4 block">📋</span>
-                  <p className="text-gray-600 text-lg">
-                    Activity logging system coming soon
-                  </p>
-                  <p className="text-gray-500 mt-2">
-                    Track user activities, detections, and system events
-                  </p>
-                </div>
-              </div>
-            )}
+            {activeTab === 'logs' && <ActivityLogs />}
 
             {/* Analytics Tab */}
             {activeTab === 'analytics' && (
