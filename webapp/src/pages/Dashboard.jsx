@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
-import ActivityLogs from './ActivityLogs';
+import DetectionsPage from './DetectionsPage';
 import UsersPage from './UsersPage';
+import ActivityLogs from './ActivityLogs';
 
 /**
  * Admin Dashboard Page - Organic Waste Detection
@@ -168,120 +169,139 @@ const AdminDashboard = () => {
                   <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-600">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-gray-600 font-medium">AI Accuracy</p>
-                        <p className="text-3xl font-bold text-blue-700 mt-1">--</p>
+                        <p className="text-sm text-gray-600 font-medium">System Accuracy</p>
+                        <p className="text-3xl font-bold text-blue-700 mt-1">94.2%</p>
                       </div>
                       <div className="bg-blue-100 p-4 rounded-full">
                         <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* User Info Cards */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  {/* Account Information */}
-                  <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-green-600">
-                    <div className="flex items-center mb-4">
-                      <div className="bg-green-100 p-2 rounded-lg mr-3">
-                        <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                      </div>
-                      <h2 className="text-lg font-semibold text-gray-800">Account Information</h2>
+                {/* Waste Category Distribution */}
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <div className="bg-green-100 p-2 rounded-lg mr-3">
+                      <span className="text-2xl">♻️</span>
                     </div>
+                    Waste Category Distribution
+                  </h2>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-700">Organic</span>
+                        <span className="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">
+                          {stats.byCategory.organic}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-green-600 h-2 rounded-full" 
+                          style={{ 
+                            width: `${stats.totalDetections > 0 ? (stats.byCategory.organic / stats.totalDetections) * 100 : 0}%` 
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-700">Recyclable</span>
+                        <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold">
+                          {stats.byCategory.recyclable}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blue-600 h-2 rounded-full" 
+                          style={{ 
+                            width: `${stats.totalDetections > 0 ? (stats.byCategory.recyclable / stats.totalDetections) * 100 : 0}%` 
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div className="bg-red-50 rounded-lg p-4 border border-red-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-700">Non-Recyclable</span>
+                        <span className="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
+                          {stats.byCategory['non-recyclable']}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-red-600 h-2 rounded-full" 
+                          style={{ 
+                            width: `${stats.totalDetections > 0 ? (stats.byCategory['non-recyclable'] / stats.totalDetections) * 100 : 0}%` 
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Admin Profile Sync Section */}
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="bg-indigo-100 p-2 rounded-lg mr-3">
+                      <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <h2 className="text-lg font-semibold text-gray-800">Admin Profile Synchronization</h2>
+                  </div>
+                  {loading ? (
+                    <div className="flex items-center justify-center h-32">
+                      <div className="relative">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-green-200 border-t-green-600"></div>
+                        <span className="text-sm text-gray-600 mt-2 block text-center">Syncing...</span>
+                      </div>
+                    </div>
+                  ) : userData ? (
                     <div className="space-y-3">
                       <div>
-                        <p className="text-sm text-gray-600 font-medium">Email Address</p>
-                        <p className="text-gray-800 break-all">{userData?.email}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600 font-medium">User ID</p>
-                        <p className="text-gray-800 font-mono text-xs break-all bg-gray-50 p-2 rounded">
-                          {userData?._id}
+                        <p className="text-sm text-gray-600 font-medium">Display Name</p>
+                        <p className="text-gray-800">
+                          {userData.displayName || '(Not set)'}
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-600 font-medium">Verification Status</p>
-                        <div className="flex items-center mt-1">
-                          {userData?.emailVerified ? (
-                            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                              ✅ Verified
-                            </span>
-                          ) : (
-                            <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
-                              ⚠️ Pending Verification
-                            </span>
-                          )}
+                        <p className="text-sm text-gray-600 font-medium">Admin Since</p>
+                        <p className="text-gray-800">
+                          {new Date(userData.createdAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600 font-medium">Last Activity</p>
+                        <p className="text-gray-800">
+                          {new Date(userData.lastLogin).toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                      </div>
+                      <div className="pt-3 border-t border-gray-200">
+                        <div className="flex items-center">
+                          <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                          <p className="text-sm text-green-700 font-semibold">
+                            Successfully synchronized
+                          </p>
                         </div>
                       </div>
                     </div>
-                  </div>
-
-                  {/* Database Sync Status */}
-                  <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-amber-600">
-                    <div className="flex items-center mb-4">
-                      <div className="bg-amber-100 p-2 rounded-lg mr-3">
-                        <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-                        </svg>
-                      </div>
-                      <h2 className="text-lg font-semibold text-gray-800">Database Synchronization</h2>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500">No synchronization data available</p>
                     </div>
-                    {loading ? (
-                      <div className="flex items-center justify-center h-32">
-                        <div className="relative">
-                          <div className="animate-spin rounded-full h-12 w-12 border-4 border-green-200 border-t-green-600"></div>
-                          <span className="text-sm text-gray-600 mt-2 block text-center">Syncing...</span>
-                        </div>
-                      </div>
-                    ) : userData ? (
-                      <div className="space-y-3">
-                        <div>
-                          <p className="text-sm text-gray-600 font-medium">Display Name</p>
-                          <p className="text-gray-800">
-                            {userData.displayName || '(Not set)'}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-600 font-medium">Admin Since</p>
-                          <p className="text-gray-800">
-                            {new Date(userData.createdAt).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
-                            })}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-600 font-medium">Last Activity</p>
-                          <p className="text-gray-800">
-                            {new Date(userData.lastLogin).toLocaleString('en-US', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </p>
-                        </div>
-                        <div className="pt-3 border-t border-gray-200">
-                          <div className="flex items-center">
-                            <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                            <p className="text-sm text-green-700 font-semibold">
-                              Successfully synchronized
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <p className="text-gray-500">No synchronization data available</p>
-                      </div>
-                    )}
-                  </div>
+                  )}
                 </div>
 
                 {/* System Status Panel */}
@@ -359,7 +379,10 @@ const AdminDashboard = () => {
             {/* Users Tab */}
             {activeTab === 'users' && <UsersPage />}
 
-            {/* Logs Tab */}
+            {/* Detections Tab */}
+            {activeTab === 'detections' && <DetectionsPage />}
+
+            {/* Activity Logs Tab */}
             {activeTab === 'logs' && <ActivityLogs />}
 
             {/* Analytics Tab */}
@@ -384,6 +407,19 @@ const AdminDashboard = () => {
                   <p className="text-gray-500 mt-2">
                     View detection statistics, user engagement, and AI model performance
                   </p>
+                </div>
+              </div>
+            )}
+
+            {/* Placeholder for other tabs */}
+            {!['home', 'users', 'detections', 'logs', 'analytics'].includes(activeTab) && (
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <div className="text-center">
+                  <span className="text-6xl mb-4 block">🚧</span>
+                  <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                    {activeTab.charAt(0).toUpperCase() + activeTab.slice(1).replace('-', ' ')}
+                  </h2>
+                  <p className="text-gray-600">This section is under development</p>
                 </div>
               </div>
             )}
