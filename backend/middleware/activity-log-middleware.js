@@ -97,13 +97,21 @@ const logActivityFromResponse = async (req, res, data) => {
       await ActivityLog.logAuth('auth.logout', user, metadata);
     }
 
-    // Detection events
+    // Detection events - UPDATED for multi-class detection
     if (path.includes('/detections/analyze') && method === 'POST' && statusCode === 200) {
       const detectionId = data?.detection?._id || data?._id || 'unknown';
-      await ActivityLog.logDetection('detection.created', user, detectionId, metadata, {
-        wasteType: data?.summary?.wasteType,
-        category: data?.summary?.category,
-      });
+      
+      // Extract detailed detection info
+      const detectionDetails = {
+        totalDetections: data?.summary?.total_detections || 0,
+        uniqueClasses: data?.summary?.unique_classes || 0,
+        classCounts: data?.summary?.class_counts || {},
+        highestConfidence: data?.summary?.highest_confidence || 0,
+        averageConfidence: data?.summary?.average_confidence || 0,
+        detectedTypes: data?.detections?.map(d => d.class) || [],
+      };
+      
+      await ActivityLog.logDetection('detection.created', user, detectionId, metadata, detectionDetails);
     }
 
     if (path.includes('/detections/') && method === 'DELETE' && statusCode === 200) {

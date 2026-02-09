@@ -10,14 +10,17 @@ const DetectionSchema = new mongoose.Schema(
     detections: [
       {
         class: { type: String, required: true },
+        class_id: { type: Number, required: true }, // Added to track class ID
         confidence: { type: Number, required: true },
         box: { type: [Number], required: true },
       },
     ],
     summary: {
       total_detections: { type: Number },
-      classes_found: { type: [String] },
+      unique_classes: { type: Number }, // Changed from classes_found count
+      class_counts: { type: mongoose.Schema.Types.Mixed }, // Object with class names and counts
       highest_confidence: { type: Number },
+      average_confidence: { type: Number }, // Added average confidence
     },
     annotated_image: {
       type: String,
@@ -27,19 +30,19 @@ const DetectionSchema = new mongoose.Schema(
       width: { type: Number },
       height: { type: Number },
     },
-    // Additional fields for better history display
-    wasteType: {
+    // PRIMARY waste type (the one with highest confidence)
+    primaryWasteType: {
       type: String,
       default: 'Unknown',
     },
-    category: {
-      type: String,
-      enum: ['organic', 'recyclable', 'non-recyclable', 'unknown'],
-      default: 'unknown',
+    // ALL detected waste types (for better analytics)
+    detectedWasteTypes: {
+      type: [String],
+      default: [],
     },
   },
   {
-    timestamps: true, // This will add `createdAt` and `updatedAt` fields
+    timestamps: true,
   }
 );
 
@@ -52,7 +55,7 @@ DetectionSchema.virtual('imageUrl').get(function() {
 DetectionSchema.set('toJSON', { virtuals: true });
 DetectionSchema.set('toObject', { virtuals: true });
 
-// Pre-save middleware to automatically set wasteType and category
+// Pre-save middleware to automatically set waste types and category
 DetectionSchema.pre('save', function(next) {
   if (this.detections && this.detections.length > 0) {
     // Get the detection with highest confidence
@@ -60,22 +63,18 @@ DetectionSchema.pre('save', function(next) {
       (prev.confidence > current.confidence) ? prev : current
     );
     
-    // Set wasteType from the class name
-    this.wasteType = topDetection.class;
+    // Set primary waste type from the class name with highest confidence
+    this.primaryWasteType = topDetection.class;
     
-    // Automatically determine category based on class name
-    const className = topDetection.class.toLowerCase();
-    if (className.includes('organic')) {
-      this.category = 'organic';
-    } else if (className.includes('recycl')) {
-      this.category = 'recyclable';
-    } else if (className.includes('non-recycl')) {
-      this.category = 'non-recyclable';
-    } else {
-      this.category = 'unknown';
-    }
+    // Collect all detected waste types
+    this.detectedWasteTypes = [...new Set(this.detections.map(d => d.class))];
   }
   next();
 });
+
+// Index for faster queries
+DetectionSchema.index({ user: 1, createdAt: -1 });
+DetectionSchema.index({ primaryWasteType: 1 });
+DetectionSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model('Detection', DetectionSchema);

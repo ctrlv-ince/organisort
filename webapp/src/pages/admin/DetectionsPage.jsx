@@ -3,11 +3,13 @@ import React, { useState, useEffect } from 'react';
 /**
  * Detections Page - Admin Panel
  * Displays all user detections for admin monitoring
+ * UPDATED FOR MULTI-CLASS ORGANIC WASTE DETECTION (45 classes)
  */
 const DetectionsPage = () => {
   const [detections, setDetections] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all'); // all, organic, recyclable, non-recyclable
+  const [wasteTypes, setWasteTypes] = useState([]);
+  const [selectedWasteType, setSelectedWasteType] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -19,7 +21,13 @@ const DetectionsPage = () => {
         return;
       }
 
-      const response = await fetch(`${API_URL}/api/detections/history`, {
+      // Build query parameters
+      const params = new URLSearchParams();
+      if (selectedWasteType && selectedWasteType !== 'all') {
+        params.append('wasteType', selectedWasteType);
+      }
+
+      const response = await fetch(`${API_URL}/api/detections/history?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -38,18 +46,47 @@ const DetectionsPage = () => {
     }
   };
 
+  const fetchWasteTypes = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await fetch(`${API_URL}/api/detections/waste-types`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setWasteTypes(data.wasteTypes || []);
+      }
+    } catch (error) {
+      console.error('Error fetching waste types:', error);
+    }
+  };
+
   useEffect(() => {
-    fetchDetections();
+    fetchWasteTypes();
   }, []);
 
-  // Filter detections based on category and search term
+  useEffect(() => {
+    fetchDetections();
+  }, [selectedWasteType]);
+
+  // Filter detections based on search term
   const filteredDetections = detections.filter((detection) => {
-    const matchesFilter = filter === 'all' || detection.summary?.category === filter;
-    const matchesSearch = 
-      detection.summary?.wasteType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      detection._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      detection.user.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesFilter && matchesSearch;
+    if (!searchTerm) return true;
+    
+    const searchLower = searchTerm.toLowerCase();
+    const matchesId = detection._id.toLowerCase().includes(searchLower);
+    const matchesUser = detection.user?.toLowerCase().includes(searchLower);
+    const matchesPrimaryType = detection.primaryWasteType?.toLowerCase().includes(searchLower);
+    const matchesAnyType = detection.detectedWasteTypes?.some(type => 
+      type.toLowerCase().includes(searchLower)
+    );
+    
+    return matchesId || matchesUser || matchesPrimaryType || matchesAnyType;
   });
 
   if (loading) {
@@ -77,7 +114,7 @@ const DetectionsPage = () => {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-800">Detections</h1>
-              <p className="text-gray-600 mt-1">View all waste detection records</p>
+              <p className="text-gray-600 mt-1">View all organic waste detection records</p>
             </div>
           </div>
           <div className="text-right">
@@ -109,54 +146,29 @@ const DetectionsPage = () => {
             </div>
           </div>
 
-          {/* Category Filter */}
-          <div className="flex gap-2">
-            <button
-              onClick={() => setFilter('all')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                filter === 'all'
-                  ? 'bg-green-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+          {/* Waste Type Filter Dropdown */}
+          <div className="w-full sm:w-64">
+            <select
+              value={selectedWasteType}
+              onChange={(e) => setSelectedWasteType(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
             >
-              All
-            </button>
-            <button
-              onClick={() => setFilter('organic')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                filter === 'organic'
-                  ? 'bg-green-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Organic
-            </button>
-            <button
-              onClick={() => setFilter('recyclable')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                filter === 'recyclable'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Recyclable
-            </button>
-            <button
-              onClick={() => setFilter('non-recyclable')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                filter === 'non-recyclable'
-                  ? 'bg-red-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Non-Recyclable
-            </button>
+              <option value="all">All Waste Types</option>
+              {wasteTypes.map(type => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
           </div>
         </div>
 
         {/* Results Count */}
         <div className="mt-4 text-sm text-gray-600">
           Showing {filteredDetections.length} of {detections.length} detections
+          {selectedWasteType && selectedWasteType !== 'all' && (
+            <span className="ml-2 text-green-600 font-medium">
+              (filtered by: {selectedWasteType})
+            </span>
+          )}
         </div>
       </div>
 
@@ -166,7 +178,7 @@ const DetectionsPage = () => {
           <div className="text-6xl mb-4">🔍</div>
           <p className="text-gray-600 text-lg">No detections found</p>
           <p className="text-gray-500 mt-2">
-            {searchTerm || filter !== 'all'
+            {searchTerm || selectedWasteType !== 'all'
               ? 'Try adjusting your search or filter criteria'
               : 'Detections will appear here once users start analyzing waste'}
           </p>
@@ -174,13 +186,8 @@ const DetectionsPage = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredDetections.map((detection) => {
-            const category = detection.summary?.category || 'unknown';
-            const categoryColors = {
-              organic: 'bg-green-100 text-green-800 border-green-200',
-              recyclable: 'bg-blue-100 text-blue-800 border-blue-200',
-              'non-recyclable': 'bg-red-100 text-red-800 border-red-200',
-              unknown: 'bg-gray-100 text-gray-800 border-gray-200',
-            };
+            const itemCount = detection.detections?.length || 0;
+            const uniqueTypes = detection.detectedWasteTypes?.length || 0;
 
             return (
               <div
@@ -194,63 +201,89 @@ const DetectionsPage = () => {
                     alt="Detection"
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-2 right-2">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${categoryColors[category]}`}
-                    >
-                      {category}
-                    </span>
+                  {/* Badge showing number of items detected */}
+                  <div className="absolute top-2 right-2 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                    {itemCount} {itemCount === 1 ? 'item' : 'items'}
                   </div>
                 </div>
 
                 {/* Detection Info */}
                 <div className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-bold text-gray-800 truncate">
-                      {detection.summary?.wasteType || 'Unknown Waste'}
+                  {/* Primary Waste Type */}
+                  <div className="mb-3">
+                    <h3 className="text-lg font-bold text-gray-800">
+                      {detection.primaryWasteType || 'Unknown'}
                     </h3>
+                    {uniqueTypes > 1 && (
+                      <p className="text-xs text-gray-500">
+                        +{uniqueTypes - 1} other type{uniqueTypes - 1 !== 1 ? 's' : ''}
+                      </p>
+                    )}
                   </div>
 
-                  <div className="space-y-2 text-sm">
+                  {/* All Detected Types */}
+                  {detection.detectedWasteTypes && detection.detectedWasteTypes.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs text-gray-600 font-semibold mb-1">Detected:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {detection.detectedWasteTypes.slice(0, 3).map((type, idx) => (
+                          <span
+                            key={idx}
+                            className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full"
+                          >
+                            {type}
+                          </span>
+                        ))}
+                        {detection.detectedWasteTypes.length > 3 && (
+                          <span className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
+                            +{detection.detectedWasteTypes.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Meta Information */}
+                  <div className="space-y-2 text-sm border-t border-gray-200 pt-3">
                     <div className="flex items-start">
-                      <span className="font-semibold text-gray-600 min-w-[80px]">Detection ID:</span>
+                      <span className="font-semibold text-gray-600 min-w-[70px]">ID:</span>
                       <span className="text-gray-700 font-mono text-xs truncate">
                         {detection._id.substring(0, 12)}...
                       </span>
                     </div>
                     <div className="flex items-start">
-                      <span className="font-semibold text-gray-600 min-w-[80px]">User ID:</span>
+                      <span className="font-semibold text-gray-600 min-w-[70px]">User:</span>
                       <span className="text-gray-700 font-mono text-xs truncate">
                         {detection.user.substring(0, 12)}...
                       </span>
                     </div>
                     <div className="flex items-start">
-                      <span className="font-semibold text-gray-600 min-w-[80px]">Date:</span>
+                      <span className="font-semibold text-gray-600 min-w-[70px]">Date:</span>
                       <span className="text-gray-700">
                         {new Date(detection.createdAt).toLocaleDateString()}
                       </span>
                     </div>
                     <div className="flex items-start">
-                      <span className="font-semibold text-gray-600 min-w-[80px]">Time:</span>
+                      <span className="font-semibold text-gray-600 min-w-[70px]">Time:</span>
                       <span className="text-gray-700">
                         {new Date(detection.createdAt).toLocaleTimeString()}
                       </span>
                     </div>
                   </div>
 
-                  {/* Additional Info */}
-                  {detection.summary?.confidence && (
+                  {/* Confidence Bar */}
+                  {detection.summary?.highest_confidence && (
                     <div className="mt-3 pt-3 border-t border-gray-200">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-600">Confidence</span>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs text-gray-600">Highest Confidence</span>
                         <span className="text-xs font-bold text-green-600">
-                          {(detection.summary.confidence * 100).toFixed(1)}%
+                          {(detection.summary.highest_confidence * 100).toFixed(1)}%
                         </span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                      <div className="w-full bg-gray-200 rounded-full h-2">
                         <div
                           className="bg-green-600 h-2 rounded-full transition-all"
-                          style={{ width: `${detection.summary.confidence * 100}%` }}
+                          style={{ width: `${detection.summary.highest_confidence * 100}%` }}
                         ></div>
                       </div>
                     </div>

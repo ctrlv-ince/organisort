@@ -281,7 +281,6 @@ export default function HomeScreen() {
   const [stats, setStats] = useState({
     totalDetections: 0,
     organicWaste: 0,
-    recyclable: 0,
   });
   const [detecting, setDetecting] = useState(false);
   const [showResults, setShowResults] = useState(false);
@@ -309,13 +308,12 @@ export default function HomeScreen() {
       
       // Calculate stats
       const total = detectionData.length;
-      const organic = detectionData.filter(d => d.category === 'organic').length;
-      const recyclable = detectionData.filter(d => d.category === 'recyclable').length;
+      // Since all detections are now considered organic, this is the total number of scans.
+      const organic = total;
       
       setStats({
         totalDetections: total,
         organicWaste: organic,
-        recyclable: recyclable,
       });
     } catch (error) {
       console.error('Failed to fetch detection history:', error);

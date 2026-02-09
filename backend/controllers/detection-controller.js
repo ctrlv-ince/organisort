@@ -17,6 +17,12 @@ const analyzeImage = asyncHandler(async (req, res) => {
     filename: req.file.originalname,
     contentType: req.file.mimetype,
   });
+  
+  // Optional confidence threshold from request
+  const confidenceThreshold = req.body.confidence || req.query.confidence;
+  if (confidenceThreshold) {
+    form.append('confidence', confidenceThreshold);
+  }
 
   let pythonServiceResponse;
   try {
@@ -34,6 +40,7 @@ const analyzeImage = asyncHandler(async (req, res) => {
     console.log('Python service response received:', {
       success: pythonServiceResponse.success,
       detectionsCount: pythonServiceResponse.detections?.length,
+      uniqueClasses: pythonServiceResponse.summary?.unique_classes,
     });
     
   } catch (error) {
@@ -79,6 +86,11 @@ const getDetectionHistory = asyncHandler(async (req, res) => {
 
   // Build query based on user role
   const query = req.user.role === 'admin' ? {} : { user: req.user.id };
+  
+  // Optional filtering by waste type
+  if (req.query.wasteType) {
+    query.primaryWasteType = req.query.wasteType;
+  }
 
   // Fetch detections with pagination
   const detections = await Detection.find(query)
@@ -155,99 +167,111 @@ const getDetectionStats = asyncHandler(async (req, res) => {
   // Calculate statistics
   const stats = {
     totalDetections: detections.length,
-    byCategory: {
-      organic: 0,
-      recyclable: 0,
-      'non-recyclable': 0,
-      unknown: 0,
-    },
-    byWasteType: {},
+    totalItems: 0, // Total individual items detected across all scans
+    byWasteType: {}, // Count by specific waste type (e.g., apple: 15, banana-peel: 23)
+    topWasteTypes: [], // Top 10 most detected waste types
     recentActivity: [],
+    averageItemsPerScan: 0,
+    averageConfidence: 0,
   };
 
-  // Count by category and waste type
-  detections.forEach((detection) => {
-    // Determine category - use the pre-saved category if available, otherwise calculate it
-    let category = detection.category;
-    let wasteType = detection.wasteType;
-    
-    // If category/wasteType weren't set by pre-save hook, calculate them from detections array
-    if (!category || category === 'unknown' || !wasteType || wasteType === 'Unknown') {
-      if (detection.detections && detection.detections.length > 0) {
-        // Get the detection with highest confidence
-        const topDetection = detection.detections.reduce((prev, current) => 
-          (prev.confidence > current.confidence) ? prev : current
-        );
-        
-        wasteType = topDetection.class;
-        
-        // Determine category from class name
-        const className = topDetection.class.toLowerCase();
-        if (className.includes('organic')) {
-          category = 'organic';
-        } else if (className.includes('recycl') && !className.includes('non')) {
-          category = 'recyclable';
-        } else if (className.includes('non-recycl')) {
-          category = 'non-recyclable';
-        } else {
-          category = 'unknown';
-        }
-      }
-    }
-    
-    // Category stats
-    if (category && stats.byCategory[category] !== undefined) {
-      stats.byCategory[category]++;
-    } else {
-      stats.byCategory['unknown']++;
-    }
+  let totalConfidence = 0;
+  let totalItemCount = 0;
 
-    // Waste type stats
-    if (wasteType) {
-      stats.byWasteType[wasteType] = (stats.byWasteType[wasteType] || 0) + 1;
+  // Count by waste type
+  detections.forEach((detection) => {
+    // Count total items from this detection
+    const itemCount = detection.detections?.length || 0;
+    totalItemCount += itemCount;
+    
+    // Process each detected item
+    if (detection.detections && detection.detections.length > 0) {
+      detection.detections.forEach(item => {
+        const wasteType = item.class;
+        stats.byWasteType[wasteType] = (stats.byWasteType[wasteType] || 0) + 1;
+        totalConfidence += item.confidence;
+      });
     }
   });
 
-  // Get recent activity (last 7 days)
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  stats.totalItems = totalItemCount;
+  stats.averageItemsPerScan = detections.length > 0 
+    ? (totalItemCount / detections.length).toFixed(2) 
+    : 0;
+  stats.averageConfidence = totalItemCount > 0 
+    ? (totalConfidence / totalItemCount).toFixed(4) 
+    : 0;
+
+  // Get top 10 waste types
+  stats.topWasteTypes = Object.entries(stats.byWasteType)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+    .map(([type, count]) => ({ type, count }));
+
+  // Get recent activity (last 30 days grouped by date)
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
   const recentDetectionsQuery = {
     ...query,
-    createdAt: { $gte: sevenDaysAgo },
+    createdAt: { $gte: thirtyDaysAgo },
   };
   
-  const recentDetections = await Detection.find(recentDetectionsQuery).select('createdAt category detections');
+  const recentDetections = await Detection.find(recentDetectionsQuery)
+    .select('createdAt detections primaryWasteType')
+    .sort({ createdAt: 1 });
 
-  stats.recentActivity = recentDetections.map(d => {
-    let category = d.category;
-    
-    // Fallback if category wasn't set
-    if (!category || category === 'unknown') {
-      if (d.detections && d.detections.length > 0) {
-        const topDetection = d.detections.reduce((prev, current) => 
-          (prev.confidence > current.confidence) ? prev : current
-        );
-        const className = topDetection.class.toLowerCase();
-        if (className.includes('organic')) {
-          category = 'organic';
-        } else if (className.includes('recycl') && !className.includes('non')) {
-          category = 'recyclable';
-        } else if (className.includes('non-recycl')) {
-          category = 'non-recyclable';
-        } else {
-          category = 'unknown';
-        }
-      }
+  // Group by date
+  const activityByDate = {};
+  recentDetections.forEach(d => {
+    const date = d.createdAt.toISOString().split('T')[0];
+    if (!activityByDate[date]) {
+      activityByDate[date] = {
+        date,
+        scans: 0,
+        items: 0,
+        wasteTypes: new Set(),
+      };
     }
-    
-    return {
-      date: d.createdAt.toISOString().split('T')[0],
-      category: category || 'unknown',
-    };
+    activityByDate[date].scans += 1;
+    activityByDate[date].items += d.detections?.length || 0;
+    if (d.primaryWasteType) {
+      activityByDate[date].wasteTypes.add(d.primaryWasteType);
+    }
   });
 
+  stats.recentActivity = Object.values(activityByDate).map(day => ({
+    date: day.date,
+    scans: day.scans,
+    items: day.items,
+    uniqueWasteTypes: day.wasteTypes.size,
+  }));
+
   res.json(stats);
+});
+
+// @desc    Get list of all detected waste types (for filters/dropdowns)
+// @route   GET /api/detections/waste-types
+// @access  Private
+const getWasteTypes = asyncHandler(async (req, res) => {
+  const query = req.user.role === 'admin' ? {} : { user: req.user.id };
+
+  // Get all unique waste types from user's detections
+  const detections = await Detection.find(query).select('detectedWasteTypes');
+  
+  const wasteTypesSet = new Set();
+  detections.forEach(d => {
+    if (d.detectedWasteTypes && d.detectedWasteTypes.length > 0) {
+      d.detectedWasteTypes.forEach(type => wasteTypesSet.add(type));
+    }
+  });
+
+  const wasteTypes = Array.from(wasteTypesSet).sort();
+
+  res.json({
+    wasteTypes,
+    count: wasteTypes.length,
+  });
 });
 
 module.exports = {
@@ -256,4 +280,5 @@ module.exports = {
   getDetectionById,
   deleteDetection,
   getDetectionStats,
+  getWasteTypes,
 };
