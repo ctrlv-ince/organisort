@@ -7,6 +7,7 @@ const {
   getDetectionById,
   deleteDetection,
   getDetectionStats,
+  getWasteTypes,
 } = require('../controllers/detection-controller');
 const { unifiedAuth } = require('../middleware/auth-middleware');
 
@@ -31,6 +32,7 @@ const upload = multer({
  * @route   POST /api/detections/analyze
  * @desc    Analyze an image to detect waste type
  * @access  Private (requires Bearer token)
+ * @body    confidence (optional) - Confidence threshold (0.0 - 1.0)
  */
 router.post('/analyze', unifiedAuth, upload.single('image'), analyzeImage);
 
@@ -40,6 +42,7 @@ router.post('/analyze', unifiedAuth, upload.single('image'), analyzeImage);
  * @access  Private
  * @query   page - Page number (default: 1)
  * @query   limit - Items per page (default: 50)
+ * @query   wasteType - Filter by specific waste type (optional)
  */
 router.get('/history', unifiedAuth, getDetectionHistory);
 
@@ -49,6 +52,13 @@ router.get('/history', unifiedAuth, getDetectionHistory);
  * @access  Private
  */
 router.get('/stats', unifiedAuth, getDetectionStats);
+
+/**
+ * @route   GET /api/detections/waste-types
+ * @desc    Get list of all detected waste types for the user
+ * @access  Private
+ */
+router.get('/waste-types', unifiedAuth, getWasteTypes);
 
 /**
  * @route   GET /api/detections/:id

@@ -5,7 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Index from './pages/Index';
-import AdminDashboard from './pages/Dashboard';
+import AdminDashboard from './pages/admin/Dashboard';
 import UserDashboard from './pages/UserDashboard';
 import { useAuth } from './context/AuthContext';
 

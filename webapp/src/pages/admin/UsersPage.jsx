@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../Landing.css'; // Import shared styles
+import '../../Landing.css'; // Import shared styles
 
 /**
  * User Management Page

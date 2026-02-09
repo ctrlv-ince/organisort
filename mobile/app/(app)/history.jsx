@@ -294,13 +294,11 @@ export default function HistoryScreen() {
 
   const calculateStats = (detectionData) => {
     const total = detectionData.length;
-    const organic = detectionData.filter(d => d.category === 'organic').length;
-    const recyclable = detectionData.filter(d => d.category === 'recyclable').length;
+    const organic = total; // All detections are organic
 
     setStats({
       total,
       organic,
-      recyclable,
     });
   };
 
@@ -338,15 +336,7 @@ export default function HistoryScreen() {
     );
   };
 
-  const getCategoryColor = (category) => {
-    const colors = {
-      organic: '#10b981',
-      recyclable: '#3b82f6',
-      'non-recyclable': '#ef4444',
-      unknown: '#6b7280',
-    };
-    return colors[category] || colors.unknown;
-  };
+
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -442,12 +432,10 @@ export default function HistoryScreen() {
                     <View
                       style={[
                         styles.categoryBadge,
-                        { backgroundColor: getCategoryColor(detection.category) },
+                        { backgroundColor: '#10b981' /* Organic Green */ },
                       ]}
                     >
-                      <Text style={styles.categoryBadgeText}>
-                        {detection.category?.toUpperCase() || 'UNKNOWN'}
-                      </Text>
+                      <Text style={styles.categoryBadgeText}>ORGANIC</Text>
                     </View>
                     <View style={styles.infoBadge}>
                       <Text style={styles.infoBadgeText}>
