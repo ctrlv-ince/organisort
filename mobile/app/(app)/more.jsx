@@ -251,6 +251,18 @@ export default function MoreScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Features</Text>
             
+            <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={() => router.push('/analytics')}
+            >
+              <Text style={styles.menuIcon}>📊</Text>
+              <View style={styles.menuContent}>
+                <Text style={styles.menuTitle}>Analytics</Text>
+                <Text style={styles.menuSubtitle}>Detailed insights & impact stats</Text>
+              </View>
+              <Text style={styles.menuArrow}>›</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity style={styles.menuItem} onPress={openLeaderboard}>
               <Text style={styles.menuIcon}>🏆</Text>
               <View style={styles.menuContent}>
@@ -265,18 +277,6 @@ export default function MoreScreen() {
               <View style={styles.menuContent}>
                 <Text style={styles.menuTitle}>Achievements</Text>
                 <Text style={styles.menuSubtitle}>View your badges & progress</Text>
-              </View>
-              <Text style={styles.menuArrow}>›</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={styles.menuItem}
-              onPress={() => Alert.alert('Coming Soon', 'Statistics feature coming soon!')}
-            >
-              <Text style={styles.menuIcon}>📊</Text>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>Statistics</Text>
-                <Text style={styles.menuSubtitle}>Detailed analytics & insights</Text>
               </View>
               <Text style={styles.menuArrow}>›</Text>
             </TouchableOpacity>
