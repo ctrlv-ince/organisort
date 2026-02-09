@@ -6,7 +6,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Index from './pages/Index';
 import AdminDashboard from './pages/admin/Dashboard';
-import UserDashboard from './pages/UserDashboard';
+import UserDashboard from './pages/user/UserDashboard';
 import { useAuth } from './context/AuthContext';
 
 /**
