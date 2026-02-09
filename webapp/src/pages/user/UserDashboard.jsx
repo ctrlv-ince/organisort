@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 // Import user pages
-import UserHome from './user/UserHome';
-import ScanWaste from './user/ScanWaste';
-import MyDetections from './user/MyDetections';
-import UserProfile from './user/UserProfile';
-import Achievements from './user/Achievements';
-import Leaderboard from './user/Leaderboard';
-import UserSettings from './user/UserSettings';
+import UserHome from './UserHome';
+import ScanWaste from './ScanWaste';
+import MyDetections from './MyDetections';
+import UserProfile from './UserProfile';
+import Achievements from './Achievements';
+import Leaderboard from './Leaderboard';
+import UserSettings from './UserSettings';
 
 /**
  * User Dashboard Page - Main Container

@@ -146,6 +146,24 @@ const styles = StyleSheet.create({
     color: '#10b981', 
     fontWeight: '600' 
   },
+  wasteTypeBadge: {
+    backgroundColor: '#10b981',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginRight: 4,
+    marginTop: 4,
+  },
+  wasteTypeBadgeText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  wasteTypesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 4,
+  },
   
   emptyState: { 
     alignItems: 'center', 
@@ -268,159 +286,121 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#64748b',
   },
+  classIdBadge: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginTop: 2,
+  },
 });
 
 export default function HomeScreen() {
   const { user, logout } = useAuth();
   const router = useRouter();
-  const [userProfile, setUserProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState(null);
-  const [detectionHistory, setDetectionHistory] = useState([]);
+  
   const [stats, setStats] = useState({
     totalDetections: 0,
-    organicWaste: 0,
+    totalItems: 0,
+    uniqueTypes: 0,
   });
+  const [detectionHistory, setDetectionHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [detecting, setDetecting] = useState(false);
-  const [showResults, setShowResults] = useState(false);
   const [detectionResults, setDetectionResults] = useState(null);
+  const [showResults, setShowResults] = useState(false);
+  const [error, setError] = useState(null);
 
-  const fetchUserProfile = async () => {
+  const fetchDashboardData = async () => {
     try {
-      if (!user) return;
-      
-      const response = await apiClient.get('/api/users/me');
-      setUserProfile(response.data);
-    } catch (error) {
-      console.error('Failed to fetch user profile:', error);
-      setError('Failed to fetch user profile. Please check your authentication and try again.');
-    }
-  };
+      const [historyResponse] = await Promise.all([
+        apiClient.get('/api/detections/history?limit=5'),
+      ]);
 
-  const fetchDetectionHistory = async () => {
-    try {
-      const response = await apiClient.get('/api/detections/history?limit=5');
+      const detections = historyResponse.data.detections || historyResponse.data || [];
+      setDetectionHistory(detections);
+
+      // Calculate stats from detections
+      const totalDetections = detections.length;
+      const totalItems = detections.reduce((sum, d) => sum + (d.detections?.length || 0), 0);
       
-      // Handle both array and object responses
-      const detectionData = response.data.detections || response.data;
-      setDetectionHistory(Array.isArray(detectionData) ? detectionData : []);
-      
-      // Calculate stats
-      const total = detectionData.length;
-      // Since all detections are now considered organic, this is the total number of scans.
-      const organic = total;
-      
-      setStats({
-        totalDetections: total,
-        organicWaste: organic,
+      // Count unique waste types across all detections
+      const uniqueTypesSet = new Set();
+      detections.forEach(d => {
+        if (d.detectedWasteTypes && Array.isArray(d.detectedWasteTypes)) {
+          d.detectedWasteTypes.forEach(type => uniqueTypesSet.add(type));
+        }
       });
-    } catch (error) {
-      console.error('Failed to fetch detection history:', error);
-    }
-  };
 
-  const fetchData = async () => {
-    setLoading(true);
-    await Promise.all([fetchUserProfile(), fetchDetectionHistory()]);
-    setLoading(false);
-    setRefreshing(false);
+      setStats({
+        totalDetections,
+        totalItems,
+        uniqueTypes: uniqueTypesSet.size,
+      });
+
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+      setError('Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   };
 
   useEffect(() => {
-    fetchData();
-  }, [user]);
+    fetchDashboardData();
+  }, []);
 
   const handleRefresh = () => {
     setRefreshing(true);
-    fetchData();
-  };
-
-  const requestPermissions = async () => {
-    const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
-    const { status: mediaStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
-    if (cameraStatus !== 'granted' || mediaStatus !== 'granted') {
-      Alert.alert(
-        'Permissions Required',
-        'Please grant camera and media library permissions to use this feature.',
-        [{ text: 'OK' }]
-      );
-      return false;
-    }
-    return true;
+    setError(null);
+    fetchDashboardData();
   };
 
   const processImage = async (imageUri) => {
-    setDetecting(true);
     try {
-      console.log('Processing image:', imageUri);
+      setDetecting(true);
 
-      // Create form data for image upload
+      // Create FormData
       const formData = new FormData();
-      
-      const uriParts = imageUri.split('.');
-      const fileType = uriParts[uriParts.length - 1];
-      const fileName = `photo_${Date.now()}.${fileType}`;
+      const filename = imageUri.split('/').pop();
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : 'image/jpeg';
 
-      const file = {
+      formData.append('image', {
         uri: Platform.OS === 'ios' ? imageUri.replace('file://', '') : imageUri,
-        type: `image/${fileType}`,
-        name: fileName,
-      };
+        name: filename,
+        type,
+      });
 
-      formData.append('image', file);
-
-      console.log('Sending image to backend for detection...');
-
-      // Call your Node.js backend (it will save automatically and proxy to Flask)
+      // Send to detection API
       const response = await apiClient.post('/api/detections/analyze', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        timeout: 30000,
       });
 
-      console.log('Detection response received');
-
-      if (!response.data.success) {
-        throw new Error(response.data.error || 'Detection failed');
-      }
-
-      // Store results and show modal
-      setDetectionResults({
-        ...response.data,
-        originalImage: imageUri,
-      });
+      setDetectionResults(response.data.detection);
       setShowResults(true);
-
-      // Refresh history after successful detection
-      await fetchDetectionHistory();
+      
+      // Refresh dashboard after successful detection
+      await fetchDashboardData();
 
     } catch (error) {
-      console.error('Detection failed:', error);
-      
-      let errorMessage = 'Failed to analyze the image. ';
-      
-      if (error.response) {
-        errorMessage += `Server error: ${error.response.data?.message || error.response.status}`;
-      } else if (error.request) {
-        errorMessage += 'No response from server. Please check your network connection.';
-      } else {
-        errorMessage += error.message;
-      }
-      
-      Alert.alert('Detection Failed', errorMessage, [{ text: 'OK' }]);
+      console.error('Detection error:', error);
+      Alert.alert('Error', 'Failed to analyze image. Please try again.');
     } finally {
       setDetecting(false);
     }
   };
 
   const handleTakePhoto = async () => {
-    const hasPermission = await requestPermissions();
-    if (!hasPermission) return;
-
     try {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Camera permission is required to take photos.');
+        return;
+      }
+
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ['images'],
         allowsEditing: true,
@@ -433,15 +413,18 @@ export default function HomeScreen() {
       }
     } catch (error) {
       console.error('Camera error:', error);
-      Alert.alert('Error', 'Failed to open camera. Please try again.');
+      Alert.alert('Error', 'Failed to take photo. Please try again.');
     }
   };
 
   const handleUploadPhoto = async () => {
-    const hasPermission = await requestPermissions();
-    if (!hasPermission) return;
-
     try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Media library permission is required to upload photos.');
+        return;
+      }
+
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsEditing: true,
@@ -510,19 +493,19 @@ export default function HomeScreen() {
       >
         <View style={styles.header}>
           <View style={styles.headerTop}>
-            <Text style={styles.title}>Dashboard</Text>
+            <Text style={styles.title}>OrganiSort</Text>
             <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
               <Text style={styles.logoutText}>Logout</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.welcomeCard}>
             <Text style={styles.welcomeText}>Welcome, {user?.displayName || 'User'}! 👋</Text>
-            <Text style={styles.welcomeSubtext}>Start detecting waste and make an impact</Text>
+            <Text style={styles.welcomeSubtext}>Scan waste & contribute to sustainability</Text>
           </View>
         </View>
 
         <View style={styles.content}>
-          {/* Stats Cards */}
+          {/* Stats Cards - Now shows 3 stats */}
           <View style={styles.statsContainer}>
             <View style={styles.statCard}>
               <Text style={styles.statIcon}>📊</Text>
@@ -530,15 +513,15 @@ export default function HomeScreen() {
               <Text style={styles.statLabel}>Total Scans</Text>
             </View>
             <View style={styles.statCard}>
-              <Text style={styles.statIcon}>🌱</Text>
-              <Text style={styles.statValue}>{stats.organicWaste}</Text>
-              <Text style={styles.statLabel}>Organic</Text>
+              <Text style={styles.statIcon}>📦</Text>
+              <Text style={styles.statValue}>{stats.totalItems}</Text>
+              <Text style={styles.statLabel}>Items Found</Text>
             </View>
-            {/* <View style={styles.statCard}>
-              <Text style={styles.statIcon}>♻️</Text>
-              <Text style={styles.statValue}>{stats.recyclable}</Text>
-              <Text style={styles.statLabel}>Recyclable</Text>
-            </View> */}
+            <View style={styles.statCard}>
+              <Text style={styles.statIcon}>🏷️</Text>
+              <Text style={styles.statValue}>{stats.uniqueTypes}</Text>
+              <Text style={styles.statLabel}>Unique Types</Text>
+            </View>
           </View>
 
           {/* Detection Actions */}
@@ -577,15 +560,32 @@ export default function HomeScreen() {
                       />
                       <View style={styles.historyInfo}>
                         <Text style={styles.historyType}>
-                          {item.wasteType || 'Unknown'}
+                          {item.primaryWasteType || item.wasteType || 'Unknown'}
                         </Text>
                         <Text style={styles.historyDate}>
                           {new Date(item.createdAt).toLocaleDateString()} at{' '}
                           {new Date(item.createdAt).toLocaleTimeString()}
                         </Text>
                         <Text style={styles.historyConfidence}>
-                          {item.summary?.total_detections || 0} items detected
+                          {item.summary?.total_detections || 0} items • {item.summary?.unique_classes || 0} types
                         </Text>
+                        {/* Show detected waste types as badges */}
+                        {item.detectedWasteTypes && item.detectedWasteTypes.length > 0 && (
+                          <View style={styles.wasteTypesContainer}>
+                            {item.detectedWasteTypes.slice(0, 3).map((type, idx) => (
+                              <View key={idx} style={styles.wasteTypeBadge}>
+                                <Text style={styles.wasteTypeBadgeText}>{type}</Text>
+                              </View>
+                            ))}
+                            {item.detectedWasteTypes.length > 3 && (
+                              <View style={[styles.wasteTypeBadge, { backgroundColor: '#6b7280' }]}>
+                                <Text style={styles.wasteTypeBadgeText}>
+                                  +{item.detectedWasteTypes.length - 3}
+                                </Text>
+                              </View>
+                            )}
+                          </View>
+                        )}
                       </View>
                     </View>
                   ))}
@@ -613,7 +613,10 @@ export default function HomeScreen() {
       {detecting && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color="#10b981" />
-          <Text style={styles.loadingText}>Analyzing image...</Text>
+          <Text style={styles.loadingText}>Analyzing with 45-class AI model...</Text>
+          <Text style={[styles.loadingText, { fontSize: 12, marginTop: 4 }]}>
+            Detecting specific organic waste types
+          </Text>
         </View>
       )}
 
@@ -653,15 +656,21 @@ export default function HomeScreen() {
                       <Text style={styles.summaryValue}>
                         {detectionResults.summary?.total_detections || 0}
                       </Text>
-                      <Text style={styles.summaryLabel}>Found</Text>
+                      <Text style={styles.summaryLabel}>Items Found</Text>
                     </View>
                     <View style={styles.summaryItem}>
                       <Text style={styles.summaryValue}>
-                        {detectionResults.summary?.highest_confidence 
-                          ? (detectionResults.summary.highest_confidence * 100).toFixed(0)
+                        {detectionResults.summary?.unique_classes || 0}
+                      </Text>
+                      <Text style={styles.summaryLabel}>Unique Types</Text>
+                    </View>
+                    <View style={styles.summaryItem}>
+                      <Text style={styles.summaryValue}>
+                        {detectionResults.summary?.average_confidence 
+                          ? (detectionResults.summary.average_confidence * 100).toFixed(0)
                           : 0}%
                       </Text>
-                      <Text style={styles.summaryLabel}>Confidence</Text>
+                      <Text style={styles.summaryLabel}>Avg Confidence</Text>
                     </View>
                   </View>
 
@@ -669,7 +678,7 @@ export default function HomeScreen() {
                   {detectionResults.detections && detectionResults.detections.length > 0 ? (
                     <View style={styles.detectionsList}>
                       <Text style={[styles.sectionTitle, { fontSize: 16, marginBottom: 12 }]}>
-                        Detected Items:
+                        Detected Items ({detectionResults.detections.length}):
                       </Text>
                       {detectionResults.detections.map((detection, index) => (
                         <View key={index} style={styles.detectionItem}>
@@ -678,6 +687,9 @@ export default function HomeScreen() {
                           </Text>
                           <Text style={styles.detectionConfidence}>
                             Confidence: {(detection.confidence * 100).toFixed(1)}%
+                          </Text>
+                          <Text style={styles.classIdBadge}>
+                            Class ID: {detection.class_id} | Box: [{detection.box?.map(b => b.toFixed(0)).join(', ')}]
                           </Text>
                         </View>
                       ))}
