@@ -87,6 +87,13 @@ export default function AppLayout() {
             href: null, // This hides it from tabs but keeps the route
           }}
         />
+        {/* Hide analytics from tabs but keep it accessible via route */}
+        <Tabs.Screen
+          name="analytics"
+          options={{
+            href: null, // This hides it from tabs but keeps the route
+          }}
+        />
       </Tabs>
     </ProtectedScreen>
   );
