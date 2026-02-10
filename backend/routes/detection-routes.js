@@ -73,13 +73,13 @@ router.get('/leaderboard', unifiedAuth, getDetectionLeaderboard);
  * @desc    Get a single detection by ID
  * @access  Private
  */
-router.get('/:id', unifiedAuth, getDetectionById);
+router.get('/:id([0-9a-fA-F]{24})', unifiedAuth, getDetectionById);
 
 /**
  * @route   DELETE /api/detections/:id
  * @desc    Delete a detection
  * @access  Private
  */
-router.delete('/:id', unifiedAuth, deleteDetection);
+router.delete('/:id([0-9a-fA-F]{24})', unifiedAuth, deleteDetection);
 
 module.exports = router;

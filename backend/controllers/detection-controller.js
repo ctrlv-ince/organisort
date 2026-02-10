@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const axios = require('axios');
 const crypto = require('crypto');
 const FormData = require('form-data');
+const mongoose = require('mongoose');
 const Detection = require('../models/Detection');
 
 const isCloudinaryConfigured = () => {
@@ -229,6 +230,11 @@ const getDetectionHistory = asyncHandler(async (req, res) => {
 // @route   GET /api/detections/:id
 // @access  Private
 const getDetectionById = asyncHandler(async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    res.status(400);
+    throw new Error('Invalid detection ID');
+  }
+
   const detection = await Detection.findById(req.params.id).select('-annotated_image_public_id');
 
   if (!detection) {
@@ -249,6 +255,11 @@ const getDetectionById = asyncHandler(async (req, res) => {
 // @route   DELETE /api/detections/:id
 // @access  Private
 const deleteDetection = asyncHandler(async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    res.status(400);
+    throw new Error('Invalid detection ID');
+  }
+
   const detection = await Detection.findById(req.params.id);
 
   if (!detection) {
