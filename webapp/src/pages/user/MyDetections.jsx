@@ -9,6 +9,7 @@ const MyDetections = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('recent'); // recent, oldest, items
+  const [selectedDetection, setSelectedDetection] = useState(null);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -62,6 +63,18 @@ const MyDetections = () => {
 
   const sortedDetections = getSortedDetections();
 
+  const getDetectionImageUrl = (detection) => {
+    return detection.annotated_image || detection.imageUrl || detection.image || null;
+  };
+
+  const openDetails = (detection) => {
+    setSelectedDetection(detection);
+  };
+
+  const closeDetails = () => {
+    setSelectedDetection(null);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -114,7 +127,17 @@ const MyDetections = () => {
       {sortedDetections.length > 0 ? (
         <div className="grid md:grid-cols-2 gap-6">
           {sortedDetections.map((detection, idx) => (
-            <div key={detection._id || idx} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+            <div key={detection._id || idx} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              {getDetectionImageUrl(detection) && (
+                <img
+                  src={getDetectionImageUrl(detection)}
+                  alt={`Detection from ${new Date(detection.createdAt).toLocaleString()}`}
+                  className="w-full h-48 object-cover bg-gray-100"
+                  loading="lazy"
+                />
+              )}
+
+              <div className="p-6">
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
@@ -184,6 +207,13 @@ const MyDetections = () => {
                   <p className="text-xs text-gray-500">Highest</p>
                 </div>
               </div>
+              <button
+                onClick={() => openDetails(detection)}
+                className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold py-2.5 rounded-lg transition-colors"
+              >
+                View Details
+              </button>
+              </div>
             </div>
           ))}
         </div>
@@ -198,6 +228,72 @@ const MyDetections = () => {
           <p className="text-gray-400 text-sm">
             {searchTerm ? 'Try a different search term' : 'Start scanning waste to see your history'}
           </p>
+        </div>
+      )}
+      
+      {selectedDetection && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4" onClick={closeDetails}>
+          <div
+            className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-gray-800">Detection Details</h2>
+              <button
+                onClick={closeDetails}
+                className="text-sm font-semibold px-3 py-1.5 rounded-md bg-red-500 hover:bg-red-600 text-white transition-colors"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5">
+              {getDetectionImageUrl(selectedDetection) && (
+                <img
+                  src={getDetectionImageUrl(selectedDetection)}
+                  alt="Detection detail"
+                  className="w-full max-h-[420px] object-contain rounded-lg bg-gray-100"
+                />
+              )}
+
+              <div className="grid sm:grid-cols-3 gap-3">
+                <div className="bg-blue-50 rounded-lg p-3">
+                  <p className="text-xs text-gray-500">Detected Items</p>
+                  <p className="text-lg font-bold text-blue-700">{selectedDetection.summary?.total_detections || selectedDetection.detections?.length || 0}</p>
+                </div>
+                <div className="bg-emerald-50 rounded-lg p-3">
+                  <p className="text-xs text-gray-500">Avg Confidence</p>
+                  <p className="text-lg font-bold text-emerald-700">
+                    {selectedDetection.summary?.average_confidence
+                      ? `${(selectedDetection.summary.average_confidence * 100).toFixed(1)}%`
+                      : 'N/A'}
+                  </p>
+                </div>
+                <div className="bg-amber-50 rounded-lg p-3">
+                  <p className="text-xs text-gray-500">Scanned At</p>
+                  <p className="text-sm font-semibold text-amber-700">{new Date(selectedDetection.createdAt).toLocaleString()}</p>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-bold text-gray-800 mb-3">Detected Objects</h3>
+                {selectedDetection.detections?.length ? (
+                  <div className="space-y-2">
+                    {selectedDetection.detections.map((item, index) => (
+                      <div key={index} className="bg-gray-50 border-l-4 border-green-500 rounded-md p-3">
+                        <p className="font-semibold text-gray-800">{item.class || item.name || 'Unknown item'}</p>
+                        <p className="text-sm text-gray-600">
+                          Confidence: {item.confidence ? `${(item.confidence * 100).toFixed(1)}%` : 'N/A'}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No item-level details available for this detection.</p>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
