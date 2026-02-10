@@ -88,11 +88,12 @@ export const AuthProvider = ({ children }) => {
    * Logout user
    */
   const logout = async () => {
+    const token = localStorage.getItem('token');
+
     try {
       setError(null);
       
       // Call logout endpoint to invalidate token
-      const token = localStorage.getItem('token');
       if (token) {
         await axios.post(`${API_URL}/api/auth/logout`, {}, {
           headers: {
@@ -103,12 +104,14 @@ export const AuthProvider = ({ children }) => {
       }
       
       // Clear the token from localStorage
-      localStorage.removeItem('token');
-      setUser(null);
       console.log('✅ User logged out');
     } catch (err) {
-      setError(err.message);
-      throw err;
+      // A backend failure should not keep a stale local session alive.
+      console.warn('Logout API call failed, clearing local session anyway:', err);
+      setError(err.response?.data?.error || err.message);
+    } finally {
+      localStorage.removeItem('token');
+      setUser(null);
     }
   };
 

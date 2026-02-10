@@ -24,7 +24,11 @@ const DetectionSchema = new mongoose.Schema(
     },
     annotated_image: {
       type: String,
-      required: true,
+      default: '',
+    },
+    annotated_image_public_id: {
+      type: String,
+      default: null,
     },
     image_dimensions: {
       width: { type: Number },
