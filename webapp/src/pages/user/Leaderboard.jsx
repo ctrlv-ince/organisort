@@ -19,7 +19,7 @@ const Leaderboard = ({ userData }) => {
     try {
       setError('');
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/users/stats/detections`, {
+      const response = await fetch(`${API_URL}/api/detections/leaderboard`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

@@ -392,6 +392,50 @@ const getWasteTypes = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Get leaderboard ranked by total scans per user
+// @route   GET /api/detections/leaderboard
+// @access  Private
+const getDetectionLeaderboard = asyncHandler(async (_req, res) => {
+  const leaderboard = await Detection.aggregate([
+    {
+      $group: {
+        _id: '$user',
+        detectionCount: { $sum: 1 },
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'user',
+      },
+    },
+    {
+      $unwind: {
+        path: '$user',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        detectionCount: 1,
+        displayName: '$user.displayName',
+        email: '$user.email',
+      },
+    },
+    {
+      $sort: { detectionCount: -1 },
+    },
+  ]);
+
+  res.json({
+    success: true,
+    data: leaderboard,
+  });
+});
+
 module.exports = {
   analyzeImage,
   getDetectionHistory,
@@ -399,4 +443,5 @@ module.exports = {
   deleteDetection,
   getDetectionStats,
   getWasteTypes,
+  getDetectionLeaderboard,
 };

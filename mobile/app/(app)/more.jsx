@@ -168,7 +168,7 @@ export default function MoreScreen() {
   const fetchLeaderboard = async () => {
     setLoading(true);
     try {
-      const response = await apiClient.get('/api/users/stats/detections');
+      const response = await apiClient.get('/api/detections/leaderboard');
       const users = response.data?.data || [];
 
       const leaderboard = users

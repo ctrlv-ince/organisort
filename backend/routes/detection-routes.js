@@ -8,6 +8,7 @@ const {
   deleteDetection,
   getDetectionStats,
   getWasteTypes,
+  getDetectionLeaderboard,
 } = require('../controllers/detection-controller');
 const { unifiedAuth } = require('../middleware/auth-middleware');
 
@@ -59,6 +60,13 @@ router.get('/stats', unifiedAuth, getDetectionStats);
  * @access  Private
  */
 router.get('/waste-types', unifiedAuth, getWasteTypes);
+
+/**
+ * @route   GET /api/detections/leaderboard
+ * @desc    Get global leaderboard by total scans
+ * @access  Private
+ */
+router.get('/leaderboard', unifiedAuth, getDetectionLeaderboard);
 
 /**
  * @route   GET /api/detections/:id
