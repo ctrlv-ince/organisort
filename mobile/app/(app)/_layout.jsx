@@ -88,6 +88,15 @@ export default function AppLayout() {
             href: null, // This hides it from tabs but keeps the route
           }}
         />
+
+        {/* Hide edit-profile from tabs but keep it accessible via route */}
+        <Tabs.Screen
+          name="edit-profile"
+          options={{
+            href: null,
+          }}
+        />
+
         {/* Hide analytics from tabs but keep it accessible via route */}
         <Tabs.Screen
           name="analytics"

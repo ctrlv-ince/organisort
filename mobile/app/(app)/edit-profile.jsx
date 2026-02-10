@@ -1,0 +1,166 @@
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+  ScrollView,
+} from 'react-native';
+import { useAuth } from '@/src/context/AuthContext';
+import { useRouter } from 'expo-router';
+import apiClient from '@/src/utils/apiClient';
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#f8fafc' },
+  header: {
+    backgroundColor: '#3b82f6',
+    paddingTop: 32,
+    paddingBottom: 24,
+    paddingHorizontal: 24,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+  },
+  title: { fontSize: 30, fontWeight: 'bold', color: 'white', textAlign: 'center' },
+  subtitle: { fontSize: 16, color: '#bfdbfe', textAlign: 'center', marginTop: 8 },
+  content: { padding: 24 },
+  formCard: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  label: { fontSize: 14, fontWeight: '600', color: '#334155', marginBottom: 8, marginTop: 16 },
+  input: {
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: '#0f172a',
+    backgroundColor: '#fff',
+  },
+  inputDisabled: { backgroundColor: '#f1f5f9', color: '#64748b' },
+  helper: { fontSize: 12, color: '#64748b', marginTop: 6 },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 24,
+  },
+  button: {
+    flex: 1,
+    borderRadius: 10,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  cancelButton: { backgroundColor: '#e2e8f0' },
+  cancelText: { color: '#334155', fontSize: 16, fontWeight: '600' },
+  saveButton: { backgroundColor: '#10b981' },
+  saveButtonDisabled: { opacity: 0.7 },
+  saveText: { color: 'white', fontSize: 16, fontWeight: '700' },
+});
+
+export default function EditProfileScreen() {
+  const { user } = useAuth();
+  const router = useRouter();
+  const [displayName, setDisplayName] = useState(user?.displayName || '');
+  const [photoURL, setPhotoURL] = useState(user?.photoURL || '');
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    const trimmedName = displayName.trim();
+    const trimmedPhotoURL = photoURL.trim();
+
+    if (!trimmedName) {
+      Alert.alert('Invalid name', 'Display name cannot be empty.');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await apiClient.put('/api/users/profile', {
+        displayName: trimmedName,
+        photoURL: trimmedPhotoURL || null,
+      });
+
+      Alert.alert('Success', 'Your profile has been updated.', [
+        {
+          text: 'OK',
+          onPress: () => router.back(),
+        },
+      ]);
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      const message = error?.response?.data?.error || 'Failed to update profile. Please try again.';
+      Alert.alert('Update failed', message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 32 }}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Edit Profile</Text>
+        <Text style={styles.subtitle}>Update your account details</Text>
+      </View>
+
+      <View style={styles.content}>
+        <View style={styles.formCard}>
+          <Text style={styles.label}>Email Address</Text>
+          <TextInput
+            style={[styles.input, styles.inputDisabled]}
+            value={user?.email || ''}
+            editable={false}
+          />
+
+          <Text style={styles.label}>Display Name</Text>
+          <TextInput
+            style={styles.input}
+            value={displayName}
+            onChangeText={setDisplayName}
+            placeholder="Enter your display name"
+            autoCapitalize="words"
+            maxLength={50}
+          />
+
+          <Text style={styles.label}>Photo URL (optional)</Text>
+          <TextInput
+            style={styles.input}
+            value={photoURL}
+            onChangeText={setPhotoURL}
+            placeholder="https://example.com/photo.jpg"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <Text style={styles.helper}>Paste a public image URL for your avatar.</Text>
+
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              style={[styles.button, styles.cancelButton]}
+              onPress={() => router.back()}
+              disabled={saving}
+            >
+              <Text style={styles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.button, styles.saveButton, saving && styles.saveButtonDisabled]}
+              onPress={handleSave}
+              disabled={saving}
+            >
+              {saving ? <ActivityIndicator color="white" /> : <Text style={styles.saveText}>Save</Text>}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </ScrollView>
+  );
+}

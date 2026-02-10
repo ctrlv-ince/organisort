@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useAuth } from '@/src/context/AuthContext';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import apiClient from '@/src/utils/apiClient';
 
 const styles = StyleSheet.create({
@@ -149,9 +149,11 @@ export default function ProfileScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    fetchProfileData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchProfileData();
+    }, [])
+  );
 
   const fetchProfileData = async () => {
     try {
@@ -338,7 +340,7 @@ export default function ProfileScreen() {
 
           <TouchableOpacity 
             style={styles.actionButton}
-            onPress={() => Alert.alert('Coming Soon', 'Edit profile feature coming soon!')}
+            onPress={() => router.push('/edit-profile')}
           >
             <Text style={styles.actionIcon}>✏️</Text>
             <Text style={styles.actionText}>Edit Profile</Text>
