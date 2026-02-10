@@ -1,6 +1,8 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const axios = require("axios");
+const mongoose = require("mongoose");
 
 // Import configurations
 const { initializeFirebase } = require("./config/firebase-config");
@@ -32,6 +34,48 @@ app.use(express.urlencoded({ extended: true }));
 
 // Activity logging middleware (add EARLY, before routes)
 app.use(logActivity);
+
+// Health check route for admin dashboard
+app.get("/api/health", async (_req, res) => {
+  const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || "http://localhost:5001";
+
+  const backendApi = {
+    label: "Backend API",
+    status: "ACTIVE",
+    healthy: true,
+  };
+
+  const database = {
+    label: "Database",
+    status: mongoose.connection.readyState === 1 ? "SYNCED" : "DISCONNECTED",
+    healthy: mongoose.connection.readyState === 1,
+  };
+
+  let pythonAiService = {
+    label: "Python AI Service",
+    status: "INACTIVE",
+    healthy: false,
+  };
+
+  try {
+    const response = await axios.get(`${pythonServiceUrl}/health`, { timeout: 3000 });
+
+    if (response.status === 200) {
+      pythonAiService = {
+        label: "Python AI Service",
+        status: "ACTIVE",
+        healthy: true,
+      };
+    }
+  } catch (error) {
+    console.warn("⚠️ Python AI service health check failed:", error.message);
+  }
+
+  res.json({
+    updatedAt: new Date().toISOString(),
+    services: [backendApi, pythonAiService, database],
+  });
+});
 
 // Routes
 app.use("/api/auth", authRoutes);

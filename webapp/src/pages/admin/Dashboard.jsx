@@ -29,6 +29,10 @@ const AdminDashboard = () => {
   });
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [systemHealth, setSystemHealth] = useState({
+    services: [],
+    updatedAt: null,
+  });
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -91,6 +95,21 @@ const AdminDashboard = () => {
           console.warn('Failed to fetch detection stats');
         }
 
+        // Fetch system health status
+        const healthResponse = await fetch(`${API_URL}/api/health`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (healthResponse.ok) {
+          const healthData = await healthResponse.json();
+          setSystemHealth(healthData);
+          console.log('✅ System health fetched:', healthData);
+        } else {
+          console.warn('Failed to fetch system health');
+        }
+
       } catch (err) {
         console.error('Error fetching data:', err);
       } finally {
@@ -100,6 +119,24 @@ const AdminDashboard = () => {
 
     fetchData();
   }, [user]);
+
+  const getServiceBadgeClasses = (healthy) => (
+    healthy
+      ? 'bg-green-100 text-green-800'
+      : 'bg-red-100 text-red-800'
+  );
+
+  const getServiceRowClasses = (healthy) => (
+    healthy
+      ? 'bg-green-50 border-green-200'
+      : 'bg-red-50 border-red-200'
+  );
+
+  const getServiceDotClasses = (healthy) => (
+    healthy
+      ? 'bg-green-500'
+      : 'bg-red-500'
+  );
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-green-50 to-amber-50">
@@ -316,33 +353,29 @@ const AdminDashboard = () => {
                       System Health
                     </h2>
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
-                        <div className="flex items-center">
-                          <div className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse"></div>
-                          <span className="text-gray-700 font-medium">Backend API</span>
-                        </div>
-                        <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold">
-                          ACTIVE
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
-                        <div className="flex items-center">
-                          <div className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse"></div>
-                          <span className="text-gray-700 font-medium">Python AI Service</span>
-                        </div>
-                        <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold">
-                          ACTIVE
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
-                        <div className="flex items-center">
-                          <div className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse"></div>
-                          <span className="text-gray-700 font-medium">Database</span>
-                        </div>
-                        <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold">
-                          SYNCED
-                        </span>
-                      </div>
+                      {systemHealth.services.length > 0 ? (
+                        systemHealth.services.map((service) => (
+                          <div
+                            key={service.label}
+                            className={`flex items-center justify-between p-4 rounded-lg border ${getServiceRowClasses(service.healthy)}`}
+                          >
+                            <div className="flex items-center">
+                              <div className={`w-3 h-3 rounded-full mr-3 animate-pulse ${getServiceDotClasses(service.healthy)}`}></div>
+                              <span className="text-gray-700 font-medium">{service.label}</span>
+                            </div>
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${getServiceBadgeClasses(service.healthy)}`}>
+                              {service.status}
+                            </span>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-sm text-gray-500">System health data unavailable.</p>
+                      )}
+                      {systemHealth.updatedAt && (
+                        <p className="text-xs text-gray-500">
+                          Last updated: {new Date(systemHealth.updatedAt).toLocaleString('en-US')}
+                        </p>
+                      )}
                       <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
                         <div className="flex items-start">
                           <svg className="w-5 h-5 text-blue-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
