@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { View, Platform } from 'react-native';
+import { View, Platform, Text } from 'react-native';
 import Svg, { Path, Polyline, Circle } from 'react-native-svg';
 import ProtectedScreen from '@/src/components/ProtectedScreen';
 
@@ -123,7 +123,7 @@ function ScanIcon({ color, size = 24 }) {
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-        <View style={{ fontSize: size * 0.7, color: 'white' }}>📷</View>
+        <Text style={{ fontSize: size * 0.7, color: 'white' }}>📷</Text>
       </View>
     </View>
   );

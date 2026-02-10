@@ -143,12 +143,12 @@ export default function ScanScreen() {
 
     try {
       const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: false,
         quality: 0.8,
       });
 
-      if (!result.canceled && result.assets[0]) {
+      if (!result.canceled && result.assets?.[0]) {
         await processImage(result.assets[0].uri);
       }
     } catch (error) {
@@ -164,12 +164,12 @@ export default function ScanScreen() {
 
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: false,
         quality: 0.8,
       });
 
-      if (!result.canceled && result.assets[0]) {
+      if (!result.canceled && result.assets?.[0]) {
         await processImage(result.assets[0].uri);
       }
     } catch (error) {
@@ -196,7 +196,7 @@ export default function ScanScreen() {
       });
 
       // Send to detection API
-      const response = await apiClient.post('/api/detections/detect', formData, {
+      const response = await apiClient.post('/api/detections/analyze', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

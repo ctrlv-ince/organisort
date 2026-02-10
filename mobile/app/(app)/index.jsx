@@ -177,6 +177,20 @@ const styles = StyleSheet.create({
   },
 });
 
+
+function QuickActionCard({ icon, label, onPress }) {
+  return (
+    <TouchableOpacity
+      style={styles.quickActionCard}
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
+      <Text style={styles.quickActionIcon}>{icon}</Text>
+      <Text style={styles.quickActionText}>{label}</Text>
+    </TouchableOpacity>
+  );
+}
+
 export default function HomeScreen() {
   const { user } = useAuth();
   const router = useRouter();
@@ -290,37 +304,26 @@ export default function HomeScreen() {
         <View style={styles.actionSection}>
           <Text style={styles.sectionTitle}>Quick Actions</Text>
           <View style={styles.quickActions}>
-            <TouchableOpacity
-              style={quickActionCard}
+            <QuickActionCard
+              icon="📷"
+              label="Scan Waste"
               onPress={() => router.push('/scan')}
-            >
-              <Text style={styles.quickActionIcon}>📷</Text>
-              <Text style={styles.quickActionText}>Scan Waste</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.quickActionCard}
+            />
+            <QuickActionCard
+              icon="📊"
+              label="View History"
               onPress={() => router.push('/history')}
-            >
-              <Text style={styles.quickActionIcon}>📊</Text>
-              <Text style={styles.quickActionText}>View History</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.quickActionCard}
+            />
+            <QuickActionCard
+              icon="👤"
+              label="My Profile"
               onPress={() => router.push('/profile')}
-            >
-              <Text style={styles.quickActionIcon}>👤</Text>
-              <Text style={styles.quickActionText}>My Profile</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.quickActionCard}
+            />
+            <QuickActionCard
+              icon="🏆"
+              label="Leaderboard"
               onPress={() => router.push('/more')}
-            >
-              <Text style={styles.quickActionIcon}>🏆</Text>
-              <Text style={styles.quickActionText}>Leaderboard</Text>
-            </TouchableOpacity>
+            />
           </View>
         </View>
 
