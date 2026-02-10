@@ -8,7 +8,7 @@ export const setOnUnauthorized = (callback) => {
   onUnauthorized = callback;
 };
 
-const API_TIMEOUT = parseInt(process.env.EXPO_PUBLIC_API_TIMEOUT || '30000', 10);
+const API_TIMEOUT = parseInt(process.env.EXPO_PUBLIC_API_TIMEOUT || '10000', 10);
 
 export const apiClient = axios.create({
   baseURL: getApiUrl(),

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import apiClient from '@/src/utils/apiClient';
+import { getApiUrl } from '@/src/utils/env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AuthContext = createContext(undefined);
@@ -12,19 +13,22 @@ export const AuthProvider = ({ children }) => {
     const checkAuthStatus = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
-        console.log('Token retrieved in checkAuthStatus:', token);
         if (token) {
           // Verify the token with the backend
           const response = await apiClient.get('/api/users/me');
-          
-          // Update the user state with the user data from the response
-          setUser(response.data);
-          
+
+          // Update user state with the API payload data object
+          setUser(response.data?.data || null);
         } else {
           setUser(null);
         }
       } catch (error) {
-        console.error('Error checking auth status:', error);
+        const baseURL = getApiUrl();
+        console.error(
+          `Error checking auth status. API URL: ${baseURL}. `
+          + 'If using a physical device, set EXPO_PUBLIC_API_URL to your computer\'s LAN IP.',
+          error
+        );
         setUser(null);
       } finally {
         setLoading(false);
@@ -53,13 +57,12 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await apiClient.post('/api/auth/login', { email, password });
-      
+
       // Store the JWT token in AsyncStorage for API calls
       await AsyncStorage.setItem('token', response.data.token);
-      console.log('Token stored in AsyncStorage:', response.data.token);
-      
-      // Update the user state with the user data from the response
-      setUser(response.data);
+
+      // Update user state with user payload object
+      setUser(response.data?.data || null);
     } catch (error) {
       console.error('Email sign-in error:', error);
       throw error;
@@ -72,12 +75,12 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await apiClient.post('/api/auth/register', { email, password });
-      
+
       // Store the JWT token in AsyncStorage for API calls
       await AsyncStorage.setItem('token', response.data.token);
-      
-      // Update the user state with the user data from the response
-      setUser(response.data);
+
+      // Update user state with user payload object
+      setUser(response.data?.data || null);
     } catch (error) {
       console.error('Email registration error:', error);
       throw error;
@@ -88,7 +91,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async (router) => {
     setLoading(true);
-    
+
     try {
       // Call the server logout FIRST (while token is still in AsyncStorage)
       await apiClient.post('/api/auth/logout');
@@ -100,7 +103,7 @@ export const AuthProvider = ({ children }) => {
       await AsyncStorage.removeItem('token');
       setUser(null);
       setLoading(false);
-      
+
       if (router) {
         router.replace('/(auth)/login');
       }
