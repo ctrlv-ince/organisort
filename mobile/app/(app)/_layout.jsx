@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { View, Platform } from 'react-native';
+import Svg, { Path, Polyline, Circle } from 'react-native-svg';
 import ProtectedScreen from '@/src/components/ProtectedScreen';
 
 export default function AppLayout() {
@@ -103,10 +104,10 @@ export default function AppLayout() {
 function HomeIcon({ color, size = 24 }) {
   return (
     <View style={{ width: size, height: size }}>
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" strokeLinecap="round" strokeLinejoin="round"/>
-        <polyline points="9 22 9 12 15 12 15 22" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
+      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+        <Path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" strokeLinecap="round" strokeLinejoin="round" />
+        <Polyline points="9 22 9 12 15 12 15 22" strokeLinecap="round" strokeLinejoin="round" />
+      </Svg>
     </View>
   );
 }
@@ -131,9 +132,9 @@ function ScanIcon({ color, size = 24 }) {
 function HistoryIcon({ color, size = 24 }) {
   return (
     <View style={{ width: size, height: size }}>
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
-        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
+      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+        <Path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" />
+      </Svg>
     </View>
   );
 }
@@ -141,10 +142,10 @@ function HistoryIcon({ color, size = 24 }) {
 function ProfileIcon({ color, size = 24 }) {
   return (
     <View style={{ width: size, height: size }}>
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" strokeLinecap="round" strokeLinejoin="round"/>
-        <circle cx="12" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
+      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+        <Path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" strokeLinecap="round" strokeLinejoin="round" />
+        <Circle cx="12" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round" />
+      </Svg>
     </View>
   );
 }
@@ -152,11 +153,11 @@ function ProfileIcon({ color, size = 24 }) {
 function MoreIcon({ color, size = 24 }) {
   return (
     <View style={{ width: size, height: size }}>
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
-        <circle cx="12" cy="12" r="1" fill={color}/>
-        <circle cx="12" cy="5" r="1" fill={color}/>
-        <circle cx="12" cy="19" r="1" fill={color}/>
-      </svg>
+      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+        <Circle cx="12" cy="12" r="1" fill={color} />
+        <Circle cx="12" cy="5" r="1" fill={color} />
+        <Circle cx="12" cy="19" r="1" fill={color} />
+      </Svg>
     </View>
   );
 }
