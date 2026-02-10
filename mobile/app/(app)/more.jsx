@@ -168,19 +168,18 @@ export default function MoreScreen() {
   const fetchLeaderboard = async () => {
     setLoading(true);
     try {
-      const response = await apiClient.get('/api/users');
-      const users = response.data;
-      
-      // Sort by detection count (mock - you'd need actual stats from backend)
+      const response = await apiClient.get('/api/users/stats/detections');
+      const users = response.data?.data || [];
+
       const leaderboard = users
+        .sort((a, b) => (b.detectionCount || 0) - (a.detectionCount || 0))
+        .slice(0, 10)
         .map((user, index) => ({
           id: user._id,
           name: user.displayName || user.email?.split('@')[0] || 'User',
-          score: Math.floor(Math.random() * 100), // Mock score
+          score: user.detectionCount || 0,
           rank: index + 1,
-        }))
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 10);
+        }));
       
       setLeaderboardData(leaderboard);
     } catch (error) {

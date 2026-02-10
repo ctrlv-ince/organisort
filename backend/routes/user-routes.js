@@ -16,7 +16,6 @@ router.get('/', unifiedAuth, admin, getAllUsers);
 router.get(
   '/stats/detections',
   unifiedAuth,
-  admin,
   getAllUsersWithDetectionCount
 );
 
