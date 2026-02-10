@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 /**
  * UserProfile Page
@@ -12,19 +12,29 @@ const UserProfile = ({ userData, setUserData }) => {
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+  useEffect(() => {
+    setDisplayName(userData?.displayName || '');
+  }, [userData?.displayName]);
+
   const handleSave = async () => {
     setSaving(true);
     setMessage('');
 
     try {
+      const trimmedDisplayName = displayName.trim();
+      if (!trimmedDisplayName) {
+        setMessage('Display name cannot be empty');
+        return;
+      }
+
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/users/me`, {
-        method: 'PATCH',
+      const response = await fetch(`${API_URL}/api/users/profile`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ displayName }),
+        body: JSON.stringify({ displayName: trimmedDisplayName }),
       });
 
       if (response.ok) {
@@ -33,7 +43,8 @@ const UserProfile = ({ userData, setUserData }) => {
         setMessage('Profile updated successfully!');
         setEditing(false);
       } else {
-        setMessage('Failed to update profile');
+        const errorData = await response.json().catch(() => ({}));
+        setMessage(errorData?.error || 'Failed to update profile');
       }
     } catch (err) {
       console.error('Update error:', err);
