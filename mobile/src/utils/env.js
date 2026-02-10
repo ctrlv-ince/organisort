@@ -4,7 +4,6 @@ export const validateEnv = () => {
   const requiredVars = [
     'EXPO_PUBLIC_FIREBASE_API_KEY',
     'EXPO_PUBLIC_FIREBASE_PROJECT_ID',
-    'EXPO_PUBLIC_API_URL',
   ];
 
   const missingVars = requiredVars.filter((v) => !process.env[v]);
@@ -14,13 +13,32 @@ export const validateEnv = () => {
     return false;
   }
 
+  if (!process.env.EXPO_PUBLIC_API_URL) {
+    console.warn(
+      'EXPO_PUBLIC_API_URL is not set. Falling back to a local default URL for simulator/emulator use.'
+    );
+  }
+
   return true;
 };
 
 export const getApiUrl = () => {
-  if (process.env.EXPO_PUBLIC_API_URL) {
-    return process.env.EXPO_PUBLIC_API_URL;
+  const configuredApiUrl = process.env.EXPO_PUBLIC_API_URL;
+  if (configuredApiUrl) {
+    return configuredApiUrl;
   }
+
+  // Fallbacks for local development.
+  // IMPORTANT: Physical devices cannot reach localhost of your dev machine.
+  if (Platform.OS === 'android') {
+    return 'http://10.0.2.2:5000';
+  }
+
+  if (Platform.OS === 'ios') {
+    return 'http://127.0.0.1:5000';
+  }
+
+  return 'http://localhost:5000';
 };
 
 export const getFirebaseConfig = () => {
