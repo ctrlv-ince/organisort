@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+const CHART_COLORS = ['#ef4444', '#f97316', '#f59e0b', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899'];
+
 /**
  * Analytics Page - Admin Dashboard
  * Comprehensive analytics and insights for organic waste detection
@@ -50,29 +52,88 @@ const AnalyticsPage = () => {
     }
   };
 
+  const formatDayKey = (dateValue) => {
+    const date = new Date(dateValue);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   // Calculate trend data
   const getTrendData = () => {
-    if (!stats?.recentActivity) return [];
-    
-    // Group by date and calculate totals
+    const numberOfDays = parseInt(timeRange, 10);
+    if (!Number.isFinite(numberOfDays) || numberOfDays <= 0) return [];
+
+    // Build a day-by-day baseline so the chart always renders the selected range
+    const today = new Date();
+    const rangeStart = new Date(today);
+    rangeStart.setHours(0, 0, 0, 0);
+    rangeStart.setDate(rangeStart.getDate() - (numberOfDays - 1));
+
     const dailyData = {};
-    stats.recentActivity.forEach(activity => {
-      if (!dailyData[activity.date]) {
-        dailyData[activity.date] = {
-          date: activity.date,
-          scans: 0,
-          items: 0,
-          types: 0
-        };
-      }
-      dailyData[activity.date].scans += activity.scans;
-      dailyData[activity.date].items += activity.items;
-      dailyData[activity.date].types += activity.uniqueWasteTypes;
+    for (let i = 0; i < numberOfDays; i += 1) {
+      const currentDay = new Date(rangeStart);
+      currentDay.setDate(rangeStart.getDate() + i);
+      const dayKey = formatDayKey(currentDay);
+      dailyData[dayKey] = {
+        date: dayKey,
+        scans: 0,
+        items: 0,
+        types: 0,
+      };
+    }
+
+    // Prefer detailed history so trend works across all selected ranges
+    if (detections.length > 0) {
+      const typeSets = {};
+
+      detections.forEach((detection) => {
+        const createdAt = detection?.createdAt;
+        if (!createdAt) return;
+
+        const detectionDate = new Date(createdAt);
+        if (Number.isNaN(detectionDate.getTime()) || detectionDate < rangeStart || detectionDate > today) {
+          return;
+        }
+
+        const dayKey = formatDayKey(detectionDate);
+        if (!dailyData[dayKey]) return;
+
+        dailyData[dayKey].scans += 1;
+        dailyData[dayKey].items += detection.detections?.length || 0;
+
+        if (!typeSets[dayKey]) {
+          typeSets[dayKey] = new Set();
+        }
+
+        detection.detections?.forEach((item) => {
+          if (item?.class) {
+            typeSets[dayKey].add(item.class);
+          }
+        });
+      });
+
+      Object.entries(typeSets).forEach(([dayKey, typesSet]) => {
+        if (dailyData[dayKey]) {
+          dailyData[dayKey].types = typesSet.size;
+        }
+      });
+
+      return Object.values(dailyData);
+    }
+
+    // Fallback to stats.recentActivity if history has no records
+    stats?.recentActivity?.forEach((activity) => {
+      const dayKey = formatDayKey(activity.date);
+      if (!dailyData[dayKey]) return;
+
+      dailyData[dayKey].scans += activity.scans || 0;
+      dailyData[dayKey].items += activity.items || 0;
+      dailyData[dayKey].types += activity.uniqueWasteTypes || 0;
     });
 
-    return Object.values(dailyData).sort((a, b) => 
-      new Date(a.date) - new Date(b.date)
-    );
+    return Object.values(dailyData);
   };
 
   // Calculate waste type distribution
@@ -143,6 +204,39 @@ const AnalyticsPage = () => {
   const trendData = getTrendData();
   const wasteDistribution = getWasteTypeDistribution();
   const categoryBreakdown = getCategoryBreakdown();
+  const trendMax = Math.max(...trendData.map((day) => day.scans), 1);
+  const chartHeight = 220;
+  const chartWidth = 900;
+  const scanLinePoints = trendData
+    .map((day, index) => {
+      const x = trendData.length > 1 ? (index / (trendData.length - 1)) * chartWidth : chartWidth / 2;
+      const y = chartHeight - (day.scans / trendMax) * chartHeight;
+      return `${x},${y}`;
+    })
+    .join(' ');
+
+  const itemsLinePoints = trendData
+    .map((day, index) => {
+      const x = trendData.length > 1 ? (index / (trendData.length - 1)) * chartWidth : chartWidth / 2;
+      const y = chartHeight - ((day.items || 0) / Math.max(...trendData.map((entry) => entry.items), 1)) * chartHeight;
+      return `${x},${y}`;
+    })
+    .join(' ');
+
+  const categoryTotal = categoryBreakdown.reduce((sum, category) => sum + category.count, 0);
+  const categorySegments = categoryBreakdown.map((item, index) => {
+    const percentage = categoryTotal ? item.count / categoryTotal : 0;
+    const offset = categoryBreakdown
+      .slice(0, index)
+      .reduce((sum, category) => sum + ((categoryTotal ? category.count / categoryTotal : 0) * 100), 0);
+
+    return {
+      ...item,
+      color: CHART_COLORS[index % CHART_COLORS.length],
+      strokeDasharray: `${percentage * 100} ${100 - percentage * 100}`,
+      strokeDashoffset: -offset,
+    };
+  });
 
   return (
     <div className="space-y-6">
@@ -235,13 +329,12 @@ const AnalyticsPage = () => {
         </h2>
         
         {trendData && trendData.length > 0 ? (
-          <div className="space-y-4">
-            {/* Simple bar chart */}
+          <div className="space-y-6">
+            {/* Bar chart */}
             <div className="overflow-x-auto">
               <div className="min-w-full inline-flex gap-2 items-end h-64 pb-8">
                 {trendData.map((day, idx) => {
-                  const maxScans = Math.max(...trendData.map(d => d.scans));
-                  const height = (day.scans / maxScans) * 100;
+                  const height = (day.scans / trendMax) * 100;
                   
                   return (
                     <div key={idx} className="flex-1 flex flex-col items-center group">
@@ -268,6 +361,54 @@ const AnalyticsPage = () => {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+
+            {/* Line chart */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">Scans vs Items Trend</h3>
+              <div className="overflow-x-auto">
+                <svg viewBox={`0 0 ${chartWidth} ${chartHeight + 30}`} className="min-w-[700px] w-full h-64">
+                  {[0, 0.25, 0.5, 0.75, 1].map((ratio) => (
+                    <line
+                      key={ratio}
+                      x1="0"
+                      x2={chartWidth}
+                      y1={chartHeight - ratio * chartHeight}
+                      y2={chartHeight - ratio * chartHeight}
+                      stroke="#e5e7eb"
+                      strokeWidth="1"
+                    />
+                  ))}
+
+                  <polyline
+                    fill="none"
+                    stroke="#16a34a"
+                    strokeWidth="3"
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    points={scanLinePoints}
+                  />
+
+                  <polyline
+                    fill="none"
+                    stroke="#2563eb"
+                    strokeWidth="3"
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    points={itemsLinePoints}
+                  />
+                </svg>
+              </div>
+              <div className="flex items-center justify-center gap-6 text-sm mt-2">
+                <div className="flex items-center">
+                  <span className="w-4 h-1 bg-green-600 rounded mr-2"></span>
+                  <span className="text-gray-600">Scans</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-4 h-1 bg-blue-600 rounded mr-2"></span>
+                  <span className="text-gray-600">Items</span>
+                </div>
               </div>
             </div>
             
@@ -300,24 +441,35 @@ const AnalyticsPage = () => {
           
           {categoryBreakdown && categoryBreakdown.length > 0 ? (
             <div className="space-y-4">
+              <div className="flex justify-center pb-2">
+                <svg viewBox="0 0 42 42" className="w-44 h-44 -rotate-90">
+                  <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#f3f4f6" strokeWidth="7"></circle>
+                  {categorySegments.map((segment) => (
+                    <circle
+                      key={segment.category}
+                      cx="21"
+                      cy="21"
+                      r="15.9155"
+                      fill="none"
+                      stroke={segment.color}
+                      strokeWidth="7"
+                      strokeDasharray={segment.strokeDasharray}
+                      strokeDashoffset={segment.strokeDashoffset}
+                    ></circle>
+                  ))}
+                </svg>
+              </div>
+
               {categoryBreakdown.map((item, idx) => {
                 const total = categoryBreakdown.reduce((sum, cat) => sum + cat.count, 0);
                 const percentage = ((item.count / total) * 100).toFixed(1);
-                const colors = [
-                  'bg-red-500',
-                  'bg-orange-500',
-                  'bg-amber-500',
-                  'bg-yellow-500',
-                  'bg-green-500',
-                  'bg-blue-500',
-                  'bg-purple-500'
-                ];
+                const color = CHART_COLORS[idx % CHART_COLORS.length];
                 
                 return (
                   <div key={idx}>
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center">
-                        <div className={`w-4 h-4 ${colors[idx % colors.length]} rounded mr-3`}></div>
+                        <div className="w-4 h-4 rounded mr-3" style={{ backgroundColor: color }}></div>
                         <span className="text-gray-700 font-medium">{item.category}</span>
                       </div>
                       <div className="text-right">
@@ -327,8 +479,8 @@ const AnalyticsPage = () => {
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-3">
                       <div
-                        className={`${colors[idx % colors.length]} h-3 rounded-full transition-all`}
-                        style={{ width: `${percentage}%` }}
+                        className="h-3 rounded-full transition-all"
+                        style={{ backgroundColor: color, width: `${percentage}%` }}
                       ></div>
                     </div>
                   </div>

@@ -4,8 +4,7 @@ import '../Landing.css';
 
 /**
  * Landing Page Component - OrganiSort
- * Main landing page for organic waste detection system
- * Updated with cleaner, professional design
+ * Reflects real platform capabilities (web + mobile + admin)
  */
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -15,99 +14,87 @@ const LandingPage = () => {
 
   const slides = [
     {
-      title: "Smart Waste Detection",
-      subtitle: "AI-powered organic waste identification for a sustainable future",
-      badge: "OrganiSort • Waste Management Innovation"
+      title: 'Organic Waste Detection Workflow',
+      subtitle: 'Sign in, scan on mobile, and review detection history and analytics on web',
+      badge: 'OrganiSort • Detection Platform'
     },
     {
-      title: "Real-Time Analytics",
-      subtitle: "Track, monitor, and optimize your waste management processes",
-      badge: "OrganiSort • Data-Driven Solutions"
+      title: 'Role-Based Dashboards',
+      subtitle: 'Users manage their own records while admins monitor users, detections, and reports',
+      badge: 'OrganiSort • User + Admin Experience'
     },
     {
-      title: "Make a Difference",
-      subtitle: "Join thousands contributing to environmental sustainability",
-      badge: "OrganiSort • Community Impact"
+      title: 'Connected System Architecture',
+      subtitle: 'Firebase-authenticated sessions with backend APIs and stored detection records',
+      badge: 'OrganiSort • Full-Stack System'
     }
   ];
 
-  const newsItems = [
+  const platformHighlights = [
     {
-      icon: "🤖",
-      title: "OrganiSort Launches AI-Powered Detection",
-      description: "Our new machine learning model achieves 95% accuracy in identifying organic waste materials, setting a new industry standard.",
-      date: "Feb 2026"
+      icon: '🔐',
+      title: 'Authentication & Accounts',
+      description: 'Register and log in with Firebase authentication, then access protected dashboards based on account role.',
+      detail: 'The web app gates dashboard access through protected routes and verifies profile/role data from the backend.'
     },
     {
-      icon: "👥",
-      title: "10,000+ Users Join the Movement",
-      description: "We've reached a milestone of 10,000 active users contributing to waste detection and environmental sustainability.",
-      date: "Jan 2026"
+      icon: '📱',
+      title: 'Mobile-First Scanning',
+      description: 'Waste scanning is done in the mobile app, while the web dashboard is used for review and management.',
+      detail: 'Detection records are synced and can be explored later from the web dashboard under My Detections and analytics views.'
     },
     {
-      icon: "🤝",
-      title: "Partnership with Environmental Organizations",
-      description: "OrganiSort partners with leading environmental groups to expand waste management education and awareness.",
-      date: "Dec 2025"
+      icon: '🧾',
+      title: 'Detection History',
+      description: 'Users can browse previous detections, confidence summaries, and detected waste types in one place.',
+      detail: 'The platform stores per-scan metadata including item counts and confidence metrics for historical tracking.'
     },
     {
-      icon: "📱",
-      title: "Mobile App Now Available",
-      description: "Download our mobile application for iOS and Android to detect waste on-the-go with improved camera integration.",
-      date: "Nov 2025"
-    },
-    {
-      icon: "📚",
-      title: "New Waste Categories Added",
-      description: "Expanded database now includes 50+ waste categories with detailed sorting guidelines and recycling information.",
-      date: "Oct 2025"
-    },
-    {
-      icon: "📊",
-      title: "Community Impact Report 2026",
-      description: "Our users have collectively identified over 1 million waste items, contributing to better recycling practices worldwide.",
-      date: "Sep 2025"
+      icon: '🛠️',
+      title: 'Admin Operations',
+      description: 'Admins can review users, detection activity, logs, analytics, and reporting pages from the admin portal.',
+      detail: 'The backend exposes user/detection/activity endpoints used by the admin dashboard to monitor system usage.'
     }
   ];
 
   const features = [
     {
-      icon: "🤖",
-      color: "pink",
-      title: "AI-Powered Detection",
-      description: "Advanced machine learning algorithms identify waste types with 95% accuracy in real-time.",
-      details: "Our computer vision engine analyzes images using trained models to classify organic and inorganic waste materials instantly."
+      icon: '🔄',
+      color: 'pink',
+      title: 'Real Workflow, No Demo Claims',
+      description: 'This platform focuses on your actual implementation: auth, detection records, and management tools.',
+      details: 'Landing copy now reflects what currently exists in the codebase instead of invented milestones, percentages, or partner announcements.'
     },
     {
-      icon: "📊",
-      color: "green",
-      title: "Analytics Dashboard",
-      description: "Comprehensive insights into waste patterns, trends, and environmental impact metrics.",
-      details: "Monitor your waste management efficiency with real-time dashboards, historical trends, and predictive analytics."
+      icon: '🧭',
+      color: 'green',
+      title: 'Clear User Journey',
+      description: 'Create account → access dashboard → scan with mobile app → review and manage results on web.',
+      details: 'The product flow is split intentionally between mobile capture and web-based monitoring, reports, and account controls.'
     },
     {
-      icon: "🌍",
-      color: "yellow",
-      title: "Environmental Impact",
-      description: "Track your contribution to sustainability with detailed carbon footprint reduction data.",
-      details: "See exactly how your waste sorting efforts contribute to environmental conservation and carbon reduction goals."
+      icon: '🔌',
+      color: 'yellow',
+      title: 'API-Backed Data',
+      description: 'Dashboards pull from backend routes for users, detections, stats, waste types, and activity logs.',
+      details: 'Your implementation includes authenticated REST endpoints used by both user and admin interfaces.'
     }
   ];
 
-  const stats = [
-    { number: "10,000+", label: "Active Users", icon: "👥" },
-    { number: "1M+", label: "Waste Items Detected", icon: "🗑️" },
-    { number: "95%", label: "AI Accuracy Rate", icon: "🎯" },
-    { number: "50+", label: "Waste Categories", icon: "📋" }
+  const modules = [
+    { id: 1, name: 'Auth & Access', type: 'Core Module', image: '🔐', desc: 'Firebase sign-in/registration with protected web routes and role-based dashboard access' },
+    { id: 2, name: 'Mobile Scan Experience', type: 'Capture Module', image: '📱', desc: 'Image capture and waste scanning flow handled in the mobile app experience' },
+    { id: 3, name: 'My Detections', type: 'User Module', image: '📂', desc: 'Detection history, item summaries, timestamps, and confidence metrics for each scan' },
+    { id: 4, name: 'Leaderboard & Progress', type: 'User Module', image: '🏆', desc: 'Competitive and progress-oriented views for user engagement and contribution tracking' },
+    { id: 5, name: 'Admin Analytics', type: 'Admin Module', image: '📊', desc: 'System-wide stats, users, logs, and reports for platform monitoring and oversight' },
+    { id: 6, name: 'Waste Type Insights', type: 'Admin/User Data', image: '♻️', desc: 'Aggregated waste type results and category trends from recorded detections' },
   ];
 
-  const wasteCategories = [
-    { id: 1, name: 'Food Scraps', type: 'Compostable', image: '🍎', desc: 'Fruits, vegetables, and organic food waste' },
-    { id: 2, name: 'Garden Waste', type: 'Compostable', image: '🌿', desc: 'Leaves, grass clippings, and plant materials' },
-    { id: 3, name: 'Paper Products', type: 'Recyclable', image: '📄', desc: 'Clean paper, cardboard, and packaging' },
-    { id: 4, name: 'Plastic Containers', type: 'Recyclable', image: '♻️', desc: 'Clean plastic bottles and containers' },
-    { id: 5, name: 'Glass Items', type: 'Recyclable', image: '🫙', desc: 'Glass bottles and jars' },
-    { id: 6, name: 'Mixed Waste', type: 'General', image: '🗑️', desc: 'Non-recyclable, non-compostable items' },
+  const systemFacts = [
+    { number: '2', label: 'Role Dashboards (User & Admin)', icon: '👤' },
+    { number: '5+', label: 'Detection API Endpoints', icon: '🧩' },
+    { number: '100%', label: 'Authenticated Data Access', icon: '🔒' },
+    { number: '1', label: 'Unified Detection History per User', icon: '🗃️' }
   ];
 
   // Auto-advance slides
@@ -129,10 +116,10 @@ const LandingPage = () => {
           </div>
           <nav className="desktop-nav">
             <a href="#home" className="nav-link">Home</a>
-            <a href="#features" className="nav-link">Features</a>
-            <a href="#categories" className="nav-link">Waste Categories</a>
-            <a href="#news" className="nav-link">News</a>
-            <a href="#impact" className="nav-link">Impact</a>
+            <a href="#features" className="nav-link">Capabilities</a>
+            <a href="#categories" className="nav-link">Modules</a>
+            <a href="#news" className="nav-link">How It Works</a>
+            <a href="#impact" className="nav-link">System Facts</a>
           </nav>
           <div className="header-right">
             <button
@@ -162,10 +149,10 @@ const LandingPage = () => {
       {mobileMenuOpen && (
         <div className="mobile-menu">
           <a href="#home" onClick={() => setMobileMenuOpen(false)}>Home</a>
-          <a href="#features" onClick={() => setMobileMenuOpen(false)}>Features</a>
-          <a href="#categories" onClick={() => setMobileMenuOpen(false)}>Waste Categories</a>
-          <a href="#news" onClick={() => setMobileMenuOpen(false)}>News</a>
-          <a href="#impact" onClick={() => setMobileMenuOpen(false)}>Impact</a>
+          <a href="#features" onClick={() => setMobileMenuOpen(false)}>Capabilities</a>
+          <a href="#categories" onClick={() => setMobileMenuOpen(false)}>Modules</a>
+          <a href="#news" onClick={() => setMobileMenuOpen(false)}>How It Works</a>
+          <a href="#impact" onClick={() => setMobileMenuOpen(false)}>System Facts</a>
           <button onClick={() => { navigate('/login'); setMobileMenuOpen(false); }}>Sign In</button>
           <button onClick={() => { navigate('/register'); setMobileMenuOpen(false); }}>Get Started</button>
         </div>
@@ -185,23 +172,23 @@ const LandingPage = () => {
                   {slides[currentSlide].badge}
                 </div>
                 <h1 className="hero-title">
-                  AI-powered
+                  OrganiSort
                   <br />
                   <span className="hero-title-accent">{slides[currentSlide].title}</span>
                 </h1>
                 <p className="hero-desc">
-                  {slides[currentSlide].subtitle}. Upload images or connect to live capture pipelines
-                  and help build a more sustainable future through intelligent waste management.
+                  {slides[currentSlide].subtitle}. This page now describes the real platform modules,
+                  data flow, and dashboards available in your current build.
                 </p>
                 <div className="hero-buttons">
                   <button
                     onClick={() => navigate('/register')}
                     className="btn-primary"
                   >
-                    Start Detecting Waste
+                    Create Account
                   </button>
                   <a href="#features" className="hero-button-secondary">
-                    Learn More
+                    View Capabilities
                   </a>
                 </div>
                 {/* Slide Indicators */}
@@ -217,10 +204,10 @@ const LandingPage = () => {
               </div>
               <div className="hero-right">
                 <div className="hero-image-card">
-                  <div className="hero-fruit-display">♻️</div>
+                  <div className="hero-fruit-display">🧠</div>
                   <div className="hero-price-badge">
-                    <div className="hero-price-label">Detection Accuracy</div>
-                    <div className="hero-price-value">95%</div>
+                    <div className="hero-price-label">Platform State</div>
+                    <div className="hero-price-value">Live System</div>
                   </div>
                 </div>
               </div>
@@ -254,20 +241,20 @@ const LandingPage = () => {
           </div>
         </section>
 
-        {/* Waste Categories Section */}
+        {/* Platform Modules Section */}
         <section id="categories" className="shop">
           <div className="container-pro">
             <div className="shop-header">
               <div className="shop-title">
-                <h2 className="section-title">Waste Categories</h2>
+                <h2 className="section-title">Platform Modules</h2>
                 <p>
-                  Explore the different types of waste our AI can identify and help you sort correctly.
+                  A quick view of the real modules currently implemented in your OrganiSort system.
                 </p>
               </div>
             </div>
 
             <div className="products-grid">
-              {wasteCategories.map(cat => (
+              {modules.map((cat) => (
                 <article key={cat.id} className="product-card">
                   <div className="product-image">
                     {cat.image}
@@ -283,7 +270,7 @@ const LandingPage = () => {
                     </div>
                     <p className="product-desc">{cat.desc}</p>
                     <button className="btn-outline product-button">
-                      View sorting guide
+                      Included in current build
                     </button>
                   </div>
                 </article>
@@ -292,20 +279,21 @@ const LandingPage = () => {
           </div>
         </section>
 
-        {/* News Section */}
+        {/* How It Works Section */}
         <section id="news" className="analyze">
           <div className="container-pro">
             <h2 className="section-title" style={{ marginBottom: '2rem', color: '#15803d' }}>
-              Latest News & Updates
+              How OrganiSort Works Today
             </h2>
             <div className="news-grid">
-              {newsItems.map((item, index) => (
+              {platformHighlights.map((item, index) => (
                 <div key={index} className="news-card">
                   <div className="news-icon">{item.icon}</div>
                   <div className="news-content">
-                    <div className="news-date">{item.date}</div>
+                    <div className="news-date">Current</div>
                     <h3 className="news-title">{item.title}</h3>
                     <p className="news-desc">{item.description}</p>
+                    <p className="news-desc" style={{ marginTop: '0.5rem' }}>{item.detail}</p>
                   </div>
                 </div>
               ))}
@@ -316,9 +304,9 @@ const LandingPage = () => {
         {/* Stats/Impact Section */}
         <section id="impact" className="features" style={{ background: '#f9fafb' }}>
           <div className="container-pro">
-            <h2 className="section-title">Our Impact</h2>
+            <h2 className="section-title">System Facts</h2>
             <div className="stats-grid">
-              {stats.map((stat, index) => (
+              {systemFacts.map((stat, index) => (
                 <div key={index} className="stat-card">
                   <div className="stat-icon">{stat.icon}</div>
                   <div className="stat-number">{stat.number}</div>
@@ -333,14 +321,14 @@ const LandingPage = () => {
         <section className="cta-section">
           <div className="container-pro">
             <div className="cta-content">
-              <h2>Ready to Make a Difference?</h2>
-              <p>Join thousands of users contributing to a more sustainable future through intelligent waste management.</p>
+              <h2>Ready to Use Your Actual OrganiSort System?</h2>
+              <p>Create an account, access your dashboard, and manage your real detection data.</p>
               <div className="cta-buttons">
                 <button
                   onClick={() => navigate('/register')}
                   className="btn-primary btn-large"
                 >
-                  Get Started Free
+                  Get Started
                 </button>
                 <button
                   onClick={() => navigate('/login')}
@@ -363,7 +351,7 @@ const LandingPage = () => {
               <div className="footer-logo">♻️ OrganiSort</div>
               <p className="footer-desc">
                 Organic Waste Detection & Management System.
-                AI-powered solutions for sustainable waste management and environmental conservation.
+                Built with authenticated dashboards, detection history, and admin monitoring tools.
               </p>
             </div>
 
@@ -371,44 +359,40 @@ const LandingPage = () => {
             <div className="footer-col">
               <h3 className="footer-title">Quick Links</h3>
               <a href="#home" className="footer-link">Home</a>
-              <a href="#features" className="footer-link">Features</a>
-              <a href="#categories" className="footer-link">Waste Categories</a>
-              <a href="#news" className="footer-link">News</a>
+              <a href="#features" className="footer-link">Capabilities</a>
+              <a href="#categories" className="footer-link">Modules</a>
+              <a href="#news" className="footer-link">How It Works</a>
               <button onClick={() => navigate('/register')} className="footer-link">Sign Up</button>
             </div>
 
             {/* Resources */}
             <div className="footer-col">
               <h3 className="footer-title">Resources</h3>
-              <a href="#guides" className="footer-link">User Guides</a>
-              <a href="#faq" className="footer-link">FAQ</a>
-              <a href="#api" className="footer-link">API Documentation</a>
-              <a href="#blog" className="footer-link">Blog</a>
+              <a href="/login" className="footer-link">Login</a>
+              <a href="/register" className="footer-link">Register</a>
+              <a href="/dashboard" className="footer-link">Dashboard</a>
+              <a href="#impact" className="footer-link">System Facts</a>
             </div>
 
             {/* Contact */}
             <div className="footer-col">
-              <h3 className="footer-title">Contact</h3>
+              <h3 className="footer-title">Project Note</h3>
               <p className="footer-contact">
-                <strong>Business Address:</strong><br />
-                123 Green Street<br />
-                Eco District<br />
-                Metro Manila, Philippines
+                This landing page now avoids fabricated milestones and placeholder marketing claims.
               </p>
               <p className="footer-contact">
-                Email: info@organissort.com<br />
-                Phone: +63 (2) 1234-5678
+                It reflects the actual web/mobile/admin behavior in your current implementation.
               </p>
             </div>
           </div>
 
           <div className="footer-bottom">
             <div className="footer-links">
-              <a href="#privacy">Privacy Policy</a>
+              <a href="#home">Home</a>
               <span>•</span>
-              <a href="#terms">Terms of Service</a>
+              <a href="#features">Capabilities</a>
               <span>•</span>
-              <a href="#contact">Contact</a>
+              <a href="#impact">System Facts</a>
             </div>
             <div className="footer-copyright">
               © {new Date().getFullYear()} OrganiSort. All rights reserved.
