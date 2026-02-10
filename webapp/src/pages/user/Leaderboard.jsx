@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 /**
  * Leaderboard Page
@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 const Leaderboard = ({ userData }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -16,22 +17,38 @@ const Leaderboard = ({ userData }) => {
 
   const fetchLeaderboard = async () => {
     try {
+      setError('');
       const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/api/users/stats/detections`, {
-        headers: { 'Authorization': `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data.data || []);
+
+      if (!response.ok) {
+        throw new Error('Failed to load leaderboard data');
       }
+
+      const payload = await response.json();
+      const leaderboardUsers = (payload.data || [])
+        .map((user) => ({
+          ...user,
+          detectionCount: user.detectionCount || 0,
+        }))
+        .sort((a, b) => b.detectionCount - a.detectionCount);
+
+      setUsers(leaderboardUsers);
     } catch (err) {
-      console.error('Error:', err);
+      setError(err.message || 'Something went wrong while loading leaderboard data.');
     } finally {
       setLoading(false);
     }
   };
 
-  const currentUserRank = users.findIndex(u => u._id === userData?._id) + 1;
+  const currentUserRank = users.findIndex((u) => u._id === userData?._id) + 1;
+
+  const totalScans = useMemo(
+    () => users.reduce((sum, user) => sum + (user.detectionCount || 0), 0),
+    [users]
+  );
 
   if (loading) {
     return (
@@ -54,6 +71,30 @@ const Leaderboard = ({ userData }) => {
         <p className="text-indigo-100">See how you rank against other eco-warriors!</p>
       </div>
 
+      {/* Stats summary */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white rounded-lg shadow-md p-5">
+          <p className="text-sm text-gray-500 mb-1">Participants</p>
+          <p className="text-3xl font-bold text-gray-800">{users.length}</p>
+        </div>
+        <div className="bg-white rounded-lg shadow-md p-5">
+          <p className="text-sm text-gray-500 mb-1">Total Scans</p>
+          <p className="text-3xl font-bold text-green-700">{totalScans}</p>
+        </div>
+        <div className="bg-white rounded-lg shadow-md p-5">
+          <p className="text-sm text-gray-500 mb-1">Top Score</p>
+          <p className="text-3xl font-bold text-indigo-700">{users[0]?.detectionCount || 0}</p>
+        </div>
+      </div>
+
+      {/* Error state */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4">
+          <p className="font-semibold">Could not load leaderboard right now.</p>
+          <p className="text-sm">{error}</p>
+        </div>
+      )}
+
       {/* Your Rank Card */}
       {currentUserRank > 0 && (
         <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-lg shadow-lg p-6 text-white">
@@ -71,23 +112,23 @@ const Leaderboard = ({ userData }) => {
 
       {/* Top 3 Podium */}
       {users.length >= 3 && (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* 2nd Place */}
-          <div className="bg-white rounded-lg shadow-md p-6 text-center border-t-4 border-gray-400">
+          <div className="bg-white rounded-lg shadow-md p-6 text-center border-t-4 border-gray-400 md:order-1">
             <div className="text-5xl mb-2">🥈</div>
             <p className="font-bold text-gray-800 truncate">{users[1]?.displayName || users[1]?.email}</p>
             <p className="text-2xl font-bold text-blue-600 mt-2">{users[1]?.detectionCount || 0}</p>
             <p className="text-sm text-gray-500">scans</p>
           </div>
           {/* 1st Place */}
-          <div className="bg-gradient-to-br from-amber-100 to-amber-200 rounded-lg shadow-lg p-6 text-center border-t-4 border-amber-500 transform scale-105">
+          <div className="bg-gradient-to-br from-amber-100 to-amber-200 rounded-lg shadow-lg p-6 text-center border-t-4 border-amber-500 md:order-2 md:scale-105">
             <div className="text-6xl mb-2">🥇</div>
             <p className="font-bold text-gray-800 truncate">{users[0]?.displayName || users[0]?.email}</p>
             <p className="text-3xl font-bold text-amber-700 mt-2">{users[0]?.detectionCount || 0}</p>
             <p className="text-sm text-gray-500">scans</p>
           </div>
           {/* 3rd Place */}
-          <div className="bg-white rounded-lg shadow-md p-6 text-center border-t-4 border-orange-400">
+          <div className="bg-white rounded-lg shadow-md p-6 text-center border-t-4 border-orange-400 md:order-3">
             <div className="text-5xl mb-2">🥉</div>
             <p className="font-bold text-gray-800 truncate">{users[2]?.displayName || users[2]?.email}</p>
             <p className="text-2xl font-bold text-orange-600 mt-2">{users[2]?.detectionCount || 0}</p>
@@ -127,8 +168,9 @@ const Leaderboard = ({ userData }) => {
             </div>
           ))}
           {users.length === 0 && (
-            <div className="px-6 py-12 text-center text-gray-500">
-              No rankings available yet
+            <div className="px-6 py-12 text-center">
+              <p className="text-gray-600 font-semibold mb-1">No rankings available yet.</p>
+              <p className="text-sm text-gray-500">Start scanning waste to appear on the leaderboard.</p>
             </div>
           )}
         </div>
