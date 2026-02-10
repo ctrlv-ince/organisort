@@ -157,7 +157,7 @@ export default function ProfileScreen() {
     try {
       // Fetch user data
       const userResponse = await apiClient.get('/api/users/me');
-      setUserData(userResponse.data);
+      setUserData(userResponse.data?.data || null);
 
       // Fetch user stats
       const detectionResponse = await apiClient.get('/api/detections/history');
