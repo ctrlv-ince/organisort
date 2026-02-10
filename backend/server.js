@@ -35,8 +35,8 @@ app.use(express.urlencoded({ extended: true }));
 // Activity logging middleware (add EARLY, before routes)
 app.use(logActivity);
 
-// Health check route for admin dashboard
-app.get("/api/health", async (_req, res) => {
+// Health check handler for admin dashboard and service monitors
+const healthCheckHandler = async (_req, res) => {
   const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || "http://localhost:5001";
 
   const backendApi = {
@@ -75,7 +75,11 @@ app.get("/api/health", async (_req, res) => {
     updatedAt: new Date().toISOString(),
     services: [backendApi, pythonAiService, database],
   });
-});
+};
+
+// Health check routes
+app.get("/api/health", healthCheckHandler);
+app.get("/health", healthCheckHandler);
 
 // Routes
 app.use("/api/auth", authRoutes);

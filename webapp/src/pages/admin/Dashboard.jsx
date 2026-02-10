@@ -33,8 +33,64 @@ const AdminDashboard = () => {
     services: [],
     updatedAt: null,
   });
+  const [healthEndpointConfigured, setHealthEndpointConfigured] = useState(true);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+  const normalizeSystemHealth = (payload) => {
+    const data = payload?.data && !Array.isArray(payload?.services)
+      ? payload.data
+      : payload;
+
+    const services = Array.isArray(data?.services)
+      ? data.services
+      : [];
+
+    return {
+      services,
+      updatedAt: data?.updatedAt || null,
+    };
+  };
+
+  const fetchSystemHealth = async () => {
+    const candidateUrls = [`${API_URL}/api/health`, `${API_URL}/health`];
+
+    for (const url of candidateUrls) {
+      try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          continue;
+        }
+
+        const healthData = await response.json();
+        const normalizedHealth = normalizeSystemHealth(healthData);
+
+        if (normalizedHealth.services.length > 0 || normalizedHealth.updatedAt) {
+          setSystemHealth(normalizedHealth);
+          setHealthEndpointConfigured(true);
+          console.log('✅ System health fetched:', normalizedHealth);
+          return;
+        }
+      } catch (error) {
+        console.warn(`Failed to fetch system health from ${url}:`, error);
+      }
+    }
+
+    setHealthEndpointConfigured(false);
+    setSystemHealth({
+      services: [
+        {
+          label: 'System Health Endpoint',
+          status: 'NOT CONFIGURED',
+          healthy: null,
+        },
+      ],
+      updatedAt: null,
+    });
+
+    console.warn('Failed to fetch system health from all known endpoints');
+  };
 
   /**
    * Fetch user profile and stats from backend
@@ -96,19 +152,7 @@ const AdminDashboard = () => {
         }
 
         // Fetch system health status
-        const healthResponse = await fetch(`${API_URL}/api/health`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        if (healthResponse.ok) {
-          const healthData = await healthResponse.json();
-          setSystemHealth(healthData);
-          console.log('✅ System health fetched:', healthData);
-        } else {
-          console.warn('Failed to fetch system health');
-        }
+        await fetchSystemHealth();
 
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -120,23 +164,24 @@ const AdminDashboard = () => {
     fetchData();
   }, [user]);
 
-  const getServiceBadgeClasses = (healthy) => (
-    healthy
-      ? 'bg-green-100 text-green-800'
-      : 'bg-red-100 text-red-800'
-  );
+  const getServiceBadgeClasses = (healthy) => {
+    if (healthy === true) return 'bg-green-100 text-green-800';
+    if (healthy === false) return 'bg-red-100 text-red-800';
+    return 'bg-gray-100 text-gray-700';
+  };
 
-  const getServiceRowClasses = (healthy) => (
-    healthy
-      ? 'bg-green-50 border-green-200'
-      : 'bg-red-50 border-red-200'
-  );
+  const getServiceRowClasses = (healthy) => {
+    if (healthy === true) return 'bg-green-50 border-green-200';
+    if (healthy === false) return 'bg-red-50 border-red-200';
+    return 'bg-gray-50 border-gray-200';
+  };
 
-  const getServiceDotClasses = (healthy) => (
-    healthy
-      ? 'bg-green-500'
-      : 'bg-red-500'
-  );
+  const getServiceDotClasses = (healthy) => {
+    if (healthy === true) return 'bg-green-500';
+    if (healthy === false) return 'bg-red-500';
+    return 'bg-gray-400';
+  };
+
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-green-50 to-amber-50">
@@ -370,6 +415,11 @@ const AdminDashboard = () => {
                         ))
                       ) : (
                         <p className="text-sm text-gray-500">System health data unavailable.</p>
+                      )}
+                      {!healthEndpointConfigured && (
+                        <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+                          Health endpoint is not configured on the backend. Add <code>/api/health</code> if you want live service checks.
+                        </p>
                       )}
                       {systemHealth.updatedAt && (
                         <p className="text-xs text-gray-500">
