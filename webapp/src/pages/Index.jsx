@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import '../Landing.css';
 
 /**
@@ -8,9 +9,20 @@ import '../Landing.css';
  */
 const LandingPage = () => {
   const navigate = useNavigate();
+  const { user, logout, loading } = useAuth();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFeature, setActiveFeature] = useState(null);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+      setMobileMenuOpen(false);
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+  };
 
   const slides = [
     {
@@ -124,18 +136,39 @@ const LandingPage = () => {
             <button onClick={() => navigate('/contact')} className="nav-link">Contact</button>
           </nav>
           <div className="header-right">
-            <button
-              onClick={() => navigate('/login')}
-              className="btn-outline"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => navigate('/register')}
-              className="btn-primary"
-            >
-              Get Started
-            </button>
+            {!loading && (
+              user ? (
+                <>
+                  <button
+                    onClick={() => navigate('/dashboard')}
+                    className="btn-outline"
+                  >
+                    Dashboard
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="btn-primary"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => navigate('/login')}
+                    className="btn-outline"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => navigate('/register')}
+                    className="btn-primary"
+                  >
+                    Get Started
+                  </button>
+                </>
+              )
+            )}
           </div>
           {/* Mobile Menu Button */}
           <button
@@ -157,8 +190,19 @@ const LandingPage = () => {
           <a href="#impact" onClick={() => setMobileMenuOpen(false)}>System Facts</a>
           <button onClick={() => { navigate('/about'); setMobileMenuOpen(false); }}>About</button>
           <button onClick={() => { navigate('/contact'); setMobileMenuOpen(false); }}>Contact</button>
-          <button onClick={() => { navigate('/login'); setMobileMenuOpen(false); }}>Sign In</button>
-          <button onClick={() => { navigate('/register'); setMobileMenuOpen(false); }}>Get Started</button>
+          {!loading && (
+            user ? (
+              <>
+                <button onClick={() => { navigate('/dashboard'); setMobileMenuOpen(false); }}>Dashboard</button>
+                <button onClick={handleLogout}>Logout</button>
+              </>
+            ) : (
+              <>
+                <button onClick={() => { navigate('/login'); setMobileMenuOpen(false); }}>Sign In</button>
+                <button onClick={() => { navigate('/register'); setMobileMenuOpen(false); }}>Get Started</button>
+              </>
+            )
+          )}
         </div>
       )}
 
