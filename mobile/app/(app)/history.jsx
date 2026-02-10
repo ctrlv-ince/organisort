@@ -418,7 +418,11 @@ export default function HistoryScreen() {
                 <View style={styles.historyContent}>
                   <View style={styles.historyHeader}>
                     <Text style={styles.wasteType}>
-                      {detection.wasteType || 'Unknown Waste'}
+                      {detection.primaryWasteType
+                        || detection.wasteType
+                        || detection.detectedWasteTypes?.[0]
+                        || detection.detections?.[0]?.class
+                        || 'Unknown Waste'}
                     </Text>
                     <TouchableOpacity
                       style={styles.deleteButton}
