@@ -120,6 +120,8 @@ const LandingPage = () => {
             <a href="#categories" className="nav-link">Modules</a>
             <a href="#news" className="nav-link">How It Works</a>
             <a href="#impact" className="nav-link">System Facts</a>
+            <button onClick={() => navigate('/about')} className="nav-link">About</button>
+            <button onClick={() => navigate('/contact')} className="nav-link">Contact</button>
           </nav>
           <div className="header-right">
             <button
@@ -153,6 +155,8 @@ const LandingPage = () => {
           <a href="#categories" onClick={() => setMobileMenuOpen(false)}>Modules</a>
           <a href="#news" onClick={() => setMobileMenuOpen(false)}>How It Works</a>
           <a href="#impact" onClick={() => setMobileMenuOpen(false)}>System Facts</a>
+          <button onClick={() => { navigate('/about'); setMobileMenuOpen(false); }}>About</button>
+          <button onClick={() => { navigate('/contact'); setMobileMenuOpen(false); }}>Contact</button>
           <button onClick={() => { navigate('/login'); setMobileMenuOpen(false); }}>Sign In</button>
           <button onClick={() => { navigate('/register'); setMobileMenuOpen(false); }}>Get Started</button>
         </div>
@@ -362,6 +366,8 @@ const LandingPage = () => {
               <a href="#features" className="footer-link">Capabilities</a>
               <a href="#categories" className="footer-link">Modules</a>
               <a href="#news" className="footer-link">How It Works</a>
+              <button onClick={() => navigate('/about')} className="footer-link">About</button>
+              <button onClick={() => navigate('/contact')} className="footer-link">Contact</button>
               <button onClick={() => navigate('/register')} className="footer-link">Sign Up</button>
             </div>
 
@@ -371,6 +377,8 @@ const LandingPage = () => {
               <a href="/login" className="footer-link">Login</a>
               <a href="/register" className="footer-link">Register</a>
               <a href="/dashboard" className="footer-link">Dashboard</a>
+              <a href="/about" className="footer-link">About</a>
+              <a href="/contact" className="footer-link">Contact</a>
               <a href="#impact" className="footer-link">System Facts</a>
             </div>
 

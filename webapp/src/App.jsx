@@ -5,6 +5,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Index from './pages/Index';
+import About from './pages/About';
+import Contact from './pages/Contact';
 import AdminDashboard from './pages/admin/Dashboard';
 import UserDashboard from './pages/user/UserDashboard';
 import { useAuth } from './context/AuthContext';
@@ -83,6 +85,8 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Index />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 

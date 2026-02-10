@@ -94,6 +94,13 @@ header .container-pro {
   font-weight: 500;
 }
 
+
+.nav-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
 .nav-link:hover {
   background: var(--color-bg-alt);
   color: var(--color-primary);

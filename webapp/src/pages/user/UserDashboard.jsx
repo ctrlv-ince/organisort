@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 // Import user pages
@@ -16,6 +17,7 @@ import UserSettings from './UserSettings';
  */
 const UserDashboard = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('home');
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -208,6 +210,15 @@ const UserDashboard = () => {
             </button>
           ))}
         </nav>
+
+        <div className="px-4 pb-2">
+          <button
+            onClick={() => navigate('/')}
+            className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all duration-200 font-semibold"
+          >
+            <span>Go to Landing Page</span>
+          </button>
+        </div>
 
         {/* Logout Button */}
         <div className="p-4 border-t border-green-600">
