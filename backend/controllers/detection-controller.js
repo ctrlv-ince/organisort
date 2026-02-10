@@ -127,6 +127,20 @@ const analyzeImage = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     console.error('Error forwarding request to Python service:', error.message);
+
+    if (error.response) {
+      const upstreamStatus = error.response.status;
+      const upstreamMessage = error.response.data?.error
+        || error.response.data?.message
+        || 'Image processing failed';
+
+      res.status(upstreamStatus).json({
+        message: upstreamMessage,
+        error: error.message,
+      });
+      return;
+    }
+
     res.status(500).json({
       message: 'Failed to process image',
       error: error.message,

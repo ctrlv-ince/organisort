@@ -206,7 +206,11 @@ export default function ScanScreen() {
       setShowResults(true);
     } catch (error) {
       console.error('Detection error:', error);
-      Alert.alert('Detection Failed', 'Could not process the image. Please try again.');
+      const serverMessage = error?.response?.data?.message || error?.response?.data?.error;
+      Alert.alert(
+        'Detection Failed',
+        serverMessage || 'Could not process the image. Please try again.'
+      );
     } finally {
       setDetecting(false);
     }
