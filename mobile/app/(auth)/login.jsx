@@ -25,6 +25,10 @@ const styles = StyleSheet.create({
   inputGroup: { marginBottom: 16 },
   label: { fontSize: 14, fontWeight: '600', color: '#475569', marginBottom: 8 },
   input: { borderWidth: 2, borderColor: '#d1d5db', borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12, backgroundColor: '#f8fafc', color: '#1e293b', fontSize: 16 },
+  passwordContainer: { flexDirection: 'row', alignItems: 'center' },
+  passwordInput: { flex: 1, marginRight: 8 },
+  toggleButton: { minWidth: 44, minHeight: 44, paddingHorizontal: 10, borderRadius: 8, borderWidth: 1, borderColor: '#d1d5db', backgroundColor: '#f8fafc', alignItems: 'center', justifyContent: 'center' },
+  toggleText: { fontSize: 20 },
   error: { color: '#ef4444', fontSize: 12, marginTop: 4 },
   button: { width: '100%', paddingVertical: 16, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
   buttonPrimary: { backgroundColor: '#2563eb' },
@@ -43,6 +47,7 @@ export default function LoginScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -113,15 +118,26 @@ export default function LoginScreen() {
           {/* Password Input */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="••••••••"
-              placeholderTextColor="#9ca3af"
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-              editable={!emailLoading}
-            />
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={[styles.input, styles.passwordInput]}
+                placeholder="••••••••"
+                placeholderTextColor="#9ca3af"
+                secureTextEntry={!showPassword}
+                value={password}
+                onChangeText={setPassword}
+                editable={!emailLoading}
+              />
+              <TouchableOpacity
+                style={styles.toggleButton}
+                onPress={() => setShowPassword((current) => !current)}
+                accessibilityRole="button"
+                accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                accessibilityState={{ pressed: showPassword }}
+              >
+                <Text style={styles.toggleText}>{showPassword ? '🙈' : '👁️'}</Text>
+              </TouchableOpacity>
+            </View>
             {errors.password && <Text style={styles.error}>{errors.password}</Text>}
           </View>
 
