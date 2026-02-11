@@ -12,20 +12,16 @@ const generateToken = require('../utils/jwt');
 const registerUser = async (req, res, next) => {
   try {
     const { email, password, displayName } = req.body;
-    
-    // Log request body for debugging
-    console.log('Registration request body:', req.body);
-    console.log('Email validation passed:', email);
-    console.log('Password length:', password?.length);
 
     if (!email || !password) {
-      console.log('Missing email or password');
+      console.warn('[auth.register] missing-required-fields');
       return res.status(400).json({ success: false, error: 'Email and password are required' });
     }
 
     // Check if user already exists
     let user = await User.findOne({ email });
     if (user) {
+      console.warn('[auth.register] user-already-exists');
       return res.status(400).json({ success: false, error: 'User with that email already exists' });
     }
 
@@ -37,9 +33,9 @@ const registerUser = async (req, res, next) => {
         password,
         displayName: displayName || '',
       });
-      console.log('User created successfully:', user._id);
+      console.info('[auth.register] success');
     } catch (createError) {
-      console.error('User creation error:', createError);
+      console.error('[auth.register] create-failed', createError);
       throw createError;
     }
 
@@ -55,7 +51,7 @@ const registerUser = async (req, res, next) => {
       data: { _id: user._id, email: user.email, displayName: user.displayName, role: user.role },
     });
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('[auth.register] failed', error);
     next(error);
   }
 };
@@ -68,6 +64,7 @@ const loginUser = async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
+      console.warn('[auth.login] missing-required-fields');
       return res.status(400).json({ success: false, error: 'Email and password are required' });
     }
 
@@ -75,6 +72,7 @@ const loginUser = async (req, res, next) => {
     const user = await User.findOne({ email }).select('+password');
 
     if (!user || !(await user.matchPassword(password))) {
+      console.warn('[auth.login] invalid-credentials');
       return res.status(401).json({ success: false, error: 'Invalid credentials' });
     }
 
@@ -83,6 +81,8 @@ const loginUser = async (req, res, next) => {
 
     const token = generateToken(user._id.toString());
 
+    console.info('[auth.login] success');
+
     res.json({
       success: true,
       message: 'Logged in successfully',
@@ -90,6 +90,7 @@ const loginUser = async (req, res, next) => {
       data: { _id: user._id, email: user.email, displayName: user.displayName, role: user.role },
     });
   } catch (error) {
+    console.error('[auth.login] failed', error);
     next(error);
   }
 };

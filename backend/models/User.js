@@ -61,17 +61,14 @@ const userSchema = new mongoose.Schema(
 userSchema.pre("save", async function (next) {
   // Only hash the password if it's being modified (or is new) and actually exists
   if (!this.isModified("password") || !this.password) {
-    console.log('Password not modified or empty, skipping hash');
     return next();
   }
   try {
-    console.log('Hashing password...');
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    console.log('Password hashed successfully');
     next();
   } catch (hashError) {
-    console.error('Password hashing failed:', hashError);
+    console.error('[auth.password-hash] failed', hashError);
     next(hashError);
   }
 });

@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const FormData = require('form-data');
 const mongoose = require('mongoose');
 const Detection = require('../models/Detection');
+const { buildPythonServiceUrl } = require('../utils/python-service-url');
 
 const isCloudinaryConfigured = () => {
   return Boolean(
@@ -110,12 +111,11 @@ const analyzeImage = asyncHandler(async (req, res) => {
 
   let pythonServiceResponse;
   try {
-    const pythonServiceUrl =
-      process.env.PYTHON_SERVICE_URL || 'http://127.0.0.1:5001/detect';
+    const pythonServiceDetectUrl = buildPythonServiceUrl('/detect');
 
-    console.log(`Forwarding image to Python service: ${pythonServiceUrl}`);
+    console.log(`Forwarding image to Python service: ${pythonServiceDetectUrl}`);
 
-    const response = await axios.post(pythonServiceUrl, form, {
+    const response = await axios.post(pythonServiceDetectUrl, form, {
       headers: { ...form.getHeaders() },
       timeout: 30000, // 30 second timeout
     });

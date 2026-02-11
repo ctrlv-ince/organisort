@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
 const mongoose = require("mongoose");
+const { buildPythonServiceUrl } = require("./utils/python-service-url");
 
 // Import configurations
 const { initializeFirebase } = require("./config/firebase-config");
@@ -37,7 +38,7 @@ app.use(logActivity);
 
 // Health check handler for admin dashboard and service monitors
 const healthCheckHandler = async (_req, res) => {
-  const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || "http://localhost:5001";
+  const pythonServiceHealthUrl = buildPythonServiceUrl("/health");
 
   const backendApi = {
     label: "Backend API",
@@ -58,7 +59,7 @@ const healthCheckHandler = async (_req, res) => {
   };
 
   try {
-    const response = await axios.get(`${pythonServiceUrl}/health`, { timeout: 3000 });
+    const response = await axios.get(pythonServiceHealthUrl, { timeout: 3000 });
 
     if (response.status === 200) {
       pythonAiService = {

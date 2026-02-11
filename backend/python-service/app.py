@@ -228,8 +228,9 @@ def get_classes():
     })
 
 @app.route('/health', methods=['GET'])
+@app.route('/detect/health', methods=['GET'])
 def health():
-    """Health check endpoint."""
+    """Health check endpoint. Supports legacy /detect/health path."""
     return jsonify({
         'status': 'healthy',
         'model_loaded': model is not None,
@@ -241,6 +242,7 @@ if __name__ == '__main__':
     print("📍 Server will run on http://0.0.0.0:5001")
     print("💡 Test the API:")
     print("   curl http://localhost:5001/health")
+    print("   curl http://localhost:5001/detect/health  # legacy-compatible")
     print("   curl http://localhost:5001/classes")
     print("   curl -X POST -F 'image=@test.jpg' http://localhost:5001/detect")
     print("   curl -X POST -F 'image=@test.jpg' -F 'confidence=0.5' http://localhost:5001/detect")
