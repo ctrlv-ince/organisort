@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import useAuthFormValidation from '../hooks/useAuthFormValidation';
+import {
+  PASSWORD_POLICY_MESSAGE,
+  validateRegisterFields,
+} from '../utils/authValidation';
 
 /**
  * Registration Page
@@ -19,14 +24,69 @@ const Register = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  const values = useMemo(
+    () => ({ email, password, confirmPassword }),
+    [email, password, confirmPassword]
+  );
+  const {
+    touched,
+    fieldErrors,
+    hasErrors,
+    touchField,
+    validateFieldsNow,
+    validateOnSubmit,
+  } = useAuthFormValidation({
+    values,
+    validators: validateRegisterFields,
+    fields: ['email', 'password', 'confirmPassword'],
+    debounceMs: 250,
+  });
+
+  const emailError = touched.email ? fieldErrors.email : '';
+  const passwordError = touched.password ? fieldErrors.password : '';
+  const confirmPasswordError = touched.confirmPassword ? fieldErrors.confirmPassword : '';
+
+  const isSubmitDisabled = loading || hasErrors;
+
+  const handlePasswordChange = (value) => {
+    setPassword(value);
+
+    if (confirmPassword) {
+      validateFieldsNow(['password', 'confirmPassword'], {
+        email,
+        password: value,
+        confirmPassword,
+      });
+    }
+  };
+
+  const handleConfirmPasswordChange = (value) => {
+    setConfirmPassword(value);
+
+    if (value && password) {
+      const nextValues = {
+        email,
+        password,
+        confirmPassword: value,
+      };
+
+      touchField('confirmPassword', nextValues);
+      validateFieldsNow(['confirmPassword'], nextValues);
+    }
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
+    setError('');
+
+    const errors = validateOnSubmit();
+    const hasSubmitErrors = Object.values(errors).some(Boolean);
+
+    if (hasSubmitErrors) {
       return;
     }
+
     setLoading(true);
-    setError('');
     try {
       await register(email, password); // should create user in Firebase and backend
       navigate('/dashboard');
@@ -70,33 +130,46 @@ const Register = () => {
           )}
 
           {/* Registration Form */}
-          <form onSubmit={handleRegister} className="space-y-5 mb-6">
+          <form onSubmit={handleRegister} className="space-y-5 mb-6" noValidate>
             {/* Email Field */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="register-email">
                 Email Address
               </label>
               <input
+                id="register-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={() => touchField('email')}
                 placeholder="you@example.com"
+                aria-invalid={Boolean(emailError)}
+                aria-describedby={emailError ? 'register-email-error' : undefined}
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600 outline-none transition"
                 required
               />
+              {emailError && (
+                <p id="register-email-error" className="mt-2 text-sm text-red-600">
+                  {emailError}
+                </p>
+              )}
             </div>
 
             {/* Password Field */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="register-password">
                 Password
               </label>
               <div className="relative">
                 <input
+                  id="register-password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => handlePasswordChange(e.target.value)}
+                  onBlur={() => touchField('password')}
                   placeholder="••••••••"
+                  aria-invalid={Boolean(passwordError)}
+                  aria-describedby={passwordError ? 'register-password-error register-password-help' : 'register-password-help'}
                   className="w-full px-4 pr-12 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600 outline-none transition"
                   required
                 />
@@ -110,19 +183,31 @@ const Register = () => {
                   {showPassword ? '🙈' : '👁️'}
                 </button>
               </div>
+              <p id="register-password-help" className="mt-2 text-xs text-gray-500">
+                {PASSWORD_POLICY_MESSAGE}
+              </p>
+              {passwordError && (
+                <p id="register-password-error" className="mt-2 text-sm text-red-600">
+                  {passwordError}
+                </p>
+              )}
             </div>
 
             {/* Confirm Password Field */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="register-confirm-password">
                 Confirm Password
               </label>
               <div className="relative">
                 <input
+                  id="register-confirm-password"
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={(e) => handleConfirmPasswordChange(e.target.value)}
+                  onBlur={() => touchField('confirmPassword')}
                   placeholder="••••••••"
+                  aria-invalid={Boolean(confirmPasswordError)}
+                  aria-describedby={confirmPasswordError ? 'register-confirm-password-error' : undefined}
                   className="w-full px-4 pr-12 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600 outline-none transition"
                   required
                 />
@@ -136,12 +221,17 @@ const Register = () => {
                   {showConfirmPassword ? '🙈' : '👁️'}
                 </button>
               </div>
+              {confirmPasswordError && (
+                <p id="register-confirm-password-error" className="mt-2 text-sm text-red-600">
+                  {confirmPasswordError}
+                </p>
+              )}
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={isSubmitDisabled}
               className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5"
             >
               {loading ? (

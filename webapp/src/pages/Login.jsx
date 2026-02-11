@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import useAuthFormValidation from '../hooks/useAuthFormValidation';
+import { validateLoginFields } from '../utils/authValidation';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -12,16 +14,42 @@ const Login = () => {
   const { login, googleLogin, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
+  const values = useMemo(() => ({ email, password }), [email, password]);
+  const {
+    touched,
+    fieldErrors,
+    hasErrors,
+    touchField,
+    validateOnSubmit,
+  } = useAuthFormValidation({
+    values,
+    validators: validateLoginFields,
+    fields: ['email', 'password'],
+    debounceMs: 250,
+  });
+
   // Redirect if already logged in
   if (isAuthenticated) {
     navigate('/dashboard', { replace: true });
     return null;
   }
 
+  const emailError = touched.email ? fieldErrors.email : '';
+  const passwordError = touched.password ? fieldErrors.password : '';
+  const isSubmitDisabled = loading || hasErrors;
+
   const handleEmailLogin = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
+
+    const errors = validateOnSubmit();
+    const hasSubmitErrors = Object.values(errors).some(Boolean);
+
+    if (hasSubmitErrors) {
+      return;
+    }
+
+    setLoading(true);
 
     try {
       await login(email, password);
@@ -86,9 +114,9 @@ const Login = () => {
           )}
 
           {/* Email/Password Form */}
-          <form onSubmit={handleEmailLogin} className="space-y-5 mb-6">
+          <form onSubmit={handleEmailLogin} className="space-y-5 mb-6" noValidate>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="login-email">
                 Email Address
               </label>
               <div className="relative">
@@ -98,18 +126,27 @@ const Login = () => {
                   </svg>
                 </div>
                 <input
+                  id="login-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onBlur={() => touchField('email')}
                   placeholder="you@example.com"
+                  aria-invalid={Boolean(emailError)}
+                  aria-describedby={emailError ? 'login-email-error' : undefined}
                   className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600 outline-none transition"
                   required
                 />
               </div>
+              {emailError && (
+                <p id="login-email-error" className="mt-2 text-sm text-red-600">
+                  {emailError}
+                </p>
+              )}
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="login-password">
                 Password
               </label>
               <div className="relative">
@@ -119,10 +156,14 @@ const Login = () => {
                   </svg>
                 </div>
                 <input
+                  id="login-password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onBlur={() => touchField('password')}
                   placeholder="••••••••"
+                  aria-invalid={Boolean(passwordError)}
+                  aria-describedby={passwordError ? 'login-password-error' : undefined}
                   className="w-full pl-10 pr-12 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600 outline-none transition"
                   required
                 />
@@ -136,6 +177,11 @@ const Login = () => {
                   {showPassword ? '🙈' : '👁️'}
                 </button>
               </div>
+              {passwordError && (
+                <p id="login-password-error" className="mt-2 text-sm text-red-600">
+                  {passwordError}
+                </p>
+              )}
             </div>
 
             <div className="flex items-center justify-between text-sm">
@@ -150,7 +196,7 @@ const Login = () => {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={isSubmitDisabled}
               className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5"
             >
               {loading ? (
