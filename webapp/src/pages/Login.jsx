@@ -61,6 +61,24 @@ const Login = () => {
     }
   };
 
+  const handleEmailChange = (value) => {
+    const nextValues = { email: value, password };
+    setEmail(value);
+
+    if (touched.email || value) {
+      touchField('email', nextValues);
+    }
+  };
+
+  const handlePasswordChange = (value) => {
+    const nextValues = { email, password: value };
+    setPassword(value);
+
+    if (touched.password || value) {
+      touchField('password', nextValues);
+    }
+  };
+
   const handleGoogleLogin = async () => {
     setLoading(true);
     setError('');
@@ -129,7 +147,7 @@ const Login = () => {
                   id="login-email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => handleEmailChange(e.target.value)}
                   onBlur={() => touchField('email')}
                   placeholder="you@example.com"
                   aria-invalid={Boolean(emailError)}
@@ -159,7 +177,7 @@ const Login = () => {
                   id="login-password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => handlePasswordChange(e.target.value)}
                   onBlur={() => touchField('password')}
                   placeholder="••••••••"
                   aria-invalid={Boolean(passwordError)}

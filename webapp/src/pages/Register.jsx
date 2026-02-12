@@ -49,29 +49,48 @@ const Register = () => {
   const isSubmitDisabled = loading || hasErrors;
 
   const handlePasswordChange = (value) => {
+    const nextValues = {
+      email,
+      password: value,
+      confirmPassword,
+    };
     setPassword(value);
 
+    if (touched.password || value) {
+      touchField('password', nextValues);
+    }
+
     if (confirmPassword) {
-      validateFieldsNow(['password', 'confirmPassword'], {
-        email,
-        password: value,
-        confirmPassword,
-      });
+      validateFieldsNow(['password', 'confirmPassword'], nextValues);
     }
   };
 
   const handleConfirmPasswordChange = (value) => {
     setConfirmPassword(value);
 
-    if (value && password) {
-      const nextValues = {
-        email,
-        password,
-        confirmPassword: value,
-      };
+    const nextValues = {
+      email,
+      password,
+      confirmPassword: value,
+    };
 
+    if (touched.confirmPassword || value) {
       touchField('confirmPassword', nextValues);
       validateFieldsNow(['confirmPassword'], nextValues);
+    }
+  };
+
+  const handleEmailChange = (value) => {
+    const nextValues = {
+      email: value,
+      password,
+      confirmPassword,
+    };
+
+    setEmail(value);
+
+    if (touched.email || value) {
+      touchField('email', nextValues);
     }
   };
 
@@ -140,7 +159,7 @@ const Register = () => {
                 id="register-email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => handleEmailChange(e.target.value)}
                 onBlur={() => touchField('email')}
                 placeholder="you@example.com"
                 aria-invalid={Boolean(emailError)}
