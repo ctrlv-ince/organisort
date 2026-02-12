@@ -5,6 +5,12 @@ import useAuthFormValidation from '../hooks/useAuthFormValidation';
 import { validateLoginFields } from '../utils/authValidation';
 
 const Login = () => {
+  const getInputStateClasses = (hasError) => (
+    hasError
+      ? 'border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50/40 text-red-900 placeholder-red-300'
+      : 'border-gray-300 focus:ring-green-600 focus:border-green-600'
+  );
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -151,13 +157,19 @@ const Login = () => {
                   onBlur={() => touchField('email')}
                   placeholder="you@example.com"
                   aria-invalid={Boolean(emailError)}
+                  aria-errormessage={emailError ? 'login-email-error' : undefined}
                   aria-describedby={emailError ? 'login-email-error' : undefined}
-                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600 outline-none transition"
+                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:ring-2 outline-none transition ${getInputStateClasses(Boolean(emailError))}`}
                   required
                 />
               </div>
               {emailError && (
-                <p id="login-email-error" className="mt-2 text-sm text-red-600">
+                <p
+                  id="login-email-error"
+                  role="alert"
+                  aria-live="polite"
+                  className="mt-2 text-sm text-red-700 font-medium"
+                >
                   {emailError}
                 </p>
               )}
@@ -181,8 +193,9 @@ const Login = () => {
                   onBlur={() => touchField('password')}
                   placeholder="••••••••"
                   aria-invalid={Boolean(passwordError)}
+                  aria-errormessage={passwordError ? 'login-password-error' : undefined}
                   aria-describedby={passwordError ? 'login-password-error' : undefined}
-                  className="w-full pl-10 pr-12 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600 outline-none transition"
+                  className={`w-full pl-10 pr-12 py-3 border-2 rounded-lg focus:ring-2 outline-none transition ${getInputStateClasses(Boolean(passwordError))}`}
                   required
                 />
                 <button
@@ -196,7 +209,12 @@ const Login = () => {
                 </button>
               </div>
               {passwordError && (
-                <p id="login-password-error" className="mt-2 text-sm text-red-600">
+                <p
+                  id="login-password-error"
+                  role="alert"
+                  aria-live="polite"
+                  className="mt-2 text-sm text-red-700 font-medium"
+                >
                   {passwordError}
                 </p>
               )}

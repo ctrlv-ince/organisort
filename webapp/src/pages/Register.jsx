@@ -13,6 +13,12 @@ import {
  * UCAP-themed version
  */
 const Register = () => {
+  const getInputStateClasses = (hasError) => (
+    hasError
+      ? 'border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50/40 text-red-900 placeholder-red-300'
+      : 'border-gray-300 focus:ring-green-600 focus:border-green-600'
+  );
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -163,12 +169,18 @@ const Register = () => {
                 onBlur={() => touchField('email')}
                 placeholder="you@example.com"
                 aria-invalid={Boolean(emailError)}
+                aria-errormessage={emailError ? 'register-email-error' : undefined}
                 aria-describedby={emailError ? 'register-email-error' : undefined}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600 outline-none transition"
+                className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 outline-none transition ${getInputStateClasses(Boolean(emailError))}`}
                 required
               />
               {emailError && (
-                <p id="register-email-error" className="mt-2 text-sm text-red-600">
+                <p
+                  id="register-email-error"
+                  role="alert"
+                  aria-live="polite"
+                  className="mt-2 text-sm text-red-700 font-medium"
+                >
                   {emailError}
                 </p>
               )}
@@ -188,8 +200,9 @@ const Register = () => {
                   onBlur={() => touchField('password')}
                   placeholder="••••••••"
                   aria-invalid={Boolean(passwordError)}
-                  aria-describedby={passwordError ? 'register-password-error register-password-help' : 'register-password-help'}
-                  className="w-full px-4 pr-12 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600 outline-none transition"
+                  aria-errormessage={passwordError ? 'register-password-error' : undefined}
+                  aria-describedby={passwordError ? 'register-password-help register-password-error' : 'register-password-help'}
+                  className={`w-full px-4 pr-12 py-3 border-2 rounded-lg focus:ring-2 outline-none transition ${getInputStateClasses(Boolean(passwordError))}`}
                   required
                 />
                 <button
@@ -206,7 +219,12 @@ const Register = () => {
                 {PASSWORD_POLICY_MESSAGE}
               </p>
               {passwordError && (
-                <p id="register-password-error" className="mt-2 text-sm text-red-600">
+                <p
+                  id="register-password-error"
+                  role="alert"
+                  aria-live="polite"
+                  className="mt-2 text-sm text-red-700 font-medium"
+                >
                   {passwordError}
                 </p>
               )}
@@ -226,8 +244,9 @@ const Register = () => {
                   onBlur={() => touchField('confirmPassword')}
                   placeholder="••••••••"
                   aria-invalid={Boolean(confirmPasswordError)}
+                  aria-errormessage={confirmPasswordError ? 'register-confirm-password-error' : undefined}
                   aria-describedby={confirmPasswordError ? 'register-confirm-password-error' : undefined}
-                  className="w-full px-4 pr-12 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600 outline-none transition"
+                  className={`w-full px-4 pr-12 py-3 border-2 rounded-lg focus:ring-2 outline-none transition ${getInputStateClasses(Boolean(confirmPasswordError))}`}
                   required
                 />
                 <button
@@ -241,7 +260,12 @@ const Register = () => {
                 </button>
               </div>
               {confirmPasswordError && (
-                <p id="register-confirm-password-error" className="mt-2 text-sm text-red-600">
+                <p
+                  id="register-confirm-password-error"
+                  role="alert"
+                  aria-live="polite"
+                  className="mt-2 text-sm text-red-700 font-medium"
+                >
                   {confirmPasswordError}
                 </p>
               )}
