@@ -10,6 +10,7 @@ import UserProfile from './UserProfile';
 import Achievements from './Achievements';
 import Leaderboard from './Leaderboard';
 import UserSettings from './UserSettings';
+import LandingPageButton from '../../components/LandingPageButton';
 
 /**
  * User Dashboard Page - Main Container
@@ -212,12 +213,7 @@ const UserDashboard = () => {
         </nav>
 
         <div className="px-4 pb-2">
-          <button
-            onClick={() => navigate('/')}
-            className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all duration-200 font-semibold"
-          >
-            <span>Go to Landing Page</span>
-          </button>
+          <LandingPageButton variant="sidebar" />
         </div>
 
         {/* Logout Button */}

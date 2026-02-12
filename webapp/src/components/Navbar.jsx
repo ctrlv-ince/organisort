@@ -1,6 +1,6 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import LandingPageButton from './LandingPageButton';
 
 /**
  * Navbar Component
@@ -8,7 +8,6 @@ import { useAuth } from '../context/AuthContext';
  */
 const Navbar = () => {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
@@ -48,12 +47,7 @@ const Navbar = () => {
                   </div>
                 </div>
 
-                <button
-                  onClick={() => navigate('/')}
-                  className="px-4 py-2 bg-green-50 hover:bg-green-100 text-green-700 font-medium text-sm rounded-lg transition duration-200"
-                >
-                  Landing Page
-                </button>
+                <LandingPageButton variant="navbar" />
 
                 {/* Logout Button */}
                 <button
