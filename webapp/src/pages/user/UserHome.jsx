@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import InfoCard from '../../components/InfoCard';
+import PageHeaderCard from '../../components/PageHeaderCard';
+import PrimaryButton from '../../components/PrimaryButton';
 
 /**
  * UserHome Page
@@ -55,17 +58,12 @@ const UserHome = ({ userData }) => {
   return (
     <div className="p-6 space-y-6">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-green-600 to-green-800 rounded-lg shadow-xl p-8 text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 opacity-10 text-9xl">♻️</div>
-        <div className="relative z-10">
-          <h1 className="text-4xl font-bold mb-2">
-            Welcome back, {userData?.displayName || userData?.email?.split('@')[0] || 'User'}! 👋
-          </h1>
-          <p className="text-green-100 text-lg">
-            Ready to make a difference today? Let's sort some waste! 🌱
-          </p>
-        </div>
-      </div>
+      <PageHeaderCard
+        title={`Welcome back, ${userData?.displayName || userData?.email?.split('@')[0] || 'User'}! 👋`}
+        subtitle="Ready to make a difference today? Let's sort some waste! 🌱"
+        variant="primary"
+        icon={<span className="text-4xl">♻️</span>}
+      />
 
       {/* Stats Cards */}
       <div className="grid md:grid-cols-3 gap-6">
@@ -110,7 +108,7 @@ const UserHome = ({ userData }) => {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <InfoCard>
         <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
           <svg className="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -118,21 +116,21 @@ const UserHome = ({ userData }) => {
           Quick Actions
         </h2>
         <div className="grid md:grid-cols-2 gap-4">
-          <button className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-4 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center group">
+          <PrimaryButton className="py-4 px-6 shadow-md hover:shadow-lg w-full group">
             <svg className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
             </svg>
             <span>Start New Scan</span>
-          </button>
+          </PrimaryButton>
 
-          <button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center group">
+          <PrimaryButton variant="info" className="py-4 px-6 shadow-md hover:shadow-lg w-full group">
             <svg className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
             </svg>
             <span>View Achievements</span>
-          </button>
+          </PrimaryButton>
         </div>
-      </div>
+      </InfoCard>
 
       {/* Recent Activity */}
       <div className="bg-white rounded-lg shadow-md p-6">
