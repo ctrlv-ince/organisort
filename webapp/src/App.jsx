@@ -7,6 +7,9 @@ import Register from './pages/Register';
 import Index from './pages/Index';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
+import Help from './pages/Help';
 import AdminDashboard from './pages/admin/Dashboard';
 import UserDashboard from './pages/user/UserDashboard';
 import { useAuth } from './context/AuthContext';
@@ -87,6 +90,9 @@ function App() {
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/help" element={<Help />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
