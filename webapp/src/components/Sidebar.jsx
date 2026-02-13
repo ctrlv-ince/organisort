@@ -90,9 +90,9 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
   ];
 
   return (
-    <aside className="w-64 bg-gradient-to-b from-green-800 to-green-900 text-white shadow-2xl">
+    <aside className="w-64 h-screen flex flex-col bg-gradient-to-b from-green-700 to-green-900 text-white shadow-2xl">
       {/* Sidebar Header */}
-      <div className="p-6 border-b border-green-700">
+      <div className="p-6 border-b border-green-600">
         <div className="flex items-center space-x-3">
           <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
             <span className="text-3xl">♻️</span>
@@ -105,7 +105,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
       </div>
 
       {/* Navigation Menu */}
-      <nav className="p-4 space-y-2">
+      <nav className="p-4 space-y-2 flex-1 overflow-y-auto">
         {menuItems.map((item) => (
           <button
             key={item.id}
@@ -113,7 +113,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
             className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
               activeTab === item.id
                 ? 'bg-white text-green-800 shadow-lg font-semibold'
-                : 'text-green-100 hover:bg-green-700 hover:text-white'
+                : 'text-green-100 hover:bg-green-600 hover:text-white'
             }`}
           >
             <span className={activeTab === item.id ? 'text-green-700' : ''}>
@@ -125,7 +125,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
       </nav>
 
       {/* Sidebar Footer */}
-      <div className="absolute bottom-0 w-64 p-4 border-t border-green-700">
+      <div className="mt-auto p-4 border-t border-green-600">
         <div className="bg-green-700 bg-opacity-50 rounded-lg p-4">
           <div className="flex items-center space-x-2 mb-2">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
