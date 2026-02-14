@@ -2,11 +2,14 @@ const User = require('../models/User');
 const generateToken = require('../utils/jwt');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const axios = require('axios');
 
 const OTP_LENGTH = 6;
 const OTP_TTL_MINUTES = Number(process.env.EMAIL_OTP_TTL_MINUTES || 10);
 const OTP_RESEND_COOLDOWN_SECONDS = Number(process.env.EMAIL_OTP_RESEND_COOLDOWN_SECONDS || 60);
 const OTP_MAX_ATTEMPTS = Number(process.env.EMAIL_OTP_MAX_ATTEMPTS || 5);
+const RESEND_API_URL = 'https://api.resend.com/emails';
+const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
 
 const generateOtpCode = () => {
   const min = 10 ** (OTP_LENGTH - 1);
@@ -23,8 +26,43 @@ const buildChallengeToken = (userId, challengeId) => jwt.sign(
 );
 
 const sendOtpEmail = async (email, otpCode) => {
-  // TODO: replace with actual email provider integration when available.
-  console.info('[auth.2fa] email-otp-sent', { email, otpCode });
+  const resendApiKey = process.env.RESEND_API_KEY;
+
+  if (!resendApiKey) {
+    throw new Error('RESEND_API_KEY is not configured');
+  }
+
+  const text = `${otpCode} is your OrganiSort login verification code. It expires in ${OTP_TTL_MINUTES} minutes.`;
+  const html = `
+    <div style="font-family:Arial,sans-serif;line-height:1.4;color:#0f172a;max-width:480px;margin:0 auto;">
+      <h2 style="margin-bottom:8px;">Your OrganiSort verification code</h2>
+      <p style="margin:0 0 16px;">Use the following code to complete your sign in:</p>
+      <div style="font-size:28px;font-weight:700;letter-spacing:6px;padding:12px 16px;background:#f1f5f9;border-radius:8px;display:inline-block;">
+        ${otpCode}
+      </div>
+      <p style="margin:16px 0 0;color:#334155;">This code expires in ${OTP_TTL_MINUTES} minutes.</p>
+      <p style="margin:8px 0 0;color:#64748b;font-size:12px;">If you didn't request this code, you can safely ignore this email.</p>
+    </div>
+  `;
+
+  await axios.post(
+    RESEND_API_URL,
+    {
+      from: RESEND_FROM_EMAIL,
+      to: [email],
+      subject: 'Your OrganiSort login verification code',
+      html,
+      text,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+      },
+      timeout: 10000,
+    }
+  );
+
+  console.info('[auth.2fa] email-otp-sent', { email });
 };
 
 /**
