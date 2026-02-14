@@ -49,6 +49,28 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    twoFactorChallenge: {
+      otpHash: {
+        type: String,
+        default: null,
+      },
+      expiresAt: {
+        type: Date,
+        default: null,
+      },
+      attempts: {
+        type: Number,
+        default: 0,
+      },
+      challengeId: {
+        type: String,
+        default: null,
+      },
+      resendAvailableAt: {
+        type: Date,
+        default: null,
+      },
+    },
   },
   {
     timestamps: false, // We're managing timestamps manually

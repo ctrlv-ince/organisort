@@ -3,6 +3,8 @@ const { protect } = require("../middleware/auth-middleware");
 const {
   registerUser,
   loginUser,
+  verifyEmailOtp,
+  resendEmailOtp,
 } = require("../controllers/auth-controller");
 
 const router = express.Router();
@@ -20,6 +22,20 @@ router.post("/register", registerUser);
  * Public route (no authentication required)
  */
 router.post("/login", loginUser);
+
+/**
+ * POST /api/auth/verify-email-otp
+ * Verify email OTP and issue auth token
+ * Public route (no authentication required)
+ */
+router.post("/verify-email-otp", verifyEmailOtp);
+
+/**
+ * POST /api/auth/resend-email-otp
+ * Resend email OTP for active 2FA challenge
+ * Public route (no authentication required)
+ */
+router.post("/resend-email-otp", resendEmailOtp);
 
 /**
  * POST /api/auth/logout
