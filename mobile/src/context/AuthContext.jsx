@@ -58,13 +58,51 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const response = await apiClient.post('/api/auth/login', { email, password });
 
+      if (response.data?.requires2FA) {
+        return {
+          requires2FA: true,
+          challengeToken: response.data.challengeToken,
+          message: response.data.message,
+        };
+      }
+
       // Store the JWT token in AsyncStorage for API calls
       await AsyncStorage.setItem('token', response.data.token);
 
       // Update user state with user payload object
       setUser(response.data?.data || null);
+      return { requires2FA: false, user: response.data?.data || null };
     } catch (error) {
       console.error('Email sign-in error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const verifyEmailOtp = async (challengeToken, otp) => {
+    try {
+      setLoading(true);
+      const response = await apiClient.post('/api/auth/verify-email-otp', { challengeToken, otp });
+      await AsyncStorage.setItem('token', response.data.token);
+      setUser(response.data?.data || null);
+      return response.data?.data || null;
+    } catch (error) {
+      console.error('OTP verification error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resendEmailOtp = async (challengeToken) => {
+    try {
+      setLoading(true);
+      const response = await apiClient.post('/api/auth/resend-email-otp', { challengeToken });
+      return response.data;
+    } catch (error) {
+      console.error('Resend OTP error:', error);
       throw error;
     } finally {
       setLoading(false);
@@ -115,6 +153,8 @@ export const AuthProvider = ({ children }) => {
     loading,
     signInWithGoogle,
     signInWithEmail,
+    verifyEmailOtp,
+    resendEmailOtp,
     registerWithEmail,
     logout,
     isAuthenticated: !!user,

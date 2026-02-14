@@ -16,8 +16,12 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [otp, setOtp] = useState('');
+  const [challengeToken, setChallengeToken] = useState('');
+  const [otpMessage, setOtpMessage] = useState('');
+  const [otpSubmitting, setOtpSubmitting] = useState(false);
 
-  const { login, googleLogin, isAuthenticated } = useAuth();
+  const { login, verifyEmailOtp, resendEmailOtp, googleLogin, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const values = useMemo(() => ({ email, password }), [email, password]);
@@ -58,12 +62,52 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await login(email, password);
+      const loginResult = await login(email, password);
+      if (loginResult?.requires2FA) {
+        setChallengeToken(loginResult.challengeToken);
+        setOtpMessage(loginResult.message || 'Enter the OTP sent to your email.');
+        return;
+      }
       navigate('/dashboard');
     } catch (err) {
-      setError(err.message || 'Login failed');
+      setError(err.response?.data?.error || err.message || 'Login failed');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOtpVerification = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (!otp.trim()) {
+      setError('Please enter the OTP sent to your email.');
+      return;
+    }
+
+    setOtpSubmitting(true);
+    try {
+      await verifyEmailOtp(challengeToken, otp.trim());
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || 'OTP verification failed');
+    } finally {
+      setOtpSubmitting(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setError('');
+    setOtpSubmitting(true);
+
+    try {
+      const response = await resendEmailOtp(challengeToken);
+      setChallengeToken(response.challengeToken || challengeToken);
+      setOtpMessage(response.message || 'A new OTP has been sent to your email.');
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || 'Could not resend OTP');
+    } finally {
+      setOtpSubmitting(false);
     }
   };
 
@@ -137,7 +181,7 @@ const Login = () => {
             </div>
           )}
 
-          {/* Email/Password Form */}
+          {!challengeToken && (
           <form onSubmit={handleEmailLogin} className="space-y-5 mb-6" noValidate>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="login-email">
@@ -248,7 +292,48 @@ const Login = () => {
               )}
             </button>
           </form>
+          )}
 
+          {challengeToken && (
+            <form onSubmit={handleOtpVerification} className="space-y-5 mb-6" noValidate>
+              <div className="p-3 bg-blue-50 text-blue-800 border border-blue-200 rounded-lg text-sm">
+                {otpMessage || 'Enter the OTP sent to your email to complete sign in.'}
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="login-otp">
+                  One-Time Password
+                </label>
+                <input
+                  id="login-otp"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                  placeholder="Enter 6-digit code"
+                  className="w-full px-4 py-3 border-2 rounded-lg focus:ring-2 outline-none transition border-gray-300 focus:ring-green-600 focus:border-green-600"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={otpSubmitting}
+                className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 rounded-lg"
+              >
+                {otpSubmitting ? 'Verifying...' : 'Verify OTP'}
+              </button>
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                disabled={otpSubmitting}
+                className="w-full border-2 border-green-600 text-green-700 hover:bg-green-50 disabled:border-gray-300 disabled:text-gray-400 font-semibold py-3 rounded-lg"
+              >
+                Resend OTP
+              </button>
+            </form>
+          )}
+
+          {!challengeToken && (
+          <>
           {/* Divider */}
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
@@ -285,8 +370,11 @@ const Login = () => {
             </svg>
             <span>{loading ? 'Signing in...' : 'Sign in with Google'}</span>
           </button>
+          </>
+          )}
 
           {/* Registration Link */}
+          {!challengeToken && (
           <div className="mt-6 pt-6 border-t border-gray-200">
             <p className="text-center text-sm text-gray-600">
               First time using OrganiSort?{' '}
@@ -298,6 +386,7 @@ const Login = () => {
               </a>
             </p>
           </div>
+          )}
 
           {/* Info Text */}
           <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">

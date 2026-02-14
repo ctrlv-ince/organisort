@@ -43,13 +43,16 @@ const styles = StyleSheet.create({
 });
 
 export default function LoginScreen() {
-  const { signInWithEmail, signInWithGoogle, loading } = useAuth();
+  const { signInWithEmail, verifyEmailOtp, resendEmailOtp, signInWithGoogle, loading } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [otp, setOtp] = useState('');
+  const [challengeToken, setChallengeToken] = useState('');
+  const [otpMessage, setOtpMessage] = useState('');
 
   const handleEmailSignIn = async () => {
     const newErrors = {};
@@ -62,10 +65,47 @@ export default function LoginScreen() {
 
     try {
       setEmailLoading(true);
-      await signInWithEmail(email, password);
+      const loginResult = await signInWithEmail(email, password);
+      if (loginResult?.requires2FA) {
+        setChallengeToken(loginResult.challengeToken);
+        setOtpMessage(loginResult.message || 'Enter the OTP sent to your email.');
+        return;
+      }
       router.replace('/(app)');
     } catch (error) {
       Alert.alert('Sign-In Error', error.message || 'Invalid email or password');
+    } finally {
+      setEmailLoading(false);
+    }
+  };
+
+
+  const handleOtpVerification = async () => {
+    if (!otp.trim()) {
+      Alert.alert('OTP Required', 'Please enter the OTP sent to your email.');
+      return;
+    }
+
+    try {
+      setEmailLoading(true);
+      await verifyEmailOtp(challengeToken, otp.trim());
+      router.replace('/(app)');
+    } catch (error) {
+      Alert.alert('Verification Error', error?.response?.data?.error || error.message || 'OTP verification failed');
+    } finally {
+      setEmailLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    try {
+      setEmailLoading(true);
+      const response = await resendEmailOtp(challengeToken);
+      setChallengeToken(response.challengeToken || challengeToken);
+      setOtpMessage(response.message || 'A new OTP has been sent to your email.');
+      Alert.alert('OTP Sent', response.message || 'A new OTP has been sent to your email.');
+    } catch (error) {
+      Alert.alert('Resend Error', error?.response?.data?.error || error.message || 'Unable to resend OTP');
     } finally {
       setEmailLoading(false);
     }
@@ -100,6 +140,8 @@ export default function LoginScreen() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Sign In</Text>
 
+          {!challengeToken && (
+          <>
           {/* Email Input */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Email</Text>
@@ -174,9 +216,49 @@ export default function LoginScreen() {
             <Text style={styles.googleText}>Sign in with Google</Text>
           </TouchableOpacity>
 
+          </>
+          )}
+
+          {challengeToken && (
+            <>
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Email Verification Code</Text>
+                <Text style={{ color: '#475569', marginBottom: 8 }}>{otpMessage || 'Enter the OTP sent to your email.'}</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter 6-digit code"
+                  placeholderTextColor="#9ca3af"
+                  keyboardType="number-pad"
+                  maxLength={6}
+                  value={otp}
+                  onChangeText={(value) => setOtp(value.replace(/\D/g, ''))}
+                  editable={!emailLoading}
+                />
+              </View>
+
+              <TouchableOpacity
+                style={[styles.button, styles.buttonPrimary, (emailLoading || loading) && styles.buttonDisabled]}
+                onPress={handleOtpVerification}
+                disabled={emailLoading || loading}
+              >
+                {emailLoading || loading ? <ActivityIndicator color="white" /> : <Text style={styles.buttonText}>Verify OTP</Text>}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.googleButton, (emailLoading || loading) && styles.buttonDisabled]}
+                onPress={handleResendOtp}
+                disabled={emailLoading || loading}
+              >
+                <Text style={styles.googleText}>Resend OTP</Text>
+              </TouchableOpacity>
+            </>
+          )}
+
+          {!challengeToken && (
           <TouchableOpacity onPress={() => router.replace("/(auth)/register")}>
             <Text style={[styles.footer, { color: "#bfdbfe", textDecorationLine: "underline" }]}>Don't have an account? Register</Text>
           </TouchableOpacity>
+          )}
         </View>
 
         {/* Footer */}

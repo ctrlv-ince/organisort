@@ -28,15 +28,56 @@ export const AuthProvider = ({ children }) => {
         password,
       });
 
+      if (response.data?.requires2FA) {
+        return {
+          requires2FA: true,
+          challengeToken: response.data.challengeToken,
+          message: response.data.message,
+        };
+      }
+
       // Store the JWT token in localStorage for API calls
       localStorage.setItem('token', response.data.token);
-      
+
       // Update the user state with the user data from the response
       setUser(response.data.data);
       setError(null);
-      return response.data.data;
+      return {
+        requires2FA: false,
+        user: response.data.data,
+      };
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed');
+      throw err;
+    }
+  };
+
+  const verifyEmailOtp = async (challengeToken, otp) => {
+    try {
+      setError(null);
+      const response = await axios.post(`${API_URL}/api/auth/verify-email-otp`, {
+        challengeToken,
+        otp,
+      });
+
+      localStorage.setItem('token', response.data.token);
+      setUser(response.data.data);
+      return response.data.data;
+    } catch (err) {
+      setError(err.response?.data?.error || 'OTP verification failed');
+      throw err;
+    }
+  };
+
+  const resendEmailOtp = async (challengeToken) => {
+    try {
+      setError(null);
+      const response = await axios.post(`${API_URL}/api/auth/resend-email-otp`, {
+        challengeToken,
+      });
+      return response.data;
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to resend OTP');
       throw err;
     }
   };
@@ -158,6 +199,8 @@ export const AuthProvider = ({ children }) => {
     googleLogin,
     logout,
     register,
+    verifyEmailOtp,
+    resendEmailOtp,
     isAuthenticated: !!user,
   };
 
