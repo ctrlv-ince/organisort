@@ -1,4 +1,5 @@
 const ActivityLog = require('../models/ActivityLog');
+const { getPaginationParams } = require('../utils/pagination');
 
 /**
  * Activity Log Controller
@@ -12,9 +13,11 @@ const ActivityLog = require('../models/ActivityLog');
  */
 const getAllLogs = async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 50;
-    const skip = (page - 1) * limit;
+    const {
+      page,
+      limit,
+      skip,
+    } = getPaginationParams(req.query);
 
     // Build filter query
     const filter = {};
@@ -68,6 +71,13 @@ const getAllLogs = async (req, res, next) => {
       },
     });
   } catch (error) {
+    if (error.message.startsWith('Invalid page') || error.message.startsWith('Invalid limit')) {
+      return res.status(400).json({
+        success: false,
+        error: error.message,
+      });
+    }
+
     next(error);
   }
 };
@@ -227,9 +237,11 @@ const getLogStats = async (req, res, next) => {
 const getUserLogs = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 50;
-    const skip = (page - 1) * limit;
+    const {
+      page,
+      limit,
+      skip,
+    } = getPaginationParams(req.query);
 
     const logs = await ActivityLog.find({ user: userId })
       .sort({ createdAt: -1 })
@@ -249,6 +261,13 @@ const getUserLogs = async (req, res, next) => {
       },
     });
   } catch (error) {
+    if (error.message.startsWith('Invalid page') || error.message.startsWith('Invalid limit')) {
+      return res.status(400).json({
+        success: false,
+        error: error.message,
+      });
+    }
+
     next(error);
   }
 };

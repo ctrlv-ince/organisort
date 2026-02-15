@@ -5,6 +5,7 @@ const FormData = require('form-data');
 const mongoose = require('mongoose');
 const Detection = require('../models/Detection');
 const { buildPythonServiceUrl } = require('../utils/python-service-url');
+const { getPaginationParams } = require('../utils/pagination');
 
 const isCloudinaryConfigured = () => {
   return Boolean(
@@ -192,10 +193,16 @@ const analyzeImage = asyncHandler(async (req, res) => {
 // @route   GET /api/detections/history
 // @access  Private
 const getDetectionHistory = asyncHandler(async (req, res) => {
-  // Get query parameters for pagination (optional)
-  const page = parseInt(req.query.page, 10) || 1;
-  const limit = parseInt(req.query.limit, 10) || 50;
-  const skip = (page - 1) * limit;
+  let page;
+  let limit;
+  let skip;
+
+  try {
+    ({ page, limit, skip } = getPaginationParams(req.query));
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
 
   // Build query based on user role
   const query = req.user.role === 'admin' ? {} : { user: req.user.id };
