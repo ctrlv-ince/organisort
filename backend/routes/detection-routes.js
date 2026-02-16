@@ -9,6 +9,7 @@ const {
   getDetectionStats,
   getWasteTypes,
   getDetectionLeaderboard,
+  getWasteGuides,
 } = require('../controllers/detection-controller');
 const { unifiedAuth } = require('../middleware/auth-middleware');
 
@@ -60,6 +61,13 @@ router.get('/stats', unifiedAuth, getDetectionStats);
  * @access  Private
  */
 router.get('/waste-types', unifiedAuth, getWasteTypes);
+
+/**
+ * @route   GET /api/detections/waste-guides
+ * @desc    Get centralized metadata for all detectable waste classes
+ * @access  Private
+ */
+router.get('/waste-guides', unifiedAuth, getWasteGuides);
 
 /**
  * @route   GET /api/detections/leaderboard

@@ -4,8 +4,13 @@ const crypto = require('crypto');
 const FormData = require('form-data');
 const mongoose = require('mongoose');
 const Detection = require('../models/Detection');
+const {
+  WASTE_DISPOSAL_GUIDES,
+  DEFAULT_DISPOSAL_GUIDE,
+} = require('../constants/waste-disposal-guides');
 const { buildPythonServiceUrl } = require('../utils/python-service-url');
 const { getPaginationParams } = require('../utils/pagination');
+const { WASTE_GUIDES, buildDisposalGuides } = require('../data/waste-guides');
 
 const isCloudinaryConfigured = () => {
   return Boolean(
@@ -185,8 +190,39 @@ const analyzeImage = asyncHandler(async (req, res) => {
     console.error('Failed to save detection to database:', error.message);
   }
 
+  const detections = Array.isArray(pythonServiceResponse.detections)
+    ? pythonServiceResponse.detections
+    : [];
+  const classCounts = pythonServiceResponse.summary?.class_counts || {};
+
+  const uniqueClasses = [...new Set(
+    detections
+      .map((detection) => detection?.class)
+      .filter(Boolean)
+  )];
+
+  const disposalGuides = uniqueClasses.map((classLabel) => ({
+    class: classLabel,
+    count: Number(classCounts[classLabel] || 0),
+    guide: WASTE_DISPOSAL_GUIDES[classLabel] || DEFAULT_DISPOSAL_GUIDE,
+  }));
+
+  pythonServiceResponse.disposal_guides = disposalGuides;
+
   // Forward the original response from the Python service to the client
+  pythonServiceResponse.disposal_guides = buildDisposalGuides(pythonServiceResponse.detections || []);
+
   res.json(pythonServiceResponse);
+});
+
+// @desc    Get centralized waste-guide metadata map
+// @route   GET /api/detections/waste-guides
+// @access  Private
+const getWasteGuides = asyncHandler(async (_req, res) => {
+  res.json({
+    wasteGuides: WASTE_GUIDES,
+    count: Object.keys(WASTE_GUIDES).length,
+  });
 });
 
 // @desc    Get detection history for the logged-in user
@@ -462,4 +498,5 @@ module.exports = {
   getDetectionStats,
   getWasteTypes,
   getDetectionLeaderboard,
+  getWasteGuides,
 };

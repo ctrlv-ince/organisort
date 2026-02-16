@@ -110,6 +110,47 @@ const styles = StyleSheet.create({
   detectionClass: { fontSize: 16, fontWeight: 'bold', color: '#1e293b', marginBottom: 4 },
   detectionConfidence: { fontSize: 14, color: '#64748b', marginBottom: 4 },
   classIdBadge: { fontSize: 11, color: '#9ca3af', fontFamily: 'monospace' },
+  disposalSection: { marginTop: 20, paddingTop: 16, borderTopWidth: 1, borderTopColor: '#e2e8f0' },
+  disposalCard: {
+    backgroundColor: '#f8fafc',
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#3b82f6',
+  },
+  disposalHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 8,
+  },
+  disposalWasteName: { fontSize: 16, fontWeight: '700', color: '#1e293b', flex: 1 },
+  disposalCount: {
+    fontSize: 12,
+    color: '#1d4ed8',
+    fontWeight: '700',
+    backgroundColor: '#dbeafe',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 999,
+  },
+  disposalBinLabel: { fontSize: 14, color: '#334155', marginBottom: 10, lineHeight: 20 },
+  disposalInstructionsTitle: { fontSize: 13, fontWeight: '700', color: '#475569', marginBottom: 6 },
+  instructionRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 6, paddingRight: 4 },
+  instructionNumber: { width: 20, fontSize: 13, fontWeight: '700', color: '#2563eb', lineHeight: 20 },
+  instructionText: { flex: 1, fontSize: 13, color: '#334155', lineHeight: 20 },
+  cautionNote: {
+    marginTop: 4,
+    fontSize: 13,
+    color: '#92400e',
+    backgroundColor: '#fef3c7',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    lineHeight: 18,
+  },
   emptyText: { fontSize: 14, color: '#64748b', textAlign: 'center' },
 });
 
@@ -119,6 +160,51 @@ export default function ScanScreen() {
   const [detecting, setDetecting] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [detectionResults, setDetectionResults] = useState(null);
+
+  const formatWasteName = (value) => {
+    if (!value) return 'Unknown waste';
+    return value
+      .toString()
+      .replace(/[-_]+/g, ' ')
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  };
+
+  const buildFallbackDisposalGuide = (className, count) => ({
+    class: className,
+    count,
+    target_bin: 'Organic / Compost Bin',
+    instructions: [
+      `Segregate ${formatWasteName(className).toLowerCase()} from non-organic waste.`,
+      'Place it in the organic or compost collection bin.',
+      'Keep the bin covered and send contents to composting as scheduled.',
+    ],
+    caution: 'Avoid mixing with plastics, metals, or hazardous materials.',
+  });
+
+  const getDisposalGuides = (results) => {
+    if (!results) return [];
+
+    if (Array.isArray(results.disposal_guides) && results.disposal_guides.length > 0) {
+      return results.disposal_guides.map((guide) => ({
+        class: guide.class || guide.waste_class || 'Unknown waste',
+        count: guide.count || 1,
+        target_bin: guide.target_bin || guide.bin || 'Organic / Compost Bin',
+        instructions: Array.isArray(guide.instructions) ? guide.instructions : [],
+        caution: guide.caution || guide.note,
+      }));
+    }
+
+    const classCounts = results.summary?.class_counts;
+    if (!classCounts || typeof classCounts !== 'object') return [];
+
+    return Object.entries(classCounts)
+      .filter(([, count]) => Number(count) > 0)
+      .map(([className, count]) => buildFallbackDisposalGuide(className, Number(count)));
+  };
+
+  const totalDetections = detectionResults?.summary?.total_detections || 0;
+  const disposalGuides = getDisposalGuides(detectionResults);
+  const shouldShowDisposalSection = totalDetections > 0 && disposalGuides.length > 0;
 
   // Request camera permissions
   const requestPermissions = async () => {
@@ -394,6 +480,40 @@ export default function ScanScreen() {
                       <Text style={[styles.emptyText, { marginTop: 16, fontSize: 14 }]}>
                         ✅ Detection saved to history automatically
                       </Text>
+
+                      {shouldShowDisposalSection && (
+                        <View style={styles.disposalSection}>
+                          <Text style={[styles.sectionTitle, { fontSize: 16, marginBottom: 12 }]}>How to Dispose</Text>
+                          {disposalGuides.map((guide, index) => (
+                            <View key={`${guide.class}-${index}`} style={styles.disposalCard}>
+                              <View style={styles.disposalHeaderRow}>
+                                <Text style={styles.disposalWasteName}>{formatWasteName(guide.class)}</Text>
+                                <Text style={styles.disposalCount}>x{guide.count || 1}</Text>
+                              </View>
+
+                              <Text style={styles.disposalBinLabel}>Bin: {guide.target_bin || 'Organic / Compost Bin'}</Text>
+
+                              {Array.isArray(guide.instructions) && guide.instructions.length > 0 ? (
+                                <>
+                                  <Text style={styles.disposalInstructionsTitle}>Instructions</Text>
+                                  {guide.instructions.map((instruction, instructionIndex) => (
+                                    <View key={`${guide.class}-step-${instructionIndex}`} style={styles.instructionRow}>
+                                      <Text style={styles.instructionNumber}>{instructionIndex + 1}.</Text>
+                                      <Text style={styles.instructionText}>{instruction}</Text>
+                                    </View>
+                                  ))}
+                                </>
+                              ) : (
+                                <Text style={styles.instructionText}>Follow your local organic waste disposal guidelines.</Text>
+                              )}
+
+                              {guide.caution ? (
+                                <Text style={styles.cautionNote}>⚠️ {guide.caution}</Text>
+                              ) : null}
+                            </View>
+                          ))}
+                        </View>
+                      )}
                     </View>
                   ) : (
                     <Text style={styles.emptyText}>No waste detected in this image.</Text>
