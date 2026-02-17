@@ -1,529 +1,743 @@
-import React, { useState } from 'react';
+// mobile/app/(app)/scan.jsx - Updated with OpenStreetMap disposal locations
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
-  ScrollView,
   StyleSheet,
+  TouchableOpacity,
   Image,
-  Modal,
+  ScrollView,
   ActivityIndicator,
   Alert,
+  Modal,
+  Dimensions,
+  Linking,
 } from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-import { useAuth } from '@/src/context/AuthContext';
-import { useRouter } from 'expo-router';
+import * as Location from 'expo-location';
+import MapView, { Marker, Circle, UrlTile } from 'react-native-maps';
+import { Ionicons } from '@expo/vector-icons';
 import apiClient from '@/src/utils/apiClient';
 
+const { width } = Dimensions.get('window');
+
+export default function ScanScreen() {
+  const [permission, requestPermission] = useCameraPermissions();
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [result, setResult] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
+  const [disposalLocations, setDisposalLocations] = useState([]);
+  const [showMap, setShowMap] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+
+  let cameraRef = null;
+
+  useEffect(() => {
+    getUserLocation();
+  }, []);
+
+  useEffect(() => {
+    if (result && userLocation) {
+      fetchDisposalLocations();
+    }
+  }, [result, userLocation]);
+
+  const getUserLocation = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Location permission is required to find nearby disposal locations');
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+
+      setUserLocation({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+    } catch (error) {
+      console.error('Error getting location:', error);
+    }
+  };
+
+  const fetchDisposalLocations = async () => {
+    try {
+      if (!userLocation || !result?.detections) return;
+
+      const wasteTypes = result.detections.map(d => d.class);
+
+      const response = await apiClient.get('/api/disposal-locations/recommended', {
+        params: {
+          latitude: userLocation.latitude,
+          longitude: userLocation.longitude,
+          wasteTypes: wasteTypes.join(','),
+        },
+      });
+
+      if (response.data.success) {
+        setDisposalLocations(response.data.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching disposal locations:', error);
+    }
+  };
+
+  const openCamera = async () => {
+    if (!permission?.granted) {
+      const { status } = await requestPermission();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Camera permission is required to scan waste');
+        return;
+      }
+    }
+    setIsCameraActive(true);
+    setCapturedImage(null);
+    setResult(null);
+    setDisposalLocations([]);
+  };
+
+  const takePicture = async () => {
+    if (cameraRef) {
+      const photo = await cameraRef.takePictureAsync({ quality: 0.8 });
+      setCapturedImage(photo.uri);
+      setIsCameraActive(false);
+    }
+  };
+
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'Gallery permission is required to upload images');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.8,
+      allowsEditing: false,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      setCapturedImage(result.assets[0].uri);
+      setResult(null);
+      setDisposalLocations([]);
+    }
+  };
+
+  const analyzeImage = async () => {
+    if (!capturedImage) return;
+
+    try {
+      setAnalyzing(true);
+
+      const formData = new FormData();
+      formData.append('image', {
+        uri: capturedImage,
+        type: 'image/jpeg',
+        name: 'waste.jpg',
+      });
+
+      const response = await apiClient.post('/api/detections/analyze', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 30000,
+      });
+
+      if (response.data.success) {
+        setResult(response.data);
+      } else {
+        Alert.alert('Analysis Failed', response.data.error || 'Could not analyze the image');
+      }
+    } catch (error) {
+      console.error('Analysis error:', error);
+      Alert.alert('Error', 'Failed to analyze the image. Please try again.');
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  const handleDirections = (location) => {
+    const url = `https://www.openstreetmap.org/directions?from=${userLocation.latitude},${userLocation.longitude}&to=${location.location.coordinates[1]},${location.location.coordinates[0]}`;
+    Linking.openURL(url);
+  };
+
+  const retake = () => {
+    setCapturedImage(null);
+    setResult(null);
+    setDisposalLocations([]);
+    setShowMap(false);
+  };
+
+  if (isCameraActive) {
+    return (
+      <View style={styles.container}>
+        <CameraView
+          style={styles.camera}
+          ref={(ref) => (cameraRef = ref)}
+          facing="back"
+        >
+          <View style={styles.cameraOverlay}>
+            <TouchableOpacity style={styles.closeCamera} onPress={() => setIsCameraActive(false)}>
+              <Ionicons name="close" size={32} color="white" />
+            </TouchableOpacity>
+            <View style={styles.captureButtonContainer}>
+              <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
+                <View style={styles.captureButtonInner} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </CameraView>
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Scan Organic Waste</Text>
+        <Text style={styles.headerSubtitle}>
+          Detect waste and find nearby disposal locations
+        </Text>
+      </View>
+
+      {!capturedImage && (
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.primaryButton} onPress={openCamera}>
+            <Ionicons name="camera" size={24} color="white" />
+            <Text style={styles.buttonText}>Open Camera</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.secondaryButton} onPress={pickImage}>
+            <Ionicons name="images" size={24} color="#10b981" />
+            <Text style={styles.secondaryButtonText}>Choose from Gallery</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {capturedImage && !result && (
+        <View style={styles.previewContainer}>
+          <Image source={{ uri: capturedImage }} style={styles.preview} />
+          <View style={styles.previewActions}>
+            <TouchableOpacity style={styles.retakeButton} onPress={retake}>
+              <Text style={styles.retakeButtonText}>Retake</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.analyzeButton, analyzing && styles.analyzeButtonDisabled]}
+              onPress={analyzeImage}
+              disabled={analyzing}
+            >
+              {analyzing ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text style={styles.analyzeButtonText}>Analyze</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      {result && (
+        <View style={styles.resultContainer}>
+          <Image
+            source={{ uri: result.annotated_image }}
+            style={styles.resultImage}
+          />
+
+          <View style={styles.statsContainer}>
+            <View style={styles.statCard}>
+              <Text style={styles.statValue}>{result.summary?.total_detections || 0}</Text>
+              <Text style={styles.statLabel}>Items</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statValue}>{result.summary?.unique_classes || 0}</Text>
+              <Text style={styles.statLabel}>Types</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statValue}>
+                {result.summary?.average_confidence 
+                  ? `${(result.summary.average_confidence * 100).toFixed(0)}%`
+                  : 'N/A'}
+              </Text>
+              <Text style={styles.statLabel}>Confidence</Text>
+            </View>
+          </View>
+
+          <View style={styles.detectionsList}>
+            <Text style={styles.sectionTitle}>Detected Items</Text>
+            {result.detections?.map((detection, index) => (
+              <View key={index} style={styles.detectionItem}>
+                <Text style={styles.detectionClass}>{detection.class}</Text>
+                <Text style={styles.detectionConfidence}>
+                  {(detection.confidence * 100).toFixed(1)}%
+                </Text>
+              </View>
+            ))}
+          </View>
+
+          {disposalLocations.length > 0 && (
+            <View style={styles.disposalSection}>
+              <Text style={styles.sectionTitle}>Nearby Disposal Locations</Text>
+              <Text style={styles.disposalSubtitle}>
+                Found {disposalLocations.length} location{disposalLocations.length !== 1 ? 's' : ''} that accept this waste
+              </Text>
+
+              <TouchableOpacity
+                style={styles.viewMapButton}
+                onPress={() => setShowMap(true)}
+              >
+                <Ionicons name="map" size={20} color="white" />
+                <Text style={styles.viewMapButtonText}>View on Map</Text>
+              </TouchableOpacity>
+
+              {disposalLocations[0] && (
+                <View style={styles.nearestCard}>
+                  <View style={styles.nearestHeader}>
+                    <Ionicons name="location" size={20} color="#10b981" />
+                    <Text style={styles.nearestTitle}>Nearest Location</Text>
+                  </View>
+                  <Text style={styles.nearestName}>{disposalLocations[0].name}</Text>
+                  <Text style={styles.nearestDistance}>{disposalLocations[0].distanceText} away</Text>
+                  <TouchableOpacity
+                    style={styles.directionsButton}
+                    onPress={() => handleDirections(disposalLocations[0])}
+                  >
+                    <Ionicons name="navigate" size={16} color="white" />
+                    <Text style={styles.directionsButtonText}>Get Directions</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          )}
+
+          <TouchableOpacity style={styles.retakeButton} onPress={retake}>
+            <Ionicons name="refresh" size={20} color="#10b981" />
+            <Text style={styles.retakeButtonText}>Scan Another</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      <Modal visible={showMap} animationType="slide" onRequestClose={() => setShowMap(false)}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Disposal Locations</Text>
+            <TouchableOpacity style={styles.closeButton} onPress={() => setShowMap(false)}>
+              <Ionicons name="close" size={28} color="#fff" />
+            </TouchableOpacity>
+          </View>
+
+          {userLocation && (
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: userLocation.latitude,
+                longitude: userLocation.longitude,
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05,
+              }}
+              showsUserLocation={true}
+            >
+              {/* OpenStreetMap tiles */}
+              <UrlTile
+                urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                maximumZ={19}
+                flipY={false}
+              />
+
+              <Circle
+                center={userLocation}
+                radius={500}
+                strokeColor="rgba(16, 185, 129, 0.5)"
+                fillColor="rgba(16, 185, 129, 0.1)"
+              />
+
+              {disposalLocations.map((location) => (
+                <Marker
+                  key={location._id}
+                  coordinate={{
+                    latitude: location.location.coordinates[1],
+                    longitude: location.location.coordinates[0],
+                  }}
+                  pinColor="#10b981"
+                  onPress={() => setSelectedLocation(location)}
+                />
+              ))}
+            </MapView>
+          )}
+
+          {selectedLocation && (
+            <View style={styles.locationCard}>
+              <TouchableOpacity
+                style={styles.closeLocationCard}
+                onPress={() => setSelectedLocation(null)}
+              >
+                <Ionicons name="close" size={24} color="#666" />
+              </TouchableOpacity>
+              <Text style={styles.locationName}>{selectedLocation.name}</Text>
+              <Text style={styles.locationAddress}>{selectedLocation.address}</Text>
+              <Text style={styles.locationDistance}>{selectedLocation.distanceText} away</Text>
+              <TouchableOpacity
+                style={styles.directionsButtonLarge}
+                onPress={() => handleDirections(selectedLocation)}
+              >
+                <Ionicons name="navigate" size={20} color="white" />
+                <Text style={styles.directionsButtonText}>Get Directions</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      </Modal>
+    </ScrollView>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
+  container: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+  },
+  content: {
+    padding: 20,
+  },
   header: {
+    marginBottom: 24,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#1e293b',
+    marginBottom: 8,
+  },
+  headerSubtitle: {
+    fontSize: 16,
+    color: '#64748b',
+  },
+  buttonContainer: {
+    gap: 12,
+  },
+  primaryButton: {
     backgroundColor: '#10b981',
-    paddingTop: 32,
-    paddingBottom: 24,
-    paddingHorizontal: 24,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-  },
-  title: { fontSize: 30, fontWeight: 'bold', color: 'white', textAlign: 'center' },
-  subtitle: { fontSize: 16, color: '#d1fae5', textAlign: 'center', marginTop: 8 },
-  content: { padding: 24 },
-  
-  // Main Scan Buttons
-  scanSection: { marginBottom: 32 },
-  scanButton: {
-    backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 32,
-    alignItems: 'center',
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 8,
-    borderWidth: 3,
-    borderColor: '#10b981',
-  },
-  scanButtonSecondary: {
-    borderColor: '#3b82f6',
-  },
-  scanIcon: { fontSize: 80, marginBottom: 16 },
-  scanButtonTitle: { fontSize: 20, fontWeight: 'bold', color: '#1e293b', marginBottom: 8 },
-  scanButtonText: { fontSize: 14, color: '#64748b', textAlign: 'center' },
-  
-  // Info Cards
-  infoSection: { marginBottom: 24 },
-  sectionTitle: { fontSize: 20, fontWeight: 'bold', color: '#1e293b', marginBottom: 16 },
-  infoCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 12,
+    gap: 8,
   },
-  infoIcon: { fontSize: 32, marginRight: 16 },
-  infoContent: { flex: 1 },
-  infoTitle: { fontSize: 16, fontWeight: '600', color: '#1e293b', marginBottom: 4 },
-  infoText: { fontSize: 14, color: '#64748b' },
-  
-  // Loading & Modal Styles
-  loadingOverlay: {
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  secondaryButton: {
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#10b981',
+    gap: 8,
+  },
+  secondaryButtonText: {
+    color: '#10b981',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  camera: {
+    flex: 1,
+  },
+  cameraOverlay: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+  closeCamera: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    top: 50,
+    left: 20,
+    padding: 8,
+  },
+  captureButtonContainer: {
+    position: 'absolute',
+    bottom: 40,
+    alignSelf: 'center',
+  },
+  captureButton: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1000,
+    borderWidth: 4,
+    borderColor: '#10b981',
   },
-  loadingText: { color: 'white', marginTop: 12, fontSize: 16, fontWeight: '600' },
-  
-  modalContainer: { flex: 1, backgroundColor: 'rgba(0,0,0,0.9)' },
+  captureButtonInner: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#10b981',
+  },
+  previewContainer: {
+    marginBottom: 20,
+  },
+  preview: {
+    width: '100%',
+    height: 400,
+    borderRadius: 12,
+    backgroundColor: '#e2e8f0',
+  },
+  previewActions: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 16,
+  },
+  retakeButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#10b981',
+    gap: 8,
+  },
+  retakeButtonText: {
+    color: '#10b981',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  analyzeButton: {
+    flex: 1,
+    backgroundColor: '#10b981',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  analyzeButtonDisabled: {
+    opacity: 0.6,
+  },
+  analyzeButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  resultContainer: {
+    gap: 20,
+  },
+  resultImage: {
+    width: '100%',
+    height: 400,
+    borderRadius: 12,
+    backgroundColor: '#e2e8f0',
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: 'white',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  statValue: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#10b981',
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#64748b',
+    marginTop: 4,
+  },
+  detectionsList: {
+    backgroundColor: 'white',
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1e293b',
+    marginBottom: 12,
+  },
+  detectionItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  detectionClass: {
+    fontSize: 16,
+    color: '#1e293b',
+    textTransform: 'capitalize',
+  },
+  detectionConfidence: {
+    fontSize: 14,
+    color: '#10b981',
+    fontWeight: '600',
+  },
+  disposalSection: {
+    backgroundColor: 'white',
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  disposalSubtitle: {
+    fontSize: 14,
+    color: '#64748b',
+    marginBottom: 16,
+  },
+  viewMapButton: {
+    backgroundColor: '#10b981',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 14,
+    borderRadius: 8,
+    gap: 8,
+    marginBottom: 16,
+  },
+  viewMapButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  nearestCard: {
+    backgroundColor: '#f0fdf4',
+    padding: 16,
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: '#10b981',
+  },
+  nearestHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  nearestTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#10b981',
+  },
+  nearestName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1e293b',
+    marginBottom: 4,
+  },
+  nearestDistance: {
+    fontSize: 14,
+    color: '#64748b',
+    marginBottom: 12,
+  },
+  directionsButton: {
+    backgroundColor: '#10b981',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    borderRadius: 6,
+    gap: 6,
+  },
+  directionsButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+  },
   modalHeader: {
+    backgroundColor: '#10b981',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
     paddingTop: 50,
   },
-  modalTitle: { fontSize: 24, fontWeight: 'bold', color: 'white' },
-  closeButton: { backgroundColor: '#10b981', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8 },
-  closeButtonText: { color: 'white', fontWeight: 'bold' },
-  modalContent: { flex: 1, padding: 20 },
-  resultImage: { width: '100%', height: 300, borderRadius: 12, marginBottom: 20, resizeMode: 'contain' },
-  resultsCard: { backgroundColor: 'white', borderRadius: 12, padding: 20 },
-  resultsSummary: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 24, paddingBottom: 20, borderBottomWidth: 1, borderBottomColor: '#e2e8f0' },
-  summaryItem: { alignItems: 'center' },
-  summaryValue: { fontSize: 32, fontWeight: 'bold', color: '#10b981' },
-  summaryLabel: { fontSize: 12, color: '#64748b', marginTop: 4 },
-  detectionsList: { marginTop: 12 },
-  detectionItem: { backgroundColor: '#f8fafc', padding: 12, borderRadius: 8, marginBottom: 10, borderLeftWidth: 4, borderLeftColor: '#10b981' },
-  detectionClass: { fontSize: 16, fontWeight: 'bold', color: '#1e293b', marginBottom: 4 },
-  detectionConfidence: { fontSize: 14, color: '#64748b', marginBottom: 4 },
-  classIdBadge: { fontSize: 11, color: '#9ca3af', fontFamily: 'monospace' },
-  disposalSection: { marginTop: 20, paddingTop: 16, borderTopWidth: 1, borderTopColor: '#e2e8f0' },
-  disposalCard: {
-    backgroundColor: '#f8fafc',
-    borderRadius: 10,
-    padding: 14,
-    marginBottom: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#3b82f6',
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
   },
-  disposalHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  closeButton: {
+    padding: 4,
+  },
+  map: {
+    flex: 1,
+  },
+  locationCard: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'white',
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  closeLocationCard: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+  },
+  locationName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1e293b',
     marginBottom: 8,
+  },
+  locationAddress: {
+    fontSize: 14,
+    color: '#64748b',
+    marginBottom: 4,
+  },
+  locationDistance: {
+    fontSize: 14,
+    color: '#10b981',
+    fontWeight: '600',
+    marginBottom: 16,
+  },
+  directionsButtonLarge: {
+    backgroundColor: '#10b981',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 14,
+    borderRadius: 8,
     gap: 8,
   },
-  disposalWasteName: { fontSize: 16, fontWeight: '700', color: '#1e293b', flex: 1 },
-  disposalCount: {
-    fontSize: 12,
-    color: '#1d4ed8',
-    fontWeight: '700',
-    backgroundColor: '#dbeafe',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 999,
-  },
-  disposalBinLabel: { fontSize: 14, color: '#334155', marginBottom: 10, lineHeight: 20 },
-  disposalInstructionsTitle: { fontSize: 13, fontWeight: '700', color: '#475569', marginBottom: 6 },
-  instructionRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 6, paddingRight: 4 },
-  instructionNumber: { width: 20, fontSize: 13, fontWeight: '700', color: '#2563eb', lineHeight: 20 },
-  instructionText: { flex: 1, fontSize: 13, color: '#334155', lineHeight: 20 },
-  cautionNote: {
-    marginTop: 4,
-    fontSize: 13,
-    color: '#92400e',
-    backgroundColor: '#fef3c7',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    lineHeight: 18,
-  },
-  emptyText: { fontSize: 14, color: '#64748b', textAlign: 'center' },
 });
-
-export default function ScanScreen() {
-  const { user } = useAuth();
-  const router = useRouter();
-  const [detecting, setDetecting] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-  const [detectionResults, setDetectionResults] = useState(null);
-
-  const formatWasteName = (value) => {
-    if (!value) return 'Unknown waste';
-    return value
-      .toString()
-      .replace(/[-_]+/g, ' ')
-      .replace(/\b\w/g, (char) => char.toUpperCase());
-  };
-
-  const buildFallbackDisposalGuide = (className, count) => ({
-    class: className,
-    count,
-    target_bin: 'Organic / Compost Bin',
-    instructions: [
-      `Segregate ${formatWasteName(className).toLowerCase()} from non-organic waste.`,
-      'Place it in the organic or compost collection bin.',
-      'Keep the bin covered and send contents to composting as scheduled.',
-    ],
-    caution: 'Avoid mixing with plastics, metals, or hazardous materials.',
-  });
-
-  const getDisposalGuides = (results) => {
-    if (!results) return [];
-
-    if (Array.isArray(results.disposal_guides) && results.disposal_guides.length > 0) {
-      return results.disposal_guides.map((guide) => ({
-        class: guide.class || guide.waste_class || 'Unknown waste',
-        count: guide.count || 1,
-        target_bin: guide.target_bin || guide.bin || 'Organic / Compost Bin',
-        instructions: Array.isArray(guide.instructions) ? guide.instructions : [],
-        caution: guide.caution || guide.note,
-      }));
-    }
-
-    const classCounts = results.summary?.class_counts;
-    if (!classCounts || typeof classCounts !== 'object') return [];
-
-    return Object.entries(classCounts)
-      .filter(([, count]) => Number(count) > 0)
-      .map(([className, count]) => buildFallbackDisposalGuide(className, Number(count)));
-  };
-
-  const totalDetections = detectionResults?.summary?.total_detections || 0;
-  const disposalGuides = getDisposalGuides(detectionResults);
-  const shouldShowDisposalSection = totalDetections > 0 && disposalGuides.length > 0;
-
-  // Request camera permissions
-  const requestPermissions = async () => {
-    const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
-    const { status: mediaStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
-    if (cameraStatus !== 'granted' || mediaStatus !== 'granted') {
-      Alert.alert(
-        'Permissions Required',
-        'Camera and media library permissions are required to scan waste.',
-        [{ text: 'OK' }]
-      );
-      return false;
-    }
-    return true;
-  };
-
-  // Take photo with camera
-  const handleTakePhoto = async () => {
-    const hasPermission = await requestPermissions();
-    if (!hasPermission) return;
-
-    try {
-      const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ['images'],
-        allowsEditing: false,
-        quality: 0.8,
-      });
-
-      if (!result.canceled && result.assets?.[0]) {
-        await processImage(result.assets[0].uri);
-      }
-    } catch (error) {
-      console.error('Camera error:', error);
-      Alert.alert('Error', 'Failed to take photo. Please try again.');
-    }
-  };
-
-  // Upload photo from gallery
-  const handleUploadPhoto = async () => {
-    const hasPermission = await requestPermissions();
-    if (!hasPermission) return;
-
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        allowsEditing: false,
-        quality: 0.8,
-      });
-
-      if (!result.canceled && result.assets?.[0]) {
-        await processImage(result.assets[0].uri);
-      }
-    } catch (error) {
-      console.error('Gallery error:', error);
-      Alert.alert('Error', 'Failed to upload photo. Please try again.');
-    }
-  };
-
-  // Process image for detection
-  const processImage = async (imageUri) => {
-    try {
-      setDetecting(true);
-
-      // Create form data
-      const formData = new FormData();
-      const filename = imageUri.split('/').pop();
-      const match = /\.(\w+)$/.exec(filename);
-      const type = match ? `image/${match[1]}` : 'image/jpeg';
-
-      formData.append('image', {
-        uri: imageUri,
-        name: filename,
-        type,
-      });
-
-      // Send to detection API
-      const response = await apiClient.post('/api/detections/analyze', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      setDetectionResults(response.data);
-      setShowResults(true);
-    } catch (error) {
-      console.error('Detection error:', error);
-      const serverMessage = error?.response?.data?.message || error?.response?.data?.error;
-      Alert.alert(
-        'Detection Failed',
-        serverMessage || 'Could not process the image. Please try again.'
-      );
-    } finally {
-      setDetecting(false);
-    }
-  };
-
-  return (
-    <>
-      <ScrollView style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Scan Waste</Text>
-          <Text style={styles.subtitle}>AI-Powered Waste Detection</Text>
-        </View>
-
-        <View style={styles.content}>
-          {/* Main Scan Buttons */}
-          <View style={styles.scanSection}>
-            <TouchableOpacity style={styles.scanButton} onPress={handleTakePhoto}>
-              <Text style={styles.scanIcon}>📷</Text>
-              <Text style={styles.scanButtonTitle}>Take Photo</Text>
-              <Text style={styles.scanButtonText}>
-                Use your camera to scan waste in real-time
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={[styles.scanButton, styles.scanButtonSecondary]} 
-              onPress={handleUploadPhoto}
-            >
-              <Text style={styles.scanIcon}>🖼️</Text>
-              <Text style={styles.scanButtonTitle}>Upload Photo</Text>
-              <Text style={styles.scanButtonText}>
-                Select an existing photo from your gallery
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* How it Works */}
-          <View style={styles.infoSection}>
-            <Text style={styles.sectionTitle}>How It Works</Text>
-            
-            <View style={styles.infoCard}>
-              <Text style={styles.infoIcon}>1️⃣</Text>
-              <View style={styles.infoContent}>
-                <Text style={styles.infoTitle}>Capture or Upload</Text>
-                <Text style={styles.infoText}>Take a photo or upload from gallery</Text>
-              </View>
-            </View>
-
-            <View style={styles.infoCard}>
-              <Text style={styles.infoIcon}>2️⃣</Text>
-              <View style={styles.infoContent}>
-                <Text style={styles.infoTitle}>AI Analysis</Text>
-                <Text style={styles.infoText}>Our 45-class model detects organic waste</Text>
-              </View>
-            </View>
-
-            <View style={styles.infoCard}>
-              <Text style={styles.infoIcon}>3️⃣</Text>
-              <View style={styles.infoContent}>
-                <Text style={styles.infoTitle}>Get Results</Text>
-                <Text style={styles.infoText}>View detected items with confidence scores</Text>
-              </View>
-            </View>
-
-            <View style={styles.infoCard}>
-              <Text style={styles.infoIcon}>4️⃣</Text>
-              <View style={styles.infoContent}>
-                <Text style={styles.infoTitle}>Track Progress</Text>
-                <Text style={styles.infoText}>All scans saved to your history automatically</Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Tips */}
-          <View style={styles.infoSection}>
-            <Text style={styles.sectionTitle}>📋 Tips for Best Results</Text>
-            
-            <View style={styles.infoCard}>
-              <Text style={styles.infoIcon}>💡</Text>
-              <View style={styles.infoContent}>
-                <Text style={styles.infoTitle}>Good Lighting</Text>
-                <Text style={styles.infoText}>Ensure waste is well-lit and visible</Text>
-              </View>
-            </View>
-
-            <View style={styles.infoCard}>
-              <Text style={styles.infoIcon}>🎯</Text>
-              <View style={styles.infoContent}>
-                <Text style={styles.infoTitle}>Clear Focus</Text>
-                <Text style={styles.infoText}>Keep waste items centered and in focus</Text>
-              </View>
-            </View>
-
-            <View style={styles.infoCard}>
-              <Text style={styles.infoIcon}>📏</Text>
-              <View style={styles.infoContent}>
-                <Text style={styles.infoTitle}>Proper Distance</Text>
-                <Text style={styles.infoText}>Not too close, not too far - fill the frame</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
-
-      {/* Loading Overlay */}
-      {detecting && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#10b981" />
-          <Text style={styles.loadingText}>Analyzing with 45-class AI model...</Text>
-          <Text style={[styles.loadingText, { fontSize: 12, marginTop: 4 }]}>
-            Detecting specific organic waste types
-          </Text>
-        </View>
-      )}
-
-      {/* Results Modal */}
-      <Modal visible={showResults} animationType="slide" onRequestClose={() => setShowResults(false)}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Detection Complete! ✅</Text>
-            <TouchableOpacity 
-              style={styles.closeButton}
-              onPress={() => {
-                setShowResults(false);
-                setDetectionResults(null);
-              }}
-            >
-              <Text style={styles.closeButtonText}>Done</Text>
-            </TouchableOpacity>
-          </View>
-
-          <ScrollView style={styles.modalContent}>
-            {detectionResults && (
-              <>
-                <Image
-                  source={{ uri: detectionResults.annotated_image }}
-                  style={styles.resultImage}
-                />
-
-                <View style={styles.resultsCard}>
-                  <View style={styles.resultsSummary}>
-                    <View style={styles.summaryItem}>
-                      <Text style={styles.summaryValue}>
-                        {detectionResults.summary?.total_detections || 0}
-                      </Text>
-                      <Text style={styles.summaryLabel}>Items Found</Text>
-                    </View>
-                    <View style={styles.summaryItem}>
-                      <Text style={styles.summaryValue}>
-                        {detectionResults.summary?.unique_classes || 0}
-                      </Text>
-                      <Text style={styles.summaryLabel}>Unique Types</Text>
-                    </View>
-                    <View style={styles.summaryItem}>
-                      <Text style={styles.summaryValue}>
-                        {detectionResults.summary?.average_confidence 
-                          ? (detectionResults.summary.average_confidence * 100).toFixed(0)
-                          : 0}%
-                      </Text>
-                      <Text style={styles.summaryLabel}>Avg Confidence</Text>
-                    </View>
-                  </View>
-
-                  {detectionResults.detections && detectionResults.detections.length > 0 ? (
-                    <View style={styles.detectionsList}>
-                      <Text style={[styles.sectionTitle, { fontSize: 16, marginBottom: 12 }]}>
-                        Detected Items ({detectionResults.detections.length}):
-                      </Text>
-                      {detectionResults.detections.map((detection, index) => (
-                        <View key={index} style={styles.detectionItem}>
-                          <Text style={styles.detectionClass}>{detection.class}</Text>
-                          <Text style={styles.detectionConfidence}>
-                            Confidence: {(detection.confidence * 100).toFixed(1)}%
-                          </Text>
-                          <Text style={styles.classIdBadge}>
-                            Class ID: {detection.class_id}
-                          </Text>
-                        </View>
-                      ))}
-                      <Text style={[styles.emptyText, { marginTop: 16, fontSize: 14 }]}>
-                        ✅ Detection saved to history automatically
-                      </Text>
-
-                      {shouldShowDisposalSection && (
-                        <View style={styles.disposalSection}>
-                          <Text style={[styles.sectionTitle, { fontSize: 16, marginBottom: 12 }]}>How to Dispose</Text>
-                          {disposalGuides.map((guide, index) => (
-                            <View key={`${guide.class}-${index}`} style={styles.disposalCard}>
-                              <View style={styles.disposalHeaderRow}>
-                                <Text style={styles.disposalWasteName}>{formatWasteName(guide.class)}</Text>
-                                <Text style={styles.disposalCount}>x{guide.count || 1}</Text>
-                              </View>
-
-                              <Text style={styles.disposalBinLabel}>Bin: {guide.target_bin || 'Organic / Compost Bin'}</Text>
-
-                              {Array.isArray(guide.instructions) && guide.instructions.length > 0 ? (
-                                <>
-                                  <Text style={styles.disposalInstructionsTitle}>Instructions</Text>
-                                  {guide.instructions.map((instruction, instructionIndex) => (
-                                    <View key={`${guide.class}-step-${instructionIndex}`} style={styles.instructionRow}>
-                                      <Text style={styles.instructionNumber}>{instructionIndex + 1}.</Text>
-                                      <Text style={styles.instructionText}>{instruction}</Text>
-                                    </View>
-                                  ))}
-                                </>
-                              ) : (
-                                <Text style={styles.instructionText}>Follow your local organic waste disposal guidelines.</Text>
-                              )}
-
-                              {guide.caution ? (
-                                <Text style={styles.cautionNote}>⚠️ {guide.caution}</Text>
-                              ) : null}
-                            </View>
-                          ))}
-                        </View>
-                      )}
-                    </View>
-                  ) : (
-                    <Text style={styles.emptyText}>No waste detected in this image.</Text>
-                  )}
-                </View>
-              </>
-            )}
-          </ScrollView>
-        </View>
-      </Modal>
-    </>
-  );
-}

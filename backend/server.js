@@ -18,6 +18,7 @@ const authRoutes = require("./routes/auth-routes");
 const userRoutes = require("./routes/user-routes");
 const detectionRoutes = require("./routes/detection-routes");
 const activityLogRoutes = require("./routes/activity-log-routes");
+const disposalLocationRoutes = require("./routes/disposal-location-routes");
 
 // Initialize Firebase
 initializeFirebase();
@@ -87,6 +88,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/detections", detectionRoutes);
 app.use("/api/activity-logs", activityLogRoutes);
+app.use("/api/disposal-locations", disposalLocationRoutes);
 
 // Error logging middleware (before error handler)
 app.use(logErrorActivity);

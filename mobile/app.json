@@ -11,6 +11,14 @@
       "resizeMode": "contain",
       "backgroundColor": "#2563eb"
     },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to find nearby waste disposal facilities."
+        }
+      ]
+    ],
     "assetBundlePatterns": [
       "**/*"
     ],
