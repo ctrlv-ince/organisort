@@ -2,14 +2,21 @@ const User = require('../models/User');
 const generateToken = require('../utils/jwt');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const axios = require('axios');
+const { execFile } = require('child_process');
+const { promisify } = require('util');
 
 const OTP_LENGTH = 6;
 const OTP_TTL_MINUTES = Number(process.env.EMAIL_OTP_TTL_MINUTES || 10);
 const OTP_RESEND_COOLDOWN_SECONDS = Number(process.env.EMAIL_OTP_RESEND_COOLDOWN_SECONDS || 60);
 const OTP_MAX_ATTEMPTS = Number(process.env.EMAIL_OTP_MAX_ATTEMPTS || 5);
-const RESEND_API_URL = 'https://api.resend.com/emails';
-const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com';
+const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
+const SMTP_SECURE = process.env.SMTP_SECURE === 'true';
+const SMTP_USER = process.env.SMTP_USER;
+const SMTP_PASS = process.env.SMTP_PASS;
+const SMTP_FROM_EMAIL = process.env.SMTP_FROM_EMAIL || SMTP_USER;
+const SMTP_TIMEOUT_MS = Number(process.env.SMTP_TIMEOUT_MS || 10000);
+const execFileAsync = promisify(execFile);
 
 const generateOtpCode = () => {
   const min = 10 ** (OTP_LENGTH - 1);
@@ -26,10 +33,8 @@ const buildChallengeToken = (userId, challengeId) => jwt.sign(
 );
 
 const sendOtpEmail = async (email, otpCode) => {
-  const resendApiKey = process.env.RESEND_API_KEY;
-
-  if (!resendApiKey) {
-    throw new Error('RESEND_API_KEY is not configured');
+  if (!SMTP_USER || !SMTP_PASS || !SMTP_FROM_EMAIL) {
+    throw new Error('SMTP_USER, SMTP_PASS, and SMTP_FROM_EMAIL are required for email OTP delivery');
   }
 
   const text = `${otpCode} is your OrganiSort login verification code. It expires in ${OTP_TTL_MINUTES} minutes.`;
@@ -45,22 +50,41 @@ const sendOtpEmail = async (email, otpCode) => {
     </div>
   `;
 
-  await axios.post(
-    RESEND_API_URL,
-    {
-      from: RESEND_FROM_EMAIL,
-      to: [email],
-      subject: 'Your OrganiSort login verification code',
-      html,
-      text,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${resendApiKey}`,
-      },
-      timeout: 10000,
-    }
-  );
+  const smtpUrl = `${SMTP_SECURE ? 'smtps' : 'smtp'}://${SMTP_HOST}:${SMTP_PORT}`;
+  const args = [
+    '--silent',
+    '--show-error',
+    '--ssl-reqd',
+    '--url',
+    smtpUrl,
+    '--user',
+    `${SMTP_USER}:${SMTP_PASS}`,
+    '--mail-from',
+    SMTP_FROM_EMAIL,
+    '--mail-rcpt',
+    email,
+    '--upload-file',
+    '-',
+  ];
+
+  const payload = [
+    `From: OrganiSort <${SMTP_FROM_EMAIL}>`,
+    `To: ${email}`,
+    'Subject: Your OrganiSort login verification code',
+    'MIME-Version: 1.0',
+    'Content-Type: text/html; charset=UTF-8',
+    '',
+    html,
+    '',
+    `Plain-text fallback: ${text}`,
+    '',
+  ].join('\r\n');
+
+  await execFileAsync('curl', args, {
+    timeout: SMTP_TIMEOUT_MS,
+    maxBuffer: 1024 * 1024,
+    input: payload,
+  });
 
   console.info('[auth.2fa] email-otp-sent', { email });
 };
@@ -138,6 +162,21 @@ const loginUser = async (req, res, next) => {
     if (!user || !(await user.matchPassword(password))) {
       console.warn('[auth.login] invalid-credentials');
       return res.status(401).json({ success: false, error: 'Invalid credentials' });
+    }
+
+    const canSkipEmailOtp = user.emailVerified || user.role === 'admin';
+    if (canSkipEmailOtp) {
+      user.twoFactorChallenge = undefined;
+      user.lastLogin = new Date();
+      await user.save({ validateBeforeSave: false });
+
+      const token = generateToken(user._id.toString());
+
+      return res.json({
+        success: true,
+        token,
+        data: { _id: user._id, email: user.email, displayName: user.displayName, role: user.role },
+      });
     }
 
     const otpCode = generateOtpCode();
@@ -226,6 +265,7 @@ const verifyEmailOtp = async (req, res, next) => {
     }
 
     user.twoFactorChallenge = undefined;
+    user.emailVerified = true;
     user.lastLogin = new Date();
     await user.save({ validateBeforeSave: false });
 

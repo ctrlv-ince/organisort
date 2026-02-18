@@ -25,6 +25,7 @@ const createAdmin = async () => {
       email: adminEmail,
       password: adminPassword, // The model will hash this
       role: 'admin',
+      emailVerified: true,
       displayName: 'Admin'
     });
 
