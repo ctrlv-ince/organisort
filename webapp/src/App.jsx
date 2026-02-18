@@ -10,6 +10,7 @@ import Contact from './pages/Contact';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import Help from './pages/Help';
+import ForgotPassword from './pages/ForgotPassword';
 import AdminDashboard from './pages/admin/Dashboard';
 import UserDashboard from './pages/user/UserDashboard';
 import { useAuth } from './context/AuthContext';
@@ -95,6 +96,8 @@ function App() {
           <Route path="/help" element={<Help />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ForgotPassword />} />
 
           {/* Protected Routes */}
           <Route

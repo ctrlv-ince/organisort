@@ -5,6 +5,8 @@ const {
   loginUser,
   verifyEmailOtp,
   resendEmailOtp,
+  forgotPassword,
+  resetPassword,
 } = require("../controllers/auth-controller");
 
 const router = express.Router();
@@ -36,6 +38,18 @@ router.post("/verify-email-otp", verifyEmailOtp);
  * Public route (no authentication required)
  */
 router.post("/resend-email-otp", resendEmailOtp);
+
+/**
+ * POST /api/auth/forgot-password
+ * Send password reset instructions
+ */
+router.post("/forgot-password", forgotPassword);
+
+/**
+ * POST /api/auth/reset-password
+ * Reset user password with a valid reset token
+ */
+router.post("/reset-password", resetPassword);
 
 /**
  * POST /api/auth/logout

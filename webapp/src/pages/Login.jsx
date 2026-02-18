@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import useAuthFormValidation from '../hooks/useAuthFormValidation';
 import { validateLoginFields } from '../utils/authValidation';
@@ -269,9 +269,9 @@ const Login = () => {
                 <input type="checkbox" className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" />
                 <span className="ml-2 text-gray-600">Remember me</span>
               </label>
-              <a href="/forgot-password" className="text-green-700 hover:text-green-800 font-medium hover:underline">
+              <Link to="/forgot-password" className="text-green-700 hover:text-green-800 font-medium hover:underline">
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             <button

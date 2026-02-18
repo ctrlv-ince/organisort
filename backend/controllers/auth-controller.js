@@ -2,6 +2,7 @@ const User = require('../models/User');
 const generateToken = require('../utils/jwt');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const { execFile } = require('child_process');
 const { promisify } = require('util');
 
@@ -16,6 +17,8 @@ const SMTP_USER = process.env.SMTP_USER;
 const SMTP_PASS = process.env.SMTP_PASS;
 const SMTP_FROM_EMAIL = process.env.SMTP_FROM_EMAIL || SMTP_USER;
 const SMTP_TIMEOUT_MS = Number(process.env.SMTP_TIMEOUT_MS || 10000);
+const PASSWORD_RESET_TTL_MINUTES = Number(process.env.PASSWORD_RESET_TTL_MINUTES || 30);
+const WEBAPP_URL = process.env.WEBAPP_URL || 'http://localhost:5173';
 const execFileAsync = promisify(execFile);
 
 const generateOtpCode = () => {
@@ -87,6 +90,57 @@ const sendOtpEmail = async (email, otpCode) => {
   });
 
   console.info('[auth.2fa] email-otp-sent', { email });
+};
+
+const sendPasswordResetEmail = async (email, resetToken) => {
+  if (!SMTP_USER || !SMTP_PASS || !SMTP_FROM_EMAIL) {
+    throw new Error('SMTP_USER, SMTP_PASS, and SMTP_FROM_EMAIL are required for password reset email delivery');
+  }
+
+  const resetLink = `${WEBAPP_URL}/reset-password?token=${encodeURIComponent(resetToken)}`;
+  const html = `
+    <div style="font-family:Arial,sans-serif;line-height:1.4;color:#0f172a;max-width:480px;margin:0 auto;">
+      <h2 style="margin-bottom:8px;">Reset your OrganiSort password</h2>
+      <p style="margin:0 0 16px;">We received a request to reset your password. Click the button below to continue:</p>
+      <a href="${resetLink}" style="display:inline-block;background:#15803d;color:#fff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;">Reset Password</a>
+      <p style="margin:16px 0 0;color:#334155;word-break:break-all;">If the button does not work, copy and paste this link into your browser:<br/>${resetLink}</p>
+      <p style="margin:8px 0 0;color:#64748b;font-size:12px;">This link expires in ${PASSWORD_RESET_TTL_MINUTES} minutes.</p>
+    </div>
+  `;
+
+  const smtpUrl = `${SMTP_SECURE ? 'smtps' : 'smtp'}://${SMTP_HOST}:${SMTP_PORT}`;
+  const args = [
+    '--silent',
+    '--show-error',
+    '--ssl-reqd',
+    '--url',
+    smtpUrl,
+    '--user',
+    `${SMTP_USER}:${SMTP_PASS}`,
+    '--mail-from',
+    SMTP_FROM_EMAIL,
+    '--mail-rcpt',
+    email,
+    '--upload-file',
+    '-',
+  ];
+
+  const payload = [
+    `From: OrganiSort <${SMTP_FROM_EMAIL}>`,
+    `To: ${email}`,
+    'Subject: Reset your OrganiSort password',
+    'MIME-Version: 1.0',
+    'Content-Type: text/html; charset=UTF-8',
+    '',
+    html,
+    '',
+  ].join('\r\n');
+
+  await execFileAsync('curl', args, {
+    timeout: SMTP_TIMEOUT_MS,
+    maxBuffer: 1024 * 1024,
+    input: payload,
+  });
 };
 
 /**
@@ -350,9 +404,76 @@ const resendEmailOtp = async (req, res, next) => {
   }
 };
 
+const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, error: 'Email is required' });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase().trim() }).select('+password');
+    if (user && user.password) {
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const tokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+      user.passwordReset = {
+        tokenHash,
+        expiresAt: new Date(Date.now() + PASSWORD_RESET_TTL_MINUTES * 60 * 1000),
+      };
+      await user.save({ validateBeforeSave: false });
+
+      await sendPasswordResetEmail(user.email, resetToken);
+    }
+
+    return res.json({
+      success: true,
+      message: 'If an account with that email exists, we sent password reset instructions.',
+    });
+  } catch (error) {
+    console.error('[auth.forgot-password] failed', error);
+    next(error);
+  }
+};
+
+const resetPassword = async (req, res, next) => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      return res.status(400).json({ success: false, error: 'Token and password are required' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ success: false, error: 'Password must be at least 6 characters long' });
+    }
+
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await User.findOne({
+      'passwordReset.tokenHash': tokenHash,
+      'passwordReset.expiresAt': { $gt: new Date() },
+    }).select('+password');
+
+    if (!user) {
+      return res.status(400).json({ success: false, error: 'Invalid or expired reset token' });
+    }
+
+    user.password = password;
+    user.passwordReset = undefined;
+    user.twoFactorChallenge = undefined;
+    await user.save();
+
+    return res.json({ success: true, message: 'Password reset successful. You can now sign in.' });
+  } catch (error) {
+    console.error('[auth.reset-password] failed', error);
+    next(error);
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   verifyEmailOtp,
   resendEmailOtp,
+  forgotPassword,
+  resetPassword,
 };
