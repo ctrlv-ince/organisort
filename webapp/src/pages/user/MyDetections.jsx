@@ -120,6 +120,10 @@ const MyDetections = () => {
     return detection.annotated_image || detection.imageUrl || detection.image || null;
   };
 
+  const getWasteGuideEntries = (detection) => Object.entries(detection?.waste_guides || {});
+
+  const getWasteDisposalGuideEntries = (detection) => Object.entries(detection?.waste_disposal_guides || {});
+
   const openDetails = (detection) => {
     setSelectedDetection(detection);
   };
@@ -370,6 +374,56 @@ const MyDetections = () => {
                   </div>
                 ) : (
                   <p className="text-sm text-gray-500">No item-level details available for this detection.</p>
+                )}
+              </div>
+
+              <div>
+                <h3 className="text-lg font-bold text-gray-800 mb-3">Waste Guides</h3>
+                {getWasteGuideEntries(selectedDetection).length ? (
+                  <div className="space-y-2">
+                    {getWasteGuideEntries(selectedDetection).map(([className, guide]) => (
+                      <div key={className} className="bg-blue-50 border border-blue-100 rounded-md p-3">
+                        <p className="font-semibold text-blue-900">{className}</p>
+                        <p className="text-sm text-blue-800">{guide.description || 'No description available.'}</p>
+                        <p className="text-xs text-blue-700 mt-1">
+                          Category: {guide.category || 'Unknown'} • Compostable: {guide.compostable === null ? 'Unknown' : guide.compostable ? 'Yes' : 'No'}
+                          {guide.avgDecompositionDays ? ` • Decomposition: ${guide.avgDecompositionDays} days` : ''}
+                          {guide.count ? ` • Count: ${guide.count}` : ''}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No waste-guide metadata available for this detection.</p>
+                )}
+              </div>
+
+              <div>
+                <h3 className="text-lg font-bold text-gray-800 mb-3">Waste Disposal Guides</h3>
+                {getWasteDisposalGuideEntries(selectedDetection).length ? (
+                  <div className="space-y-3">
+                    {getWasteDisposalGuideEntries(selectedDetection).map(([className, guide]) => (
+                      <div key={className} className="bg-emerald-50 border border-emerald-100 rounded-md p-3">
+                        <p className="font-semibold text-emerald-900">{className}</p>
+                        <p className="text-sm text-emerald-800">Bin: {(guide.bin || 'residual').toUpperCase()}</p>
+                        {Array.isArray(guide.instructions) && guide.instructions.length > 0 && (
+                          <ul className="list-disc list-inside text-sm text-emerald-800 mt-1 space-y-1">
+                            {guide.instructions.map((instruction, index) => (
+                              <li key={`${className}-instruction-${index}`}>{instruction}</li>
+                            ))}
+                          </ul>
+                        )}
+                        {guide.notes && (
+                          <p className="text-xs text-emerald-700 mt-1">Note: {guide.notes}</p>
+                        )}
+                        {guide.count ? (
+                          <p className="text-xs text-emerald-700 mt-1">Detected count: {guide.count}</p>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No waste-disposal guide available for this detection.</p>
                 )}
               </div>
             </div>

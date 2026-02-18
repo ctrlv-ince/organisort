@@ -262,6 +262,51 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#64748b',
   },
+  guideCard: {
+    backgroundColor: '#eff6ff',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#bfdbfe',
+  },
+  guideTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1e3a8a',
+    marginBottom: 4,
+  },
+  guideText: {
+    fontSize: 13,
+    color: '#1e40af',
+    marginBottom: 2,
+  },
+  disposalGuideCard: {
+    backgroundColor: '#ecfdf5',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#a7f3d0',
+  },
+  disposalGuideTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#065f46',
+    marginBottom: 4,
+  },
+  disposalGuideText: {
+    fontSize: 13,
+    color: '#047857',
+    marginBottom: 2,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#0f172a',
+    marginTop: 16,
+    marginBottom: 8,
+  },
 });
 
 export default function HistoryScreen() {
@@ -509,6 +554,42 @@ export default function HistoryScreen() {
                       </Text>
                     </View>
                   ))}
+
+                  <Text style={styles.sectionTitle}>Waste Guides</Text>
+                  {Object.entries(selectedDetection.waste_guides || {}).length > 0 ? (
+                    Object.entries(selectedDetection.waste_guides || {}).map(([className, guide]) => (
+                      <View key={`waste-guide-${className}`} style={styles.guideCard}>
+                        <Text style={styles.guideTitle}>{className}</Text>
+                        <Text style={styles.guideText}>{guide.description || 'No description available.'}</Text>
+                        <Text style={styles.guideText}>
+                          Category: {guide.category || 'Unknown'} • Compostable: {guide.compostable === null ? 'Unknown' : guide.compostable ? 'Yes' : 'No'}
+                        </Text>
+                        {guide.avgDecompositionDays ? (
+                          <Text style={styles.guideText}>Decomposition: {guide.avgDecompositionDays} days</Text>
+                        ) : null}
+                        {guide.count ? <Text style={styles.guideText}>Detected count: {guide.count}</Text> : null}
+                      </View>
+                    ))
+                  ) : (
+                    <Text style={styles.detectionConfidence}>No waste-guide metadata available for this detection.</Text>
+                  )}
+
+                  <Text style={styles.sectionTitle}>Waste Disposal Guides</Text>
+                  {Object.entries(selectedDetection.waste_disposal_guides || {}).length > 0 ? (
+                    Object.entries(selectedDetection.waste_disposal_guides || {}).map(([className, guide]) => (
+                      <View key={`disposal-guide-${className}`} style={styles.disposalGuideCard}>
+                        <Text style={styles.disposalGuideTitle}>{className}</Text>
+                        <Text style={styles.disposalGuideText}>Bin: {(guide.bin || 'residual').toUpperCase()}</Text>
+                        {Array.isArray(guide.instructions) && guide.instructions.map((instruction, idx) => (
+                          <Text key={`${className}-instruction-${idx}`} style={styles.disposalGuideText}>• {instruction}</Text>
+                        ))}
+                        {guide.notes ? <Text style={styles.disposalGuideText}>Note: {guide.notes}</Text> : null}
+                        {guide.count ? <Text style={styles.disposalGuideText}>Detected count: {guide.count}</Text> : null}
+                      </View>
+                    ))
+                  ) : (
+                    <Text style={styles.detectionConfidence}>No waste-disposal guide available for this detection.</Text>
+                  )}
 
                   <Text style={[styles.timestamp, { marginTop: 16, textAlign: 'center' }]}>
                     Detected on {new Date(selectedDetection.createdAt).toLocaleString()}

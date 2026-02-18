@@ -12,6 +12,66 @@ const { buildPythonServiceUrl } = require('../utils/python-service-url');
 const { getPaginationParams } = require('../utils/pagination');
 const { WASTE_GUIDES, buildDisposalGuides } = require('../data/waste-guides');
 
+const DEFAULT_WASTE_GUIDE = {
+  category: 'Unknown',
+  description: 'No waste guide available for this item.',
+  compostable: null,
+  avgDecompositionDays: null,
+  color: '#9ca3af',
+};
+
+const attachDetectionGuides = (detection) => {
+  const rawDetection = typeof detection.toObject === 'function'
+    ? detection.toObject()
+    : detection;
+
+  const items = Array.isArray(rawDetection.detections)
+    ? rawDetection.detections
+    : [];
+
+  const classCounts = rawDetection.summary?.class_counts || {};
+  const fallbackCounts = items.reduce((acc, item) => {
+    const className = item?.class;
+    if (!className) {
+      return acc;
+    }
+
+    acc[className] = (acc[className] || 0) + 1;
+    return acc;
+  }, {});
+  const wasteGuides = {};
+  const wasteDisposalGuides = {};
+
+  items.forEach((item) => {
+    const className = item?.class;
+    if (!className) {
+      return;
+    }
+
+    const itemCount = Number(classCounts[className] || 0) || fallbackCounts[className] || 0;
+
+    if (!wasteGuides[className]) {
+      wasteGuides[className] = {
+        ...(WASTE_GUIDES[className] || DEFAULT_WASTE_GUIDE),
+        count: itemCount,
+      };
+    }
+
+    if (!wasteDisposalGuides[className]) {
+      wasteDisposalGuides[className] = {
+        ...(WASTE_DISPOSAL_GUIDES[className] || DEFAULT_DISPOSAL_GUIDE),
+        count: itemCount,
+      };
+    }
+  });
+
+  return {
+    ...rawDetection,
+    waste_guides: wasteGuides,
+    waste_disposal_guides: wasteDisposalGuides,
+  };
+};
+
 const isCloudinaryConfigured = () => {
   return Boolean(
     process.env.CLOUDINARY_CLOUD_NAME
@@ -255,11 +315,13 @@ const getDetectionHistory = asyncHandler(async (req, res) => {
     .skip(skip)
     .select('-__v -annotated_image_public_id');
 
+  const detectionsWithGuides = detections.map((detection) => attachDetectionGuides(detection));
+
   // Get total count for pagination info
   const total = await Detection.countDocuments(query);
 
   res.json({
-    detections,
+    detections: detectionsWithGuides,
     pagination: {
       page,
       limit,
@@ -291,7 +353,7 @@ const getDetectionById = asyncHandler(async (req, res) => {
     throw new Error('Not authorized to view this detection');
   }
 
-  res.json(detection);
+  res.json(attachDetectionGuides(detection));
 });
 
 // @desc    Delete a detection
