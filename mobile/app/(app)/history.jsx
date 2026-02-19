@@ -14,6 +14,109 @@ import {
 import { useRouter } from 'expo-router';
 import apiClient from '@/src/utils/apiClient';
 
+// ---------------------------------------------------------------------------
+// Client-side fallback guide data (mirrors backend constants).
+// Used when the API response is missing waste_guides / waste_disposal_guides,
+// which can happen with older DB records that pre-date the guide attachment.
+// ---------------------------------------------------------------------------
+const CATEGORY_MAP = {
+  apple: 'Fruits', 'apple-core': 'Fruits', 'apple-peel': 'Fruits',
+  avocado: 'Fruits', 'banana-peel': 'Fruits', calamansi: 'Fruits',
+  orange: 'Fruits', 'orange-peel': 'Fruits', papaya: 'Fruits',
+  pear: 'Fruits', 'pear-core': 'Fruits', 'pear-peel': 'Fruits',
+  pineapple: 'Fruits', watermelon: 'Fruits',
+  broccoli: 'Vegetables', cucumber: 'Vegetables', garlic: 'Vegetables',
+  leaf: 'Vegetables', mushroom: 'Vegetables', onion: 'Vegetables',
+  potato: 'Vegetables', tomato: 'Vegetables',
+  bone: 'Proteins', 'bone-fish': 'Proteins', 'chicken-skin': 'Proteins',
+  fish: 'Proteins', meat: 'Proteins', mussel: 'Proteins',
+  'mussel-shell': 'Proteins', shrimp: 'Proteins', 'shrimp-shell': 'Proteins',
+  'egg-scramble': 'Eggs', 'egg-shell': 'Eggs', eggshell: 'Eggs', 'egg-yolk': 'Eggs',
+  bread: 'Grains', bun: 'Grains', noodle: 'Grains', pasta: 'Grains', rice: 'Grains',
+  congee: 'Other', good: 'Other', malunggay: 'Other', pancake: 'Other', tofu: 'Other',
+};
+
+const BIN_MAP = {
+  apple: 'compost', 'apple-core': 'compost', 'apple-peel': 'compost',
+  avocado: 'compost', 'banana-peel': 'compost', calamansi: 'compost',
+  orange: 'compost', 'orange-peel': 'compost', papaya: 'compost',
+  pear: 'compost', 'pear-core': 'compost', 'pear-peel': 'compost',
+  pineapple: 'compost', watermelon: 'compost',
+  broccoli: 'compost', cucumber: 'compost', garlic: 'compost',
+  leaf: 'compost', mushroom: 'compost', onion: 'compost',
+  potato: 'compost', tomato: 'compost',
+  bone: 'residual', 'bone-fish': 'compost', 'chicken-skin': 'compost',
+  fish: 'compost', meat: 'compost', mussel: 'compost',
+  'mussel-shell': 'special handling', shrimp: 'compost', 'shrimp-shell': 'compost',
+  'egg-scramble': 'compost', 'egg-shell': 'compost', eggshell: 'compost', 'egg-yolk': 'compost',
+  bread: 'compost', bun: 'compost', noodle: 'compost', pasta: 'compost', rice: 'compost',
+  congee: 'compost', good: 'compost', malunggay: 'compost', pancake: 'compost', tofu: 'compost',
+  'plastic-bottle': 'recyclable', 'food-waste': 'compost',
+};
+
+/**
+ * Build waste_guides and waste_disposal_guides from a raw detections array.
+ * This mirrors attachDetectionGuides() on the backend and acts as a fallback.
+ */
+const buildGuidesFromDetections = (detections = []) => {
+  const wasteGuides = {};
+  const wasteDisposalGuides = {};
+
+  detections.forEach((item) => {
+    const cls = item?.class;
+    if (!cls) return;
+
+    if (!wasteGuides[cls]) {
+      const category = CATEGORY_MAP[cls] || 'Unknown';
+      const isOrganic = (BIN_MAP[cls] || 'residual') === 'compost';
+      wasteGuides[cls] = {
+        category,
+        description: `${cls.replace(/-/g, ' ')} — ${category.toLowerCase()} waste`,
+        compostable: isOrganic,
+        avgDecompositionDays: isOrganic ? '7-90' : null,
+        color: '#9ca3af',
+        count: 0,
+      };
+    }
+    wasteGuides[cls].count += 1;
+
+    if (!wasteDisposalGuides[cls]) {
+      const bin = BIN_MAP[cls] || 'residual';
+      wasteDisposalGuides[cls] = {
+        bin,
+        instructions: [
+          `Place ${cls.replace(/-/g, ' ')} in the ${bin} bin.`,
+          'Check your local waste segregation rules for additional guidance.',
+        ],
+        notes: null,
+        count: 0,
+      };
+    }
+    wasteDisposalGuides[cls].count += 1;
+  });
+
+  return { wasteGuides, wasteDisposalGuides };
+};
+
+/**
+ * Ensure a detection object always has populated guide fields.
+ * If the API already returned them, use those; otherwise build from detections[].
+ */
+const ensureGuides = (detection) => {
+  const hasWasteGuides = detection.waste_guides && Object.keys(detection.waste_guides).length > 0;
+  const hasDisposalGuides = detection.waste_disposal_guides && Object.keys(detection.waste_disposal_guides).length > 0;
+
+  if (hasWasteGuides && hasDisposalGuides) return detection;
+
+  const { wasteGuides, wasteDisposalGuides } = buildGuidesFromDetections(detection.detections || []);
+  return {
+    ...detection,
+    waste_guides: hasWasteGuides ? detection.waste_guides : wasteGuides,
+    waste_disposal_guides: hasDisposalGuides ? detection.waste_disposal_guides : wasteDisposalGuides,
+  };
+};
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -324,7 +427,7 @@ export default function HistoryScreen() {
       
       // Handle both array and object responses
       const detectionData = response.data.detections || response.data;
-      setDetections(detectionData);
+      setDetections(Array.isArray(detectionData) ? detectionData.map(ensureGuides) : []);
       
       // Calculate stats from the data
       calculateStats(detectionData);
@@ -401,7 +504,7 @@ export default function HistoryScreen() {
   };
 
   const handleViewDetails = (detection) => {
-    setSelectedDetection(detection);
+    setSelectedDetection(ensureGuides(detection));
     setShowDetails(true);
   };
 
