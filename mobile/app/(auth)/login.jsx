@@ -10,8 +10,10 @@ import {
   StyleSheet,
   TextInput,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#2563eb' },
@@ -28,7 +30,7 @@ const styles = StyleSheet.create({
   passwordContainer: { flexDirection: 'row', alignItems: 'center' },
   passwordInput: { flex: 1, marginRight: 8 },
   toggleButton: { minWidth: 44, minHeight: 44, paddingHorizontal: 10, borderRadius: 8, borderWidth: 1, borderColor: '#d1d5db', backgroundColor: '#f8fafc', alignItems: 'center', justifyContent: 'center' },
-  toggleText: { fontSize: 20 },
+  toggleText: {},
   error: { color: '#ef4444', fontSize: 12, marginTop: 4 },
   button: { width: '100%', paddingVertical: 16, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
   buttonPrimary: { backgroundColor: '#2563eb' },
@@ -125,145 +127,148 @@ export default function LoginScreen() {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Logo */}
-        <View style={styles.logoContainer}>
-          <Text style={styles.logo}>♻️</Text>
-        </View>
-
-        {/* Header */}
-        <Text style={styles.title}>OrganiSort</Text>
-        <Text style={styles.subtitle}>Waste Detection App</Text>
-
-        {/* Sign In Card */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Sign In</Text>
-
-          {!challengeToken && (
-          <>
-          {/* Email Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="user@example.com"
-              placeholderTextColor="#9ca3af"
-              keyboardType="email-address"
-              value={email}
-              onChangeText={setEmail}
-              editable={!emailLoading}
-            />
-            {errors.email && <Text style={styles.error}>{errors.email}</Text>}
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          {/* Logo */}
+          <View style={styles.logoContainer}>
+            <Text style={styles.logo}>♻️</Text>
           </View>
 
-          {/* Password Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Password</Text>
-            <View style={styles.passwordContainer}>
-              <TextInput
-                style={[styles.input, styles.passwordInput]}
-                placeholder="••••••••"
-                placeholderTextColor="#9ca3af"
-                secureTextEntry={!showPassword}
-                value={password}
-                onChangeText={setPassword}
-                editable={!emailLoading}
-              />
-              <TouchableOpacity
-                style={styles.toggleButton}
-                onPress={() => setShowPassword((current) => !current)}
-                accessibilityRole="button"
-                accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
-                accessibilityState={{ pressed: showPassword }}
-              >
-                <Text style={styles.toggleText}>{showPassword ? '🙈' : '👁️'}</Text>
-              </TouchableOpacity>
-            </View>
-            {errors.password && <Text style={styles.error}>{errors.password}</Text>}
-          </View>
+          {/* Header */}
+          <Text style={styles.title}>OrganiSort</Text>
+          <Text style={styles.subtitle}>Waste Detection App</Text>
 
-          {/* Sign In Button */}
-          <TouchableOpacity
-            style={[
-              styles.button,
-              styles.buttonPrimary,
-              (emailLoading || loading) && styles.buttonDisabled
-            ]}
-            onPress={handleEmailSignIn}
-            disabled={emailLoading || loading}
-          >
-            {emailLoading || loading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text style={styles.buttonText}>Sign In</Text>
+          {/* Sign In Card */}
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Sign In</Text>
+
+            {!challengeToken && (
+              <>
+                {/* Email Input */}
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>Email</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="user@example.com"
+                    placeholderTextColor="#9ca3af"
+                    keyboardType="email-address"
+                    value={email}
+                    onChangeText={setEmail}
+                    editable={!emailLoading}
+                  />
+                  {errors.email && <Text style={styles.error}>{errors.email}</Text>}
+                </View>
+
+                {/* Password Input */}
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>Password</Text>
+                  <View style={styles.passwordContainer}>
+                    <TextInput
+                      style={[styles.input, styles.passwordInput]}
+                      placeholder="••••••••"
+                      placeholderTextColor="#9ca3af"
+                      secureTextEntry={!showPassword}
+                      value={password}
+                      onChangeText={setPassword}
+                      editable={!emailLoading}
+                    />
+                    <TouchableOpacity
+                      style={styles.toggleButton}
+                      onPress={() => setShowPassword((current) => !current)}
+                      accessibilityRole="button"
+                      accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                      accessibilityState={{ pressed: showPassword }}
+                    >
+                      <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={22} color="#64748b" />
+                    </TouchableOpacity>
+                  </View>
+                  {errors.password && <Text style={styles.error}>{errors.password}</Text>}
+                </View>
+
+                {/* Sign In Button */}
+                <TouchableOpacity
+                  style={[
+                    styles.button,
+                    styles.buttonPrimary,
+                    (emailLoading || loading) && styles.buttonDisabled
+                  ]}
+                  onPress={handleEmailSignIn}
+                  disabled={emailLoading || loading}
+                >
+                  {emailLoading || loading ? (
+                    <ActivityIndicator color="white" />
+                  ) : (
+                    <Text style={styles.buttonText}>Sign In</Text>
+                  )}
+                </TouchableOpacity>
+
+                {/* Divider */}
+                <View style={styles.divider}>
+                  <View style={styles.dividerLine} />
+                  <Text style={styles.dividerText}>OR</Text>
+                  <View style={styles.dividerLine} />
+                </View>
+
+                {/* Google Button */}
+                <TouchableOpacity
+                  style={styles.googleButton}
+                  onPress={handleGoogleSignIn}
+                >
+                  <Ionicons name="logo-google" size={22} color="#2563eb" style={{ marginRight: 12 }} />
+                  <Text style={styles.googleText}>Sign in with Google</Text>
+                </TouchableOpacity>
+
+              </>
             )}
-          </TouchableOpacity>
 
-          {/* Divider */}
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>OR</Text>
-            <View style={styles.dividerLine} />
+            {challengeToken && (
+              <>
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>Email Verification Code</Text>
+                  <Text style={{ color: '#475569', marginBottom: 8 }}>{otpMessage || 'Enter the OTP sent to your email.'}</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter 6-digit code"
+                    placeholderTextColor="#9ca3af"
+                    keyboardType="number-pad"
+                    maxLength={6}
+                    value={otp}
+                    onChangeText={(value) => setOtp(value.replace(/\D/g, ''))}
+                    editable={!emailLoading}
+                  />
+                </View>
+
+                <TouchableOpacity
+                  style={[styles.button, styles.buttonPrimary, (emailLoading || loading) && styles.buttonDisabled]}
+                  onPress={handleOtpVerification}
+                  disabled={emailLoading || loading}
+                >
+                  {emailLoading || loading ? <ActivityIndicator color="white" /> : <Text style={styles.buttonText}>Verify OTP</Text>}
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.googleButton, (emailLoading || loading) && styles.buttonDisabled]}
+                  onPress={handleResendOtp}
+                  disabled={emailLoading || loading}
+                >
+                  <Text style={styles.googleText}>Resend OTP</Text>
+                </TouchableOpacity>
+              </>
+            )}
+
           </View>
 
-          {/* Google Button */}
-          <TouchableOpacity
-            style={styles.googleButton}
-            onPress={handleGoogleSignIn}
-          >
-            <Text style={{ fontSize: 24, marginRight: 12 }}>🔵</Text>
-            <Text style={styles.googleText}>Sign in with Google</Text>
-          </TouchableOpacity>
-
-          </>
-          )}
-
-          {challengeToken && (
-            <>
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Email Verification Code</Text>
-                <Text style={{ color: '#475569', marginBottom: 8 }}>{otpMessage || 'Enter the OTP sent to your email.'}</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter 6-digit code"
-                  placeholderTextColor="#9ca3af"
-                  keyboardType="number-pad"
-                  maxLength={6}
-                  value={otp}
-                  onChangeText={(value) => setOtp(value.replace(/\D/g, ''))}
-                  editable={!emailLoading}
-                />
-              </View>
-
-              <TouchableOpacity
-                style={[styles.button, styles.buttonPrimary, (emailLoading || loading) && styles.buttonDisabled]}
-                onPress={handleOtpVerification}
-                disabled={emailLoading || loading}
-              >
-                {emailLoading || loading ? <ActivityIndicator color="white" /> : <Text style={styles.buttonText}>Verify OTP</Text>}
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.googleButton, (emailLoading || loading) && styles.buttonDisabled]}
-                onPress={handleResendOtp}
-                disabled={emailLoading || loading}
-              >
-                <Text style={styles.googleText}>Resend OTP</Text>
-              </TouchableOpacity>
-            </>
-          )}
-
           {!challengeToken && (
-          <TouchableOpacity onPress={() => router.replace("/(auth)/register")}>
-            <Text style={[styles.footer, { color: "#bfdbfe", textDecorationLine: "underline" }]}>Don't have an account? Register</Text>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.replace("/(auth)/register")} style={{ marginTop: 16 }}>
+              <Text style={[styles.footer, { color: "white", textDecorationLine: "underline" }]}>Don't have an account? Register</Text>
+            </TouchableOpacity>
           )}
-        </View>
 
-        {/* Footer */}
-        <Text style={styles.footer}>© 2024 OrganiSort • Waste Detection AI</Text>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          {/* Footer */}
+          <Text style={styles.footer}>© 2026 OrganiSort • Waste Detection AI</Text>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

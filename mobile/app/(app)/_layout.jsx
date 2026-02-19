@@ -121,6 +121,8 @@ function HomeIcon({ color, size = 24 }) {
   );
 }
 
+import { Ionicons } from '@expo/vector-icons';
+
 function ScanIcon({ color, size = 24 }) {
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
@@ -132,7 +134,7 @@ function ScanIcon({ color, size = 24 }) {
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-        <Text style={{ fontSize: size * 0.7, color: 'white' }}>📷</Text>
+        <Ionicons name="camera" size={size * 0.6} color="white" />
       </View>
     </View>
   );

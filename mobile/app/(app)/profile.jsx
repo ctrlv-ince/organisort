@@ -10,24 +10,26 @@ import {
   Alert,
   RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter, useFocusEffect } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import apiClient from '@/src/utils/apiClient';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
   header: {
-    backgroundColor: '#3b82f6',
-    paddingTop: 32,
+    backgroundColor: '#10b981',
+    paddingTop: 16,
     paddingBottom: 24,
     paddingHorizontal: 24,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
   },
   title: { fontSize: 30, fontWeight: 'bold', color: 'white', textAlign: 'center' },
-  subtitle: { fontSize: 16, color: '#bfdbfe', textAlign: 'center', marginTop: 8 },
+  subtitle: { fontSize: 16, color: '#d1fae5', textAlign: 'center', marginTop: 8 },
   content: { padding: 24 },
-  
+
   // Profile Header
   profileHeader: {
     backgroundColor: 'white',
@@ -45,12 +47,12 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#10b981',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
     borderWidth: 4,
-    borderColor: '#bfdbfe',
+    borderColor: '#d1fae5',
   },
   avatar: {
     width: 112,
@@ -67,7 +69,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   badgeText: { color: 'white', fontSize: 14, fontWeight: '600' },
-  
+
   // Stats Section
   statsSection: { marginBottom: 24 },
   sectionTitle: { fontSize: 20, fontWeight: 'bold', color: '#1e293b', marginBottom: 16 },
@@ -84,10 +86,10 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 3,
   },
-  statIcon: { fontSize: 32, marginBottom: 8 },
-  statValue: { fontSize: 24, fontWeight: 'bold', color: '#3b82f6' },
+  statIcon: { marginBottom: 8 },
+  statValue: { fontSize: 24, fontWeight: 'bold', color: '#10b981' },
   statLabel: { fontSize: 12, color: '#64748b', marginTop: 4, textAlign: 'center' },
-  
+
   // Info Cards
   infoSection: { marginBottom: 24 },
   infoCard: {
@@ -105,12 +107,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   infoLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  infoIcon: { fontSize: 24, marginRight: 12 },
+  infoIcon: { marginRight: 12 },
   infoContent: { flex: 1 },
   infoLabel: { fontSize: 12, color: '#64748b', marginBottom: 4 },
   infoValue: { fontSize: 16, fontWeight: '600', color: '#1e293b' },
   infoArrow: { fontSize: 20, color: '#9ca3af' },
-  
+
   // Action Buttons
   actionButton: {
     backgroundColor: 'white',
@@ -125,9 +127,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  actionIcon: { fontSize: 24, marginRight: 12 },
+  actionIcon: { marginRight: 12 },
   actionText: { fontSize: 16, fontWeight: '600', color: '#1e293b', flex: 1 },
-  
+
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -164,7 +166,7 @@ export default function ProfileScreen() {
       // Fetch user stats
       const detectionResponse = await apiClient.get('/api/detections/history');
       const detections = detectionResponse.data.detections || detectionResponse.data;
-      
+
       calculateStats(detections);
     } catch (error) {
       console.error('Failed to fetch profile data:', error);
@@ -179,7 +181,7 @@ export default function ProfileScreen() {
     const totalDetections = detections.length;
     const totalItems = detections.reduce((sum, d) => sum + (d.summary?.total_detections || 0), 0);
     const uniqueTypesSet = new Set();
-    
+
     detections.forEach(d => {
       if (d.detectedWasteTypes) {
         d.detectedWasteTypes.forEach(type => uniqueTypesSet.add(type));
@@ -211,154 +213,156 @@ export default function ProfileScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#3b82f6" />
+        <ActivityIndicator size="large" color="#10b981" />
       </View>
     );
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#3b82f6" />
-      }
-    >
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>My Profile</Text>
-        <Text style={styles.subtitle}>View your account & statistics</Text>
-      </View>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#10b981" />
+        }
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.title}>My Profile</Text>
+          <Text style={styles.subtitle}>View your account & statistics</Text>
+        </View>
 
-      <View style={styles.content}>
-        {/* Profile Header */}
-        <View style={styles.profileHeader}>
-          <View style={styles.avatarContainer}>
-            {user?.photoURL ? (
-              <Image source={{ uri: user.photoURL }} style={styles.avatar} />
-            ) : (
-              <Text style={styles.avatarText}>
-                {userData?.displayName?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
-              </Text>
-            )}
-          </View>
-          <Text style={styles.displayName}>
-            {userData?.displayName || user?.email?.split('@')[0] || 'User'}
-          </Text>
-          <Text style={styles.email}>{user?.email}</Text>
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>
-              {userData?.role === 'admin' ? '👑 Admin' : '🌱 User'}
+        <View style={styles.content}>
+          {/* Profile Header */}
+          <View style={styles.profileHeader}>
+            <View style={styles.avatarContainer}>
+              {user?.photoURL ? (
+                <Image source={{ uri: user.photoURL }} style={styles.avatar} />
+              ) : (
+                <Text style={styles.avatarText}>
+                  {userData?.displayName?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
+                </Text>
+              )}
+            </View>
+            <Text style={styles.displayName}>
+              {userData?.displayName || user?.email?.split('@')[0] || 'User'}
             </Text>
-          </View>
-        </View>
-
-        {/* Stats Section */}
-        <View style={styles.statsSection}>
-          <Text style={styles.sectionTitle}>Your Statistics</Text>
-          <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <Text style={styles.statIcon}>📊</Text>
-              <Text style={styles.statValue}>{stats.totalDetections}</Text>
-              <Text style={styles.statLabel}>Total Scans</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statIcon}>📦</Text>
-              <Text style={styles.statValue}>{stats.totalItems}</Text>
-              <Text style={styles.statLabel}>Items Detected</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statIcon}>🏷️</Text>
-              <Text style={styles.statValue}>{stats.uniqueTypes}</Text>
-              <Text style={styles.statLabel}>Unique Types</Text>
+            <Text style={styles.email}>{user?.email}</Text>
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>
+                {userData?.role === 'admin' ? '👑 Admin' : '🌱 User'}
+              </Text>
             </View>
           </View>
-        </View>
 
-        {/* Account Info */}
-        <View style={styles.infoSection}>
-          <Text style={styles.sectionTitle}>Account Information</Text>
-          
-          <View style={styles.infoCard}>
-            <View style={styles.infoLeft}>
-              <Text style={styles.infoIcon}>📧</Text>
-              <View style={styles.infoContent}>
-                <Text style={styles.infoLabel}>Email Address</Text>
-                <Text style={styles.infoValue}>{user?.email}</Text>
+          {/* Stats Section */}
+          <View style={styles.statsSection}>
+            <Text style={styles.sectionTitle}>Your Statistics</Text>
+            <View style={styles.statsGrid}>
+              <View style={styles.statCard}>
+                <Ionicons name="analytics-outline" size={28} color="#10b981" style={styles.statIcon} />
+                <Text style={styles.statValue}>{stats.totalDetections}</Text>
+                <Text style={styles.statLabel}>Total Scans</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Ionicons name="cube-outline" size={28} color="#10b981" style={styles.statIcon} />
+                <Text style={styles.statValue}>{stats.totalItems}</Text>
+                <Text style={styles.statLabel}>Items Detected</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Ionicons name="pricetag-outline" size={28} color="#10b981" style={styles.statIcon} />
+                <Text style={styles.statValue}>{stats.uniqueTypes}</Text>
+                <Text style={styles.statLabel}>Unique Types</Text>
               </View>
             </View>
           </View>
 
-          <View style={styles.infoCard}>
-            <View style={styles.infoLeft}>
-              <Text style={styles.infoIcon}>👤</Text>
-              <View style={styles.infoContent}>
-                <Text style={styles.infoLabel}>Display Name</Text>
-                <Text style={styles.infoValue}>
-                  {userData?.displayName || 'Not set'}
-                </Text>
+          {/* Account Info */}
+          <View style={styles.infoSection}>
+            <Text style={styles.sectionTitle}>Account Information</Text>
+
+            <View style={styles.infoCard}>
+              <View style={styles.infoLeft}>
+                <Ionicons name="mail-outline" size={24} color="#10b981" style={styles.infoIcon} />
+                <View style={styles.infoContent}>
+                  <Text style={styles.infoLabel}>Email Address</Text>
+                  <Text style={styles.infoValue}>{user?.email}</Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.infoCard}>
+              <View style={styles.infoLeft}>
+                <Ionicons name="person-outline" size={24} color="#10b981" style={styles.infoIcon} />
+                <View style={styles.infoContent}>
+                  <Text style={styles.infoLabel}>Display Name</Text>
+                  <Text style={styles.infoValue}>
+                    {userData?.displayName || 'Not set'}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.infoCard}>
+              <View style={styles.infoLeft}>
+                <Ionicons name="calendar-outline" size={24} color="#10b981" style={styles.infoIcon} />
+                <View style={styles.infoContent}>
+                  <Text style={styles.infoLabel}>Member Since</Text>
+                  <Text style={styles.infoValue}>
+                    {formatDate(userData?.createdAt)}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.infoCard}>
+              <View style={styles.infoLeft}>
+                <Ionicons name="checkmark-circle-outline" size={24} color="#10b981" style={styles.infoIcon} />
+                <View style={styles.infoContent}>
+                  <Text style={styles.infoLabel}>Account Status</Text>
+                  <Text style={styles.infoValue}>
+                    {userData?.isActive ? 'Active' : 'Inactive'}
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
 
-          <View style={styles.infoCard}>
-            <View style={styles.infoLeft}>
-              <Text style={styles.infoIcon}>📅</Text>
-              <View style={styles.infoContent}>
-                <Text style={styles.infoLabel}>Member Since</Text>
-                <Text style={styles.infoValue}>
-                  {formatDate(userData?.createdAt)}
-                </Text>
-              </View>
-            </View>
-          </View>
+          {/* Quick Actions */}
+          <View style={styles.infoSection}>
+            <Text style={styles.sectionTitle}>Quick Actions</Text>
 
-          <View style={styles.infoCard}>
-            <View style={styles.infoLeft}>
-              <Text style={styles.infoIcon}>✅</Text>
-              <View style={styles.infoContent}>
-                <Text style={styles.infoLabel}>Account Status</Text>
-                <Text style={styles.infoValue}>
-                  {userData?.isActive ? 'Active' : 'Inactive'}
-                </Text>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* Quick Actions */}
-        <View style={styles.infoSection}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          
-          <TouchableOpacity 
-            style={styles.actionButton}
-            onPress={() => router.push('/history')}
-          >
-            <Text style={styles.actionIcon}>📊</Text>
-            <Text style={styles.actionText}>View Detection History</Text>
-            <Text style={styles.infoArrow}>›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.actionButton}
-            onPress={() => router.push('/edit-profile')}
-          >
-            <Text style={styles.actionIcon}>✏️</Text>
-            <Text style={styles.actionText}>Edit Profile</Text>
-            <Text style={styles.infoArrow}>›</Text>
-          </TouchableOpacity>
-
-          {userData?.role === 'admin' && (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.actionButton}
-              onPress={() => router.push('/admin')}
+              onPress={() => router.push('/history')}
             >
-              <Text style={styles.actionIcon}>👑</Text>
-              <Text style={styles.actionText}>Admin Dashboard</Text>
+              <Ionicons name="bar-chart-outline" size={24} color="#10b981" style={styles.actionIcon} />
+              <Text style={styles.actionText}>View Detection History</Text>
               <Text style={styles.infoArrow}>›</Text>
             </TouchableOpacity>
-          )}
+
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => router.push('/edit-profile')}
+            >
+              <Ionicons name="create-outline" size={24} color="#10b981" style={styles.actionIcon} />
+              <Text style={styles.actionText}>Edit Profile</Text>
+              <Text style={styles.infoArrow}>›</Text>
+            </TouchableOpacity>
+
+            {userData?.role === 'admin' && (
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={() => router.push('/admin')}
+              >
+                <Ionicons name="shield-outline" size={24} color="#10b981" style={styles.actionIcon} />
+                <Text style={styles.actionText}>Admin Dashboard</Text>
+                <Text style={styles.infoArrow}>›</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

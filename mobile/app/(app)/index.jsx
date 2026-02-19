@@ -9,15 +9,18 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import apiClient from '@/src/utils/apiClient';
+import { CardSkeleton, StatSkeleton } from '@/src/components/SkeletonLoader';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
   header: {
     backgroundColor: '#10b981',
-    paddingTop: 32,
+    paddingTop: 16,
     paddingBottom: 24,
     paddingHorizontal: 24,
     borderBottomLeftRadius: 24,
@@ -57,7 +60,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 3,
   },
-  statIcon: { fontSize: 28, marginBottom: 8 },
+  statIcon: { marginBottom: 8 },
   statValue: { fontSize: 24, fontWeight: 'bold', color: '#1e293b' },
   statLabel: { fontSize: 12, color: '#64748b', marginTop: 4 },
 
@@ -87,7 +90,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
-  quickActionIcon: { fontSize: 40, marginBottom: 12 },
+  quickActionIcon: { marginBottom: 12 },
   quickActionText: {
     fontSize: 14,
     fontWeight: '600',
@@ -157,7 +160,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 40,
   },
-  emptyIcon: { fontSize: 64, marginBottom: 16, opacity: 0.5 },
+  emptyIcon: { marginBottom: 16, opacity: 0.5 },
   emptyText: { fontSize: 16, color: '#64748b', textAlign: 'center' },
 
   viewAllButton: {
@@ -185,7 +188,7 @@ function QuickActionCard({ icon, label, onPress }) {
       onPress={onPress}
       activeOpacity={0.8}
     >
-      <Text style={styles.quickActionIcon}>{icon}</Text>
+      <Ionicons name={icon} size={36} color="#10b981" style={styles.quickActionIcon} />
       <Text style={styles.quickActionText}>{label}</Text>
     </TouchableOpacity>
   );
@@ -249,171 +252,185 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#10b981" />
-      </View>
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={styles.header}>
+          <Text style={styles.greeting}>Loading...</Text>
+        </View>
+        <View style={{ padding: 24 }}>
+          <View style={styles.statsContainer}>
+            <StatSkeleton />
+            <StatSkeleton />
+            <StatSkeleton />
+          </View>
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={handleRefresh}
-          tintColor="#10b981"
-        />
-      }
-    >
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <Text style={styles.title}>OrganiSort</Text>
-        </View>
-        <View style={styles.welcomeCard}>
-          <Text style={styles.welcomeText}>
-            Welcome, {user?.displayName || 'User'}! 👋
-          </Text>
-          <Text style={styles.welcomeSubtext}>
-            Scan waste & contribute to sustainability
-          </Text>
-        </View>
-      </View>
-
-      <View style={styles.content}>
-        {/* Stats Cards */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
-            <Text style={styles.statIcon}>📊</Text>
-            <Text style={styles.statValue}>{stats.totalDetections}</Text>
-            <Text style={styles.statLabel}>Total Scans</Text>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <ScrollView
+        style={{ flex: 1 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor="#10b981"
+          />
+        }
+      >
+        <View style={styles.header}>
+          <View style={styles.headerTop}>
+            <Text style={styles.title}>OrganiSort</Text>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statIcon}>📦</Text>
-            <Text style={styles.statValue}>{stats.totalItems}</Text>
-            <Text style={styles.statLabel}>Items Found</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statIcon}>🏷️</Text>
-            <Text style={styles.statValue}>{stats.uniqueTypes}</Text>
-            <Text style={styles.statLabel}>Unique Types</Text>
+          <View style={styles.welcomeCard}>
+            <Text style={styles.welcomeText}>
+              Welcome, {user?.displayName || 'User'}! 👋
+            </Text>
+            <Text style={styles.welcomeSubtext}>
+              Scan waste & contribute to sustainability
+            </Text>
           </View>
         </View>
 
-        {/* Quick Actions */}
-        <View style={styles.actionSection}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <View style={styles.quickActions}>
-            <QuickActionCard
-              icon="📷"
-              label="Scan Waste"
-              onPress={() => router.push('/scan')}
-            />
-            <QuickActionCard
-              icon="📊"
-              label="View History"
-              onPress={() => router.push('/history')}
-            />
-            <QuickActionCard
-              icon="👤"
-              label="My Profile"
-              onPress={() => router.push('/profile')}
-            />
-            <QuickActionCard
-              icon="🏆"
-              label="Leaderboard"
-              onPress={() => router.push('/more')}
-            />
+        <View style={styles.content}>
+          {/* Stats Cards */}
+          <View style={styles.statsContainer}>
+            <View style={styles.statCard}>
+              <Ionicons name="analytics-outline" size={28} color="#10b981" style={styles.statIcon} />
+              <Text style={styles.statValue}>{stats.totalDetections}</Text>
+              <Text style={styles.statLabel}>Total Scans</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Ionicons name="cube-outline" size={28} color="#10b981" style={styles.statIcon} />
+              <Text style={styles.statValue}>{stats.totalItems}</Text>
+              <Text style={styles.statLabel}>Items Found</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Ionicons name="pricetag-outline" size={28} color="#10b981" style={styles.statIcon} />
+              <Text style={styles.statValue}>{stats.uniqueTypes}</Text>
+              <Text style={styles.statLabel}>Unique Types</Text>
+            </View>
           </View>
-        </View>
 
-        {/* Recent Detection History */}
-        <View style={styles.actionSection}>
-          <Text style={styles.sectionTitle}>Recent Detections</Text>
-          <View style={styles.historyCard}>
-            {detectionHistory.length > 0 ? (
-              <>
-                {detectionHistory.map((item, index) => (
-                  <View
-                    key={item._id || index}
-                    style={[
-                      styles.historyItem,
-                      index === detectionHistory.length - 1 && {
-                        borderBottomWidth: 0,
-                      },
-                    ]}
-                  >
-                    <Image
-                      source={{
-                        uri: item.annotated_image || item.imageUrl,
-                      }}
-                      style={styles.historyImage}
-                      resizeMode="cover"
-                    />
-                    <View style={styles.historyInfo}>
-                      <Text style={styles.historyType}>
-                        {item.primaryWasteType ||
-                          item.wasteType ||
-                          'Unknown'}
-                      </Text>
-                      <Text style={styles.historyDate}>
-                        {new Date(item.createdAt).toLocaleDateString()} at{' '}
-                        {new Date(item.createdAt).toLocaleTimeString()}
-                      </Text>
-                      <Text style={styles.historyConfidence}>
-                        {item.summary?.total_detections || 0} items •{' '}
-                        {item.summary?.unique_classes || 0} types
-                      </Text>
-                      {item.detectedWasteTypes &&
-                        item.detectedWasteTypes.length > 0 && (
-                          <View style={styles.wasteTypesContainer}>
-                            {item.detectedWasteTypes
-                              .slice(0, 3)
-                              .map((type, idx) => (
+          {/* Quick Actions */}
+          <View style={styles.actionSection}>
+            <Text style={styles.sectionTitle}>Quick Actions</Text>
+            <View style={styles.quickActions}>
+              <QuickActionCard
+                icon="camera-outline"
+                label="Scan Waste"
+                onPress={() => router.push('/scan')}
+              />
+              <QuickActionCard
+                icon="bar-chart-outline"
+                label="View History"
+                onPress={() => router.push('/history')}
+              />
+              <QuickActionCard
+                icon="person-outline"
+                label="My Profile"
+                onPress={() => router.push('/profile')}
+              />
+              <QuickActionCard
+                icon="trophy-outline"
+                label="Leaderboard"
+                onPress={() => router.push('/more')}
+              />
+            </View>
+          </View>
+
+          {/* Recent Detection History */}
+          <View style={styles.actionSection}>
+            <Text style={styles.sectionTitle}>Recent Detections</Text>
+            <View style={styles.historyCard}>
+              {detectionHistory.length > 0 ? (
+                <>
+                  {detectionHistory.map((item, index) => (
+                    <View
+                      key={item._id || index}
+                      style={[
+                        styles.historyItem,
+                        index === detectionHistory.length - 1 && {
+                          borderBottomWidth: 0,
+                        },
+                      ]}
+                    >
+                      <Image
+                        source={{
+                          uri: item.annotated_image || item.imageUrl,
+                        }}
+                        style={styles.historyImage}
+                        resizeMode="cover"
+                        onError={(e) => { e.target && (e.target.style = { display: 'none' }); }}
+                        defaultSource={require('@/assets/icon.png')}
+                      />
+                      <View style={styles.historyInfo}>
+                        <Text style={styles.historyType}>
+                          {item.summary?.total_detections || item.detections?.length || 0} Items
+                        </Text>
+                        <Text style={styles.historyDate}>
+                          {new Date(item.createdAt).toLocaleDateString()} at{' '}
+                          {new Date(item.createdAt).toLocaleTimeString()}
+                        </Text>
+                        <Text style={styles.historyConfidence}>
+                          {item.summary?.total_detections || 0} items •{' '}
+                          {item.summary?.unique_classes || 0} types
+                        </Text>
+                        {item.detectedWasteTypes &&
+                          item.detectedWasteTypes.length > 0 && (
+                            <View style={styles.wasteTypesContainer}>
+                              {item.detectedWasteTypes
+                                .slice(0, 3)
+                                .map((type, idx) => (
+                                  <View
+                                    key={idx}
+                                    style={styles.wasteTypeBadge}
+                                  >
+                                    <Text style={styles.wasteTypeBadgeText}>
+                                      {type}
+                                    </Text>
+                                  </View>
+                                ))}
+                              {item.detectedWasteTypes.length > 3 && (
                                 <View
-                                  key={idx}
-                                  style={styles.wasteTypeBadge}
+                                  style={[
+                                    styles.wasteTypeBadge,
+                                    { backgroundColor: '#6b7280' },
+                                  ]}
                                 >
                                   <Text style={styles.wasteTypeBadgeText}>
-                                    {type}
+                                    +{item.detectedWasteTypes.length - 3}
                                   </Text>
                                 </View>
-                              ))}
-                            {item.detectedWasteTypes.length > 3 && (
-                              <View
-                                style={[
-                                  styles.wasteTypeBadge,
-                                  { backgroundColor: '#6b7280' },
-                                ]}
-                              >
-                                <Text style={styles.wasteTypeBadgeText}>
-                                  +{item.detectedWasteTypes.length - 3}
-                                </Text>
-                              </View>
-                            )}
-                          </View>
-                        )}
+                              )}
+                            </View>
+                          )}
+                      </View>
                     </View>
-                  </View>
-                ))}
-                <TouchableOpacity
-                  style={styles.viewAllButton}
-                  onPress={() => router.push('/history')}
-                >
-                  <Text style={styles.viewAllText}>View All History</Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyIcon}>🔍</Text>
-                <Text style={styles.emptyText}>
-                  No detections yet.{'\n'}Start by scanning some waste!
-                </Text>
-              </View>
-            )}
+                  ))}
+                  <TouchableOpacity
+                    style={styles.viewAllButton}
+                    onPress={() => router.push('/history')}
+                  >
+                    <Text style={styles.viewAllText}>View All History</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <View style={styles.emptyState}>
+                  <Ionicons name="search-outline" size={48} color="#94a3b8" style={styles.emptyIcon} />
+                  <Text style={styles.emptyText}>
+                    No detections yet.{'\n'}Start by scanning some waste!
+                  </Text>
+                </View>
+              )}
+            </View>
           </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

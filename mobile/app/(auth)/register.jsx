@@ -177,7 +177,7 @@ export default function RegisterScreen() {
         </View>
 
         {/* Footer */}
-        <Text style={styles.footer}>© 2024 OrganiSort • Waste Detection AI</Text>
+        <Text style={styles.footer}>© 2026 OrganiSort • Waste Detection AI</Text>
       </ScrollView>
     </KeyboardAvoidingView>
   );

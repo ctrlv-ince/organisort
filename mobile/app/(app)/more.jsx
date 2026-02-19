@@ -10,28 +10,30 @@ import {
   Modal,
   ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import apiClient from '@/src/utils/apiClient';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
   header: {
-    backgroundColor: '#8b5cf6',
-    paddingTop: 32,
+    backgroundColor: '#10b981',
+    paddingTop: 16,
     paddingBottom: 24,
     paddingHorizontal: 24,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
   },
   title: { fontSize: 30, fontWeight: 'bold', color: 'white', textAlign: 'center' },
-  subtitle: { fontSize: 16, color: '#e9d5ff', textAlign: 'center', marginTop: 8 },
+  subtitle: { fontSize: 16, color: '#d1fae5', textAlign: 'center', marginTop: 8 },
   content: { padding: 24 },
-  
+
   // Section Styles
   section: { marginBottom: 24 },
   sectionTitle: { fontSize: 20, fontWeight: 'bold', color: '#1e293b', marginBottom: 16 },
-  
+
   // Menu Item Styles
   menuItem: {
     backgroundColor: 'white',
@@ -46,12 +48,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  menuIcon: { fontSize: 24, marginRight: 16, width: 30 },
+  menuIcon: { marginRight: 16, width: 30 },
   menuContent: { flex: 1 },
   menuTitle: { fontSize: 16, fontWeight: '600', color: '#1e293b', marginBottom: 2 },
   menuSubtitle: { fontSize: 12, color: '#64748b' },
   menuArrow: { fontSize: 20, color: '#9ca3af' },
-  
+
   // Settings Toggle
   settingItem: {
     backgroundColor: 'white',
@@ -68,7 +70,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   settingLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  
+
   // Logout Button
   logoutButton: {
     backgroundColor: '#ef4444',
@@ -83,10 +85,10 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   logoutText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
-  
+
   // Version
   version: { textAlign: 'center', color: '#9ca3af', fontSize: 12, marginTop: 24, marginBottom: 8 },
-  
+
   // Modal Styles
   modalContainer: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 24 },
   modalContent: { backgroundColor: 'white', borderRadius: 16, padding: 24, maxHeight: '80%' },
@@ -94,7 +96,7 @@ const styles = StyleSheet.create({
   modalTitle: { fontSize: 24, fontWeight: 'bold', color: '#1e293b' },
   modalCloseButton: { padding: 8 },
   modalCloseText: { fontSize: 24, color: '#64748b' },
-  
+
   // Leaderboard Styles
   leaderboardItem: {
     flexDirection: 'row',
@@ -107,15 +109,15 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#8b5cf6',
+    backgroundColor: '#10b981',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
   rankText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
   leaderboardName: { flex: 1, fontSize: 16, fontWeight: '600', color: '#1e293b' },
-  leaderboardScore: { fontSize: 16, fontWeight: 'bold', color: '#8b5cf6' },
-  
+  leaderboardScore: { fontSize: 16, fontWeight: 'bold', color: '#10b981' },
+
   // Achievement Styles
   achievementItem: {
     flexDirection: 'row',
@@ -127,12 +129,12 @@ const styles = StyleSheet.create({
     borderLeftWidth: 4,
     borderLeftColor: '#10b981',
   },
-  achievementIcon: { fontSize: 40, marginRight: 16 },
+  achievementIcon: { marginRight: 16 },
   achievementInfo: { flex: 1 },
   achievementTitle: { fontSize: 16, fontWeight: 'bold', color: '#1e293b', marginBottom: 4 },
   achievementDesc: { fontSize: 12, color: '#64748b' },
   achievementUnlocked: { fontSize: 10, color: '#10b981', fontWeight: '600', marginTop: 4 },
-  
+
   loadingContainer: { padding: 40, alignItems: 'center' },
   emptyText: { textAlign: 'center', color: '#64748b', fontSize: 14, padding: 20 },
 });
@@ -180,7 +182,7 @@ export default function MoreScreen() {
           score: user.detectionCount || 0,
           rank: index + 1,
         }));
-      
+
       setLeaderboardData(leaderboard);
     } catch (error) {
       console.error('Failed to fetch leaderboard:', error);
@@ -190,40 +192,62 @@ export default function MoreScreen() {
     }
   };
 
-  const loadAchievements = () => {
-    // Mock achievements - replace with actual backend data
-    setAchievements([
-      {
-        id: 1,
-        icon: '🌟',
-        title: 'First Scan',
-        description: 'Complete your first waste detection',
-        unlocked: true,
-        unlockedDate: 'Jan 15, 2024',
-      },
-      {
-        id: 2,
-        icon: '🔥',
-        title: '10 Scans',
-        description: 'Detect waste 10 times',
-        unlocked: true,
-        unlockedDate: 'Jan 20, 2024',
-      },
-      {
-        id: 3,
-        icon: '💯',
-        title: 'Perfect Detection',
-        description: 'Get 100% confidence on a scan',
-        unlocked: false,
-      },
-      {
-        id: 4,
-        icon: '🏆',
-        title: 'Top 10',
-        description: 'Reach top 10 on leaderboard',
-        unlocked: false,
-      },
-    ]);
+  const loadAchievements = async () => {
+    setLoading(true);
+    try {
+      const response = await apiClient.get('/api/detections/stats');
+      const stats = response.data?.data || {};
+      const totalScans = stats.totalDetections || 0;
+      const totalItems = stats.totalItems || 0;
+      const uniqueTypes = stats.uniqueTypes || 0;
+
+      setAchievements([
+        {
+          id: 1,
+          icon: 'star-outline',
+          title: 'First Scan',
+          description: 'Complete your first waste detection',
+          unlocked: totalScans >= 1,
+          progress: `${Math.min(totalScans, 1)}/1`,
+        },
+        {
+          id: 2,
+          icon: 'flame-outline',
+          title: '10 Scans',
+          description: 'Detect waste 10 times',
+          unlocked: totalScans >= 10,
+          progress: `${Math.min(totalScans, 10)}/10`,
+        },
+        {
+          id: 3,
+          icon: 'rocket-outline',
+          title: '50 Scans',
+          description: 'Detect waste 50 times',
+          unlocked: totalScans >= 50,
+          progress: `${Math.min(totalScans, 50)}/50`,
+        },
+        {
+          id: 4,
+          icon: 'layers-outline',
+          title: 'Variety Seeker',
+          description: 'Detect 5 different waste types',
+          unlocked: uniqueTypes >= 5,
+          progress: `${Math.min(uniqueTypes, 5)}/5`,
+        },
+        {
+          id: 5,
+          icon: 'trophy-outline',
+          title: 'Century Club',
+          description: 'Detect 100 total items',
+          unlocked: totalItems >= 100,
+          progress: `${Math.min(totalItems, 100)}/100`,
+        },
+      ]);
+    } catch (error) {
+      console.error('Failed to load achievements:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const openLeaderboard = () => {
@@ -238,144 +262,146 @@ export default function MoreScreen() {
 
   return (
     <>
-      <ScrollView style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>More</Text>
-          <Text style={styles.subtitle}>Settings, stats & more</Text>
-        </View>
-
-        <View style={styles.content}>
-          {/* Features Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Features</Text>
-            
-            <TouchableOpacity 
-              style={styles.menuItem}
-              onPress={() => router.push('/analytics')}
-            >
-              <Text style={styles.menuIcon}>📊</Text>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>Analytics</Text>
-                <Text style={styles.menuSubtitle}>Detailed insights & impact stats</Text>
-              </View>
-              <Text style={styles.menuArrow}>›</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.menuItem} onPress={openLeaderboard}>
-              <Text style={styles.menuIcon}>🏆</Text>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>Leaderboard</Text>
-                <Text style={styles.menuSubtitle}>See top waste detectors</Text>
-              </View>
-              <Text style={styles.menuArrow}>›</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.menuItem} onPress={openAchievements}>
-              <Text style={styles.menuIcon}>🎖️</Text>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>Achievements</Text>
-                <Text style={styles.menuSubtitle}>View your badges & progress</Text>
-              </View>
-              <Text style={styles.menuArrow}>›</Text>
-            </TouchableOpacity>
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <ScrollView style={{ flex: 1 }}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.title}>More</Text>
+            <Text style={styles.subtitle}>Settings, stats & more</Text>
           </View>
 
-          {/* Settings Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Settings</Text>
-            
-            <View style={styles.settingItem}>
-              <View style={styles.settingLeft}>
-                <Text style={styles.menuIcon}>🔔</Text>
+          <View style={styles.content}>
+            {/* Features Section */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Features</Text>
+
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => router.push('/analytics')}
+              >
+                <Ionicons name="analytics-outline" size={22} color="#10b981" style={styles.menuIcon} />
                 <View style={styles.menuContent}>
-                  <Text style={styles.menuTitle}>Notifications</Text>
-                  <Text style={styles.menuSubtitle}>Get detection reminders</Text>
+                  <Text style={styles.menuTitle}>Analytics</Text>
+                  <Text style={styles.menuSubtitle}>Detailed insights & impact stats</Text>
                 </View>
-              </View>
-              <Switch
-                value={notificationsEnabled}
-                onValueChange={setNotificationsEnabled}
-                trackColor={{ false: '#d1d5db', true: '#86efac' }}
-                thumbColor={notificationsEnabled ? '#10b981' : '#f3f4f6'}
-              />
+                <Text style={styles.menuArrow}>›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={openLeaderboard}>
+                <Ionicons name="trophy-outline" size={22} color="#10b981" style={styles.menuIcon} />
+                <View style={styles.menuContent}>
+                  <Text style={styles.menuTitle}>Leaderboard</Text>
+                  <Text style={styles.menuSubtitle}>See top waste detectors</Text>
+                </View>
+                <Text style={styles.menuArrow}>›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={openAchievements}>
+                <Ionicons name="ribbon-outline" size={22} color="#10b981" style={styles.menuIcon} />
+                <View style={styles.menuContent}>
+                  <Text style={styles.menuTitle}>Achievements</Text>
+                  <Text style={styles.menuSubtitle}>View your badges & progress</Text>
+                </View>
+                <Text style={styles.menuArrow}>›</Text>
+              </TouchableOpacity>
             </View>
 
-            <TouchableOpacity 
-              style={styles.menuItem}
-              onPress={() => Alert.alert('Coming Soon', 'Language settings coming soon!')}
-            >
-              <Text style={styles.menuIcon}>🌐</Text>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>Language</Text>
-                <Text style={styles.menuSubtitle}>English</Text>
+            {/* Settings Section */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Settings</Text>
+
+              <View style={styles.settingItem}>
+                <View style={styles.settingLeft}>
+                  <Ionicons name="notifications-outline" size={22} color="#10b981" style={styles.menuIcon} />
+                  <View style={styles.menuContent}>
+                    <Text style={styles.menuTitle}>Notifications</Text>
+                    <Text style={styles.menuSubtitle}>Get detection reminders</Text>
+                  </View>
+                </View>
+                <Switch
+                  value={notificationsEnabled}
+                  onValueChange={setNotificationsEnabled}
+                  trackColor={{ false: '#d1d5db', true: '#86efac' }}
+                  thumbColor={notificationsEnabled ? '#10b981' : '#f3f4f6'}
+                />
               </View>
-              <Text style={styles.menuArrow}>›</Text>
+
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => Alert.alert('Coming Soon', 'Language settings coming soon!')}
+              >
+                <Ionicons name="globe-outline" size={22} color="#10b981" style={styles.menuIcon} />
+                <View style={styles.menuContent}>
+                  <Text style={styles.menuTitle}>Language</Text>
+                  <Text style={styles.menuSubtitle}>English</Text>
+                </View>
+                <Text style={styles.menuArrow}>›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => Alert.alert('Coming Soon', 'Theme settings coming soon!')}
+              >
+                <Ionicons name="color-palette-outline" size={22} color="#10b981" style={styles.menuIcon} />
+                <View style={styles.menuContent}>
+                  <Text style={styles.menuTitle}>Appearance</Text>
+                  <Text style={styles.menuSubtitle}>Light mode</Text>
+                </View>
+                <Text style={styles.menuArrow}>›</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* About Section */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>About</Text>
+
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => Alert.alert('Help & Support', 'Contact us at support@organisort.com')}
+              >
+                <Ionicons name="help-circle-outline" size={22} color="#10b981" style={styles.menuIcon} />
+                <View style={styles.menuContent}>
+                  <Text style={styles.menuTitle}>Help & Support</Text>
+                  <Text style={styles.menuSubtitle}>Get help or report issues</Text>
+                </View>
+                <Text style={styles.menuArrow}>›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => Alert.alert('Privacy Policy', 'Your data is secure with us. We never share your information.')}
+              >
+                <Ionicons name="lock-closed-outline" size={22} color="#10b981" style={styles.menuIcon} />
+                <View style={styles.menuContent}>
+                  <Text style={styles.menuTitle}>Privacy Policy</Text>
+                  <Text style={styles.menuSubtitle}>How we protect your data</Text>
+                </View>
+                <Text style={styles.menuArrow}>›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => Alert.alert('About OrganiSort', 'AI-Powered Waste Detection App\nVersion 1.0.0\n\n© 2026 OrganiSort Team')}
+              >
+                <Ionicons name="information-circle-outline" size={22} color="#10b981" style={styles.menuIcon} />
+                <View style={styles.menuContent}>
+                  <Text style={styles.menuTitle}>About App</Text>
+                  <Text style={styles.menuSubtitle}>Version, credits & more</Text>
+                </View>
+                <Text style={styles.menuArrow}>›</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Logout Button */}
+            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+              <Text style={styles.logoutText}>Logout</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={styles.menuItem}
-              onPress={() => Alert.alert('Coming Soon', 'Theme settings coming soon!')}
-            >
-              <Text style={styles.menuIcon}>🎨</Text>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>Appearance</Text>
-                <Text style={styles.menuSubtitle}>Light mode</Text>
-              </View>
-              <Text style={styles.menuArrow}>›</Text>
-            </TouchableOpacity>
+            <Text style={styles.version}>OrganiSort v1.0.0</Text>
+            <Text style={styles.version}>Made with 💚 for the environment</Text>
           </View>
-
-          {/* About Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>About</Text>
-            
-            <TouchableOpacity 
-              style={styles.menuItem}
-              onPress={() => Alert.alert('Help & Support', 'Contact us at support@organisort.com')}
-            >
-              <Text style={styles.menuIcon}>❓</Text>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>Help & Support</Text>
-                <Text style={styles.menuSubtitle}>Get help or report issues</Text>
-              </View>
-              <Text style={styles.menuArrow}>›</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={styles.menuItem}
-              onPress={() => Alert.alert('Privacy Policy', 'Your data is secure with us. We never share your information.')}
-            >
-              <Text style={styles.menuIcon}>🔒</Text>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>Privacy Policy</Text>
-                <Text style={styles.menuSubtitle}>How we protect your data</Text>
-              </View>
-              <Text style={styles.menuArrow}>›</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={styles.menuItem}
-              onPress={() => Alert.alert('About OrganiSort', 'AI-Powered Waste Detection App\nVersion 1.0.0\n\n© 2024 OrganiSort Team')}
-            >
-              <Text style={styles.menuIcon}>ℹ️</Text>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>About App</Text>
-                <Text style={styles.menuSubtitle}>Version, credits & more</Text>
-              </View>
-              <Text style={styles.menuArrow}>›</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Logout Button */}
-          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <Text style={styles.logoutText}>🚪 Logout</Text>
-          </TouchableOpacity>
-
-          <Text style={styles.version}>OrganiSort v1.0.0</Text>
-          <Text style={styles.version}>Made with 💚 for the environment</Text>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </SafeAreaView>
 
       {/* Leaderboard Modal */}
       <Modal visible={showLeaderboard} animationType="slide" transparent>
@@ -383,7 +409,7 @@ export default function MoreScreen() {
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>🏆 Leaderboard</Text>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.modalCloseButton}
                 onPress={() => setShowLeaderboard(false)}
               >
@@ -394,7 +420,7 @@ export default function MoreScreen() {
             <ScrollView>
               {loading ? (
                 <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color="#8b5cf6" />
+                  <ActivityIndicator size="large" color="#10b981" />
                 </View>
               ) : leaderboardData.length > 0 ? (
                 leaderboardData.map((item) => (
@@ -424,8 +450,8 @@ export default function MoreScreen() {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>🎖️ Achievements</Text>
-              <TouchableOpacity 
+              <Text style={styles.modalTitle}>Achievements</Text>
+              <TouchableOpacity
                 style={styles.modalCloseButton}
                 onPress={() => setShowAchievements(false)}
               >
@@ -435,20 +461,29 @@ export default function MoreScreen() {
 
             <ScrollView>
               {achievements.map((achievement) => (
-                <View 
-                  key={achievement.id} 
+                <View
+                  key={achievement.id}
                   style={[
                     styles.achievementItem,
                     !achievement.unlocked && { opacity: 0.5, borderLeftColor: '#9ca3af' },
                   ]}
                 >
-                  <Text style={styles.achievementIcon}>{achievement.icon}</Text>
+                  <Ionicons
+                    name={achievement.icon}
+                    size={36}
+                    color={achievement.unlocked ? '#10b981' : '#9ca3af'}
+                    style={styles.achievementIcon}
+                  />
                   <View style={styles.achievementInfo}>
                     <Text style={styles.achievementTitle}>{achievement.title}</Text>
                     <Text style={styles.achievementDesc}>{achievement.description}</Text>
-                    {achievement.unlocked && (
+                    {achievement.unlocked ? (
                       <Text style={styles.achievementUnlocked}>
-                        ✅ Unlocked: {achievement.unlockedDate}
+                        ✅ Unlocked
+                      </Text>
+                    ) : (
+                      <Text style={[styles.achievementUnlocked, { color: '#9ca3af' }]}>
+                        Progress: {achievement.progress}
                       </Text>
                     )}
                   </View>

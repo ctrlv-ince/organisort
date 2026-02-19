@@ -16,6 +16,7 @@ import {
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
+import * as Haptics from 'expo-haptics';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import apiClient from '@/src/utils/apiClient';
@@ -104,6 +105,7 @@ export default function ScanScreen() {
 
   const takePicture = async () => {
     if (cameraRef) {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       const photo = await cameraRef.takePictureAsync({ quality: 0.8 });
       setCapturedImage(photo.uri);
       setIsCameraActive(false);
@@ -149,6 +151,7 @@ export default function ScanScreen() {
       });
 
       if (response.data.success) {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         setResult(response.data);
       } else {
         Alert.alert('Analysis Failed', response.data.error || 'Could not analyze the image');

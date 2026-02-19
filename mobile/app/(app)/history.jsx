@@ -13,10 +13,13 @@ import {
   Linking,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import apiClient from '@/src/utils/apiClient';
+import { CardSkeleton } from '@/src/components/SkeletonLoader';
 
 // ---------------------------------------------------------------------------
 // Client-side fallback guide data (mirrors backend constants).
@@ -128,7 +131,7 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#10b981',
-    paddingTop: 32,
+    paddingTop: 16,
     paddingBottom: 24,
     paddingHorizontal: 24,
     borderBottomLeftRadius: 24,
@@ -605,6 +608,7 @@ export default function HistoryScreen() {
   const [userLocation, setUserLocation] = useState(null);
   const [disposalLocations, setDisposalLocations] = useState([]);
   const [loadingLocations, setLoadingLocations] = useState(false);
+  const [failedImages, setFailedImages] = useState({});
   const [showDisposalMap, setShowDisposalMap] = useState(false);
   const [selectedMapLocation, setSelectedMapLocation] = useState(null);
 
@@ -721,6 +725,7 @@ export default function HistoryScreen() {
           onPress: async () => {
             try {
               await apiClient.delete(`/api/detections/${detectionId}`);
+              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
               // Remove from local state
               setDetections(detections.filter(d => d._id !== detectionId));
               Alert.alert('Success', 'Detection deleted');
@@ -760,9 +765,21 @@ export default function HistoryScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#10b981" />
-      </View>
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={styles.header}>
+          <View style={styles.headerContent}>
+            <View style={styles.headerPlaceholder} />
+            <Text style={styles.headerTitle}>Detection History</Text>
+            <View style={styles.headerPlaceholder} />
+          </View>
+        </View>
+        <View style={{ padding: 16 }}>
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+        </View>
+      </SafeAreaView>
     );
   }
 
@@ -808,11 +825,18 @@ export default function HistoryScreen() {
           {detections.length > 0 ? (
             detections.map((detection) => (
               <View key={detection._id} style={styles.historyCard}>
-                <Image
-                  source={{ uri: detection.annotated_image || detection.imageUrl }}
-                  style={styles.historyImage}
-                  resizeMode="cover"
-                />
+                {detection.annotated_image && !failedImages[detection._id] ? (
+                  <Image
+                    source={{ uri: detection.annotated_image || detection.imageUrl }}
+                    style={styles.historyImage}
+                    resizeMode="cover"
+                    onError={() => setFailedImages(prev => ({ ...prev, [detection._id]: true }))}
+                  />
+                ) : (
+                  <View style={[styles.historyImage, { backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' }]}>
+                    <Ionicons name="image-outline" size={40} color="#94a3b8" />
+                  </View>
+                )}
                 <View style={styles.historyContent}>
                   <View style={styles.historyHeader}>
                     <Text style={styles.wasteType}>
@@ -822,7 +846,7 @@ export default function HistoryScreen() {
                       style={styles.deleteButton}
                       onPress={() => handleDelete(detection._id)}
                     >
-                      <Text style={styles.deleteButtonText}>🗑️</Text>
+                      <Ionicons name="trash-outline" size={20} color="#ef4444" />
                     </TouchableOpacity>
                   </View>
 
