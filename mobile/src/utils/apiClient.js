@@ -2,7 +2,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getApiUrl } from './env';
 
-let onUnauthorized = () => {};
+let onUnauthorized = () => { };
+let isHandlingUnauthorized = false;
 
 export const setOnUnauthorized = (callback) => {
   onUnauthorized = callback;
@@ -34,9 +35,14 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && !isHandlingUnauthorized) {
+      isHandlingUnauthorized = true;
       console.error('Unauthorized - Invalid or expired token');
-      await onUnauthorized();
+      try {
+        await onUnauthorized();
+      } finally {
+        isHandlingUnauthorized = false;
+      }
     }
     return Promise.reject(error);
   }

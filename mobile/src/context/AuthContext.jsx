@@ -23,12 +23,19 @@ export const AuthProvider = ({ children }) => {
           setUser(null);
         }
       } catch (error) {
-        const baseURL = getApiUrl();
-        console.error(
-          `Error checking auth status. API URL: ${baseURL}. `
-          + 'If using a physical device, set EXPO_PUBLIC_API_URL to your computer\'s LAN IP.',
-          error
-        );
+        // If the token is expired/invalid (401), clean it up so the user
+        // is properly treated as unauthenticated and sent to login.
+        if (error.response?.status === 401) {
+          console.warn('Stored token is expired or invalid — redirecting to login.');
+          await AsyncStorage.removeItem('token');
+        } else {
+          const baseURL = getApiUrl();
+          console.error(
+            `Error checking auth status. API URL: ${baseURL}. `
+            + 'If using a physical device, set EXPO_PUBLIC_API_URL to your computer\'s LAN IP.',
+            error
+          );
+        }
         setUser(null);
       } finally {
         setLoading(false);
@@ -130,16 +137,22 @@ export const AuthProvider = ({ children }) => {
   const logout = async (router) => {
     setLoading(true);
 
+    // Clear local auth state FIRST to prevent re-sending an expired token
+    const token = await AsyncStorage.getItem('token');
+    await AsyncStorage.removeItem('token');
+    setUser(null);
+
     try {
-      // Call the server logout FIRST (while token is still in AsyncStorage)
-      await apiClient.post('/api/auth/logout');
+      // Attempt server-side logout with the token we just removed
+      if (token) {
+        await apiClient.post('/api/auth/logout', null, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
     } catch (error) {
-      // Log if server logout fails, but continue with client-side logout
+      // Log if server logout fails, but continue — local state is already cleared
       console.error('Server logout failed:', error);
     } finally {
-      // Always clear local authentication state regardless of server response
-      await AsyncStorage.removeItem('token');
-      setUser(null);
       setLoading(false);
 
       if (router) {
