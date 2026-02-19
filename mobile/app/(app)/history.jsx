@@ -747,7 +747,7 @@ export default function HistoryScreen() {
         <View style={styles.header}>
           <View style={styles.headerContent}>
             <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-              <Text style={styles.backButtonText}>←</Text>
+              <Text style={styles.backButtonText}>X</Text>
             </TouchableOpacity>
             <Text style={styles.headerTitle}>Detection History</Text>
             <View style={styles.headerPlaceholder} />
