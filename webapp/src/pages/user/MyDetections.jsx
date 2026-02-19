@@ -248,6 +248,18 @@ const MyDetections = () => {
     }
   };
 
+  const getUserLocationMapEmbedUrl = () => {
+    if (!userLocation) return null;
+
+    const radius = 0.01;
+    const left = userLocation.longitude - radius;
+    const right = userLocation.longitude + radius;
+    const top = userLocation.latitude + radius;
+    const bottom = userLocation.latitude - radius;
+
+    return `https://www.openstreetmap.org/export/embed.html?bbox=${left},${bottom},${right},${top}&layer=mapnik&marker=${userLocation.latitude},${userLocation.longitude}`;
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -556,6 +568,22 @@ const MyDetections = () => {
             </div>
 
             <div className="p-6">
+              {userLocation && (
+                <div className="mb-6 rounded-lg overflow-hidden border border-gray-200">
+                  <iframe
+                    title="Current location map"
+                    src={getUserLocationMapEmbedUrl()}
+                    className="w-full h-72"
+                    loading="lazy"
+                  />
+                  <div className="bg-gray-50 px-4 py-2 border-t border-gray-200">
+                    <p className="text-xs text-gray-600">
+                      Your current location is highlighted on the map.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {disposalLocations.length > 0 ? (
                 <div className="space-y-4">
                   {disposalLocations.map((location, index) => (
