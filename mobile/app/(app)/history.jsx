@@ -256,6 +256,32 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#94a3b8',
     marginTop: 4,
+    marginBottom: 8,
+  },
+  detectedTypesSection: {
+    marginBottom: 4,
+  },
+  detectedTypesLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#64748b',
+    marginBottom: 6,
+  },
+  detectedTypesList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  detectedTypeBadge: {
+    backgroundColor: '#dcfce7',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  detectedTypeBadgeText: {
+    fontSize: 12,
+    color: '#166534',
+    fontWeight: '500',
   },
   cardActions: {
     flexDirection: 'row',
@@ -790,11 +816,7 @@ export default function HistoryScreen() {
                 <View style={styles.historyContent}>
                   <View style={styles.historyHeader}>
                     <Text style={styles.wasteType}>
-                      {detection.primaryWasteType
-                        || detection.wasteType
-                        || detection.detectedWasteTypes?.[0]
-                        || detection.detections?.[0]?.class
-                        || 'Unknown Waste'}
+                      {detection.summary?.total_detections || detection.detections?.length || 0} Items
                     </Text>
                     <TouchableOpacity
                       style={styles.deleteButton}
@@ -804,31 +826,44 @@ export default function HistoryScreen() {
                     </TouchableOpacity>
                   </View>
 
+                  <Text style={styles.timestamp}>{new Date(detection.createdAt).toLocaleString()}</Text>
+
                   <View style={styles.detectionInfo}>
-                    <View
-                      style={[
-                        styles.categoryBadge,
-                        { backgroundColor: '#10b981' /* Organic Green */ },
-                      ]}
-                    >
-                      <Text style={styles.categoryBadgeText}>ORGANIC</Text>
-                    </View>
                     <View style={styles.infoBadge}>
                       <Text style={styles.infoBadgeText}>
-                        {detection.summary?.total_detections || detection.detections?.length || 0}{' '}
-                        items
-                      </Text>
-                    </View>
-                    <View style={styles.infoBadge}>
-                      <Text style={styles.infoBadgeText}>
-                        {detection.summary?.highest_confidence
-                          ? `${(detection.summary.highest_confidence * 100).toFixed(0)}%`
-                          : 'N/A'}
+                        {detection.summary?.average_confidence
+                          ? `${(detection.summary.average_confidence * 100).toFixed(1)}%`
+                          : 'N/A'}{' '}
+                        confidence
                       </Text>
                     </View>
                   </View>
 
-                  <Text style={styles.timestamp}>{formatDate(detection.createdAt)}</Text>
+                  {/* Detected Types */}
+                  {(detection.detectedWasteTypes?.length > 0 || detection.detections?.length > 0) && (
+                    <View style={styles.detectedTypesSection}>
+                      <Text style={styles.detectedTypesLabel}>Detected Types:</Text>
+                      <View style={styles.detectedTypesList}>
+                        {(detection.detectedWasteTypes || detection.detections?.map(d => d.class) || [])
+                          .filter((v, i, a) => a.indexOf(v) === i)
+                          .slice(0, 3)
+                          .map((type, i) => (
+                            <View key={i} style={styles.detectedTypeBadge}>
+                              <Text style={styles.detectedTypeBadgeText}>{type}</Text>
+                            </View>
+                          ))}
+                        {(detection.detectedWasteTypes || detection.detections?.map(d => d.class) || [])
+                          .filter((v, i, a) => a.indexOf(v) === i).length > 3 && (
+                            <View style={[styles.detectedTypeBadge, { backgroundColor: '#f1f5f9' }]}>
+                              <Text style={[styles.detectedTypeBadgeText, { color: '#64748b' }]}>
+                                +{(detection.detectedWasteTypes || detection.detections?.map(d => d.class) || [])
+                                  .filter((v, i, a) => a.indexOf(v) === i).length - 3} more
+                              </Text>
+                            </View>
+                          )}
+                      </View>
+                    </View>
+                  )}
 
                   <View style={styles.cardActions}>
                     <TouchableOpacity
