@@ -103,10 +103,10 @@ const LandingPage = () => {
   ];
 
   const systemFacts = [
-    { number: '2', label: 'Role Dashboards (User & Admin)', icon: '👤' },
-    { number: '5+', label: 'Detection API Endpoints', icon: '🧩' },
-    { number: '100%', label: 'Authenticated Data Access', icon: '🔒' },
-    { number: '1', label: 'Unified Detection History per User', icon: '🗃️' }
+    { number: '36', label: 'Detectable Waste Types', sublabel: 'Spanning fruits, vegetables, proteins, eggs, grains, and more — each with disposal guides and decomposition data', icon: '♻️' },
+    { number: '6', label: 'Waste Categories', sublabel: 'Fruits, Vegetables, Proteins, Eggs, Grains, and Other — each color-coded and tracked separately', icon: '📊' },
+    { number: '34', label: 'Backend API Routes', sublabel: 'Across 5 route groups — authentication, users, detections, activity logs, and disposal locations', icon: '�' },
+    { number: '3', label: 'Connected Services', sublabel: 'Express backend, Python AI detection service, and MongoDB database — all health-monitored in real time', icon: '🛠️' }
   ];
 
   // Auto-advance slides
@@ -235,8 +235,7 @@ const LandingPage = () => {
                   <span className="hero-title-accent">{slides[currentSlide].title}</span>
                 </h1>
                 <p className="hero-desc">
-                  {slides[currentSlide].subtitle}. This page now describes the real platform modules,
-                  data flow, and dashboards available in your current build.
+                  {slides[currentSlide].subtitle}
                 </p>
                 <div className="hero-buttons">
                   <button
@@ -273,8 +272,8 @@ const LandingPage = () => {
                     </div>
                   </div>
                   <div className="hero-price-badge">
-                    <div className="hero-price-label">Platform State</div>
-                    <div className="hero-price-value">Live System</div>
+                    <div className="hero-price-label">Organic Waste Detection System</div>
+                    <div className="hero-price-value">OrganiSort</div>
                   </div>
                 </div>
               </div>
@@ -378,6 +377,7 @@ const LandingPage = () => {
                   <div className="stat-icon">{stat.icon}</div>
                   <div className="stat-number">{stat.number}</div>
                   <div className="stat-label">{stat.label}</div>
+                  {stat.sublabel && <div className="stat-sublabel">{stat.sublabel}</div>}
                 </div>
               ))}
             </div>
