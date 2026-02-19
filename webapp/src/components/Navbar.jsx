@@ -23,7 +23,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <h1 className="text-xl font-bold text-gray-800">Waste Detection</h1>
+            <h1 className="text-xl font-bold text-gray-800">OrganiSort</h1>
           </div>
 
           {/* User Section */}

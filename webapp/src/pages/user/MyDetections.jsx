@@ -168,9 +168,9 @@ const MyDetections = () => {
       setLoadingLocations(true);
       const token = localStorage.getItem('token');
 
-      const wasteTypes = detection.detectedWasteTypes || 
-                        detection.detections?.map(d => d.class) || 
-                        [];
+      const wasteTypes = detection.detectedWasteTypes ||
+        detection.detections?.map(d => d.class) ||
+        [];
 
       const response = await fetch(
         `${API_URL}/api/disposal-locations/recommended?` +
@@ -199,8 +199,8 @@ const MyDetections = () => {
     let sorted = [...detections];
 
     if (searchTerm) {
-      sorted = sorted.filter(d => 
-        d.detectedWasteTypes?.some(type => 
+      sorted = sorted.filter(d =>
+        d.detectedWasteTypes?.some(type =>
           type.toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
@@ -316,6 +316,14 @@ const MyDetections = () => {
                   alt={`Detection from ${new Date(detection.createdAt).toLocaleString()}`}
                   className="w-full h-48 object-cover bg-gray-100"
                   loading="lazy"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.style.display = 'none';
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'w-full h-48 bg-gray-100 flex items-center justify-center';
+                    placeholder.innerHTML = '<svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>';
+                    e.target.parentNode.insertBefore(placeholder, e.target);
+                  }}
                 />
               )}
 
@@ -338,7 +346,7 @@ const MyDetections = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-lg font-bold text-green-600">
-                      {detection.summary?.average_confidence 
+                      {detection.summary?.average_confidence
                         ? `${(detection.summary.average_confidence * 100).toFixed(1)}%`
                         : 'N/A'}
                     </p>
@@ -379,7 +387,7 @@ const MyDetections = () => {
                   </div>
                   <div className="text-center">
                     <p className="text-lg font-bold text-amber-600">
-                      {detection.summary?.highest_confidence 
+                      {detection.summary?.highest_confidence
                         ? `${(detection.summary.highest_confidence * 100).toFixed(0)}%`
                         : 'N/A'}
                     </p>
@@ -429,7 +437,7 @@ const MyDetections = () => {
           </p>
         </div>
       )}
-      
+
       {selectedDetection && !showDisposalModal && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4" onClick={closeDetails}>
           <div
@@ -452,6 +460,14 @@ const MyDetections = () => {
                   src={getDetectionImageUrl(selectedDetection)}
                   alt="Detection detail"
                   className="w-full max-h-[420px] object-contain rounded-lg bg-gray-100"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.style.display = 'none';
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'w-full h-48 bg-gray-100 flex items-center justify-center rounded-lg';
+                    placeholder.innerHTML = '<svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>';
+                    e.target.parentNode.insertBefore(placeholder, e.target);
+                  }}
                 />
               )}
 

@@ -52,8 +52,38 @@ const Leaderboard = ({ userData }) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-200 border-t-green-600"></div>
+      <div className="p-6 space-y-6">
+        {/* Header skeleton */}
+        <div className="skeleton-shimmer h-24 rounded-lg" />
+        {/* Stats skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="bg-white rounded-lg shadow-md p-5 space-y-2">
+              <div className="skeleton-shimmer h-4 w-20" />
+              <div className="skeleton-shimmer h-8 w-12" />
+            </div>
+          ))}
+        </div>
+        {/* Rank card skeleton */}
+        <div className="skeleton-shimmer h-24 rounded-lg" />
+        {/* Ranking rows skeleton */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+            <div className="skeleton-shimmer h-6 w-32" />
+          </div>
+          {[1, 2, 3, 4, 5].map(i => (
+            <div key={i} className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="skeleton-shimmer h-12 w-12 rounded-full" />
+                <div className="space-y-2">
+                  <div className="skeleton-shimmer h-4 w-32" />
+                  <div className="skeleton-shimmer h-3 w-40" />
+                </div>
+              </div>
+              <div className="skeleton-shimmer h-8 w-12" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

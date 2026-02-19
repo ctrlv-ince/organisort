@@ -101,6 +101,7 @@ header .container-pro {
   cursor: pointer;
   font-size: 0.95rem;
 }
+
 .nav-link:hover {
   background: var(--color-bg-alt);
   color: var(--color-primary);
@@ -205,11 +206,66 @@ header .container-pro {
   background: var(--color-bg-alt);
 }
 
+/* Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+@keyframes pulse-soft {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(21, 128, 61, 0.4);
+  }
+
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(21, 128, 61, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(21, 128, 61, 0);
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Hero Section */
 .hero {
   position: relative;
-  padding: 4rem 0;
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  padding: 6rem 0;
+  /* Increased padding */
+  background: radial-gradient(circle at 50% 50%, #f0fdf4 0%, #dcfce7 60%, #bbf7d0 100%);
   overflow: hidden;
 }
 
@@ -225,8 +281,9 @@ header .container-pro {
   top: -50px;
   right: 10%;
   font-size: 12rem;
-  opacity: 0.05;
-  transform: rotate(-15deg);
+  opacity: 0.08;
+  /* Slightly more visible */
+  animation: float 6s ease-in-out infinite;
 }
 
 .hero-icon-bottom {
@@ -234,8 +291,8 @@ header .container-pro {
   bottom: -50px;
   left: 5%;
   font-size: 10rem;
-  opacity: 0.05;
-  transform: rotate(25deg);
+  opacity: 0.08;
+  animation: float 8s ease-in-out infinite reverse;
 }
 
 .hero-content {
@@ -249,65 +306,80 @@ header .container-pro {
 
 .hero-badge {
   display: inline-block;
-  background: rgba(21, 128, 61, 0.1);
-  color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  color: var(--color-primary-dark);
   padding: 0.5rem 1rem;
   border-radius: 9999px;
   font-size: 0.875rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
   border: 1px solid rgba(21, 128, 61, 0.2);
+  box-shadow: var(--shadow-sm);
+  animation: slide-up 0.5s ease-out;
 }
 
 .hero-title {
-  font-size: 3.5rem;
+  font-size: 4rem;
+  /* Larger title */
   font-weight: 800;
   line-height: 1.1;
   margin-bottom: 1.5rem;
   color: var(--color-text);
-  letter-spacing: -1px;
+  letter-spacing: -1.5px;
+  animation: slide-up 0.6s ease-out 0.1s backwards;
 }
 
 .hero-title-accent {
   color: var(--color-primary);
   display: block;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .hero-desc {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   color: var(--color-text-muted);
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
   line-height: 1.7;
+  max-width: 90%;
+  animation: slide-up 0.7s ease-out 0.2s backwards;
 }
 
 .hero-buttons {
   display: flex;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
+  animation: slide-up 0.8s ease-out 0.3s backwards;
 }
 
 .hero-button-secondary {
-  padding: 0.625rem 1.25rem;
+  padding: 0.75rem 1.5rem;
   border: 1px solid var(--color-border);
-  background: white;
+  background: rgba(255, 255, 255, 0.8);
   border-radius: 0.5rem;
   font-weight: 600;
   text-decoration: none;
   color: var(--color-text);
   transition: all 0.2s;
-  font-size: 0.875rem;
+  font-size: 1rem;
+  backdrop-filter: blur(4px);
 }
 
 .hero-button-secondary:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+  background: white;
 }
 
 .slide-indicators {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  animation: slide-up 0.9s ease-out 0.4s backwards;
 }
 
 .slide-dot {
@@ -315,40 +387,76 @@ header .container-pro {
   height: 0.75rem;
   border-radius: 9999px;
   border: none;
-  background: var(--color-border);
+  background: rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 0;
 }
 
 .slide-dot.active {
   background: var(--color-primary);
-  width: 2rem;
+  width: 2.5rem;
 }
 
 .hero-right {
   display: flex;
   justify-content: center;
+  animation: float 6s ease-in-out infinite;
+  perspective: 1000px;
 }
 
 .hero-image-card {
   position: relative;
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
   aspect-ratio: 1;
-  background: white;
-  border-radius: 1.5rem;
-  box-shadow: var(--shadow-xl);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 2rem;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 .hero-fruit-display {
   font-size: 10rem;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 10px 20px rgba(21, 128, 61, 0.2));
+  transition: transform 0.3s;
+}
+
+.hero-image-card:hover .hero-fruit-display {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* New class for the recycle icon container specifically */
+.recycle-animation-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Placeholder for the GIF */
+.recycle-gif-placeholder {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  /* If it's an image tag, this handles sizing. If div, see below */
+}
+
+/* Fallback animation if no GIF provided yet */
+.recycle-icon-animated {
+  font-size: 10rem;
+  /* Adjust as needed */
+  animation: spin-slow 10s linear infinite;
+  display: inline-block;
 }
 
 .hero-price-badge {
@@ -791,65 +899,65 @@ footer {
   .desktop-nav {
     display: none;
   }
-  
+
   .mobile-menu-btn {
     display: block;
   }
-  
+
   .mobile-menu {
     display: block;
   }
-  
+
   .header-right .btn-primary,
   .header-right .btn-outline {
     display: none;
   }
-  
+
   .hero-content {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
-  
+
   .hero-title {
     font-size: 2.5rem;
   }
-  
+
   .hero-buttons {
     flex-direction: column;
   }
-  
+
   .hero-button-secondary {
     text-align: center;
   }
-  
+
   .section-title {
     font-size: 2rem;
   }
-  
+
   .features-grid,
   .products-grid,
   .news-grid,
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .cta-content h2 {
     font-size: 2rem;
   }
-  
+
   .cta-content p {
     font-size: 1rem;
   }
-  
+
   .cta-buttons {
     flex-direction: column;
   }
-  
+
   .footer-bottom {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .container-pro {
     padding: 0 1rem;
   }
@@ -859,19 +967,19 @@ footer {
   .hero-title {
     font-size: 2rem;
   }
-  
+
   .hero-desc {
     font-size: 1rem;
   }
-  
+
   .hero-image-card {
     max-width: 100%;
   }
-  
+
   .hero-fruit-display {
     font-size: 6rem;
   }
-  
+
   .stat-number {
     font-size: 2.5rem;
   }

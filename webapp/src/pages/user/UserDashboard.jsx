@@ -151,7 +151,9 @@ const UserDashboard = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-3xl">♻️</span>
+                <svg className="w-7 h-7 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
               </div>
               <div>
                 <h2 className="text-lg font-bold">OrganiSort</h2>
@@ -198,11 +200,10 @@ const UserDashboard = () => {
                 setActiveTab(item.id);
                 setSidebarOpen(false);
               }}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                activeTab === item.id
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${activeTab === item.id
                   ? 'bg-white text-green-800 shadow-lg font-semibold'
                   : 'text-green-100 hover:bg-green-600 hover:text-white'
-              }`}
+                }`}
             >
               <span className={activeTab === item.id ? 'text-green-700' : ''}>
                 {item.icon}

@@ -15,3 +15,15 @@ body,
 body {
   @apply font-sans text-gray-900;
 }
+
+/* Skeleton shimmer loading animation */
+@keyframes shimmer {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.skeleton-shimmer {
+  animation: shimmer 1.5s ease-in-out infinite;
+  @apply bg-gray-200 rounded;
+}
