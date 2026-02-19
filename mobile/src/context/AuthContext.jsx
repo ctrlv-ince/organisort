@@ -145,7 +145,7 @@ export const AuthProvider = ({ children }) => {
     try {
       // Attempt server-side logout with the token we just removed
       if (token) {
-        await apiClient.post('/api/auth/logout', null, {
+        await apiClient.post('/api/auth/logout', {}, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }

@@ -10,8 +10,12 @@ import {
   RefreshControl,
   Alert,
   Modal,
+  Linking,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import * as Location from 'expo-location';
+import MapView, { Marker, Circle } from 'react-native-maps';
+import { Ionicons } from '@expo/vector-icons';
 import apiClient from '@/src/utils/apiClient';
 
 // ---------------------------------------------------------------------------
@@ -253,14 +257,34 @@ const styles = StyleSheet.create({
     color: '#94a3b8',
     marginTop: 4,
   },
+  cardActions: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 12,
+  },
   viewDetailsButton: {
+    flex: 1,
+    backgroundColor: '#3b82f6',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  viewDetailsText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  findDisposalButton: {
+    flex: 1,
     backgroundColor: '#10b981',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 12,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 6,
   },
-  viewDetailsText: {
+  findDisposalText: {
     color: 'white',
     fontWeight: '600',
     fontSize: 14,
@@ -410,6 +434,138 @@ const styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 8,
   },
+  // Disposal Map Modal Styles
+  disposalModalContainer: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+  },
+  disposalModalHeader: {
+    backgroundColor: '#10b981',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    paddingTop: 50,
+  },
+  disposalModalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  disposalModalSubtitle: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.8)',
+    marginTop: 2,
+  },
+  disposalMap: {
+    flex: 1,
+  },
+  noLocationContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noLocationText: {
+    fontSize: 16,
+    color: '#64748b',
+    marginTop: 12,
+  },
+  noLocationsOverlay: {
+    position: 'absolute',
+    bottom: 100,
+    left: 20,
+    right: 20,
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 24,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  noLocationsText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1e293b',
+    marginTop: 12,
+  },
+  noLocationsSubtext: {
+    fontSize: 13,
+    color: '#64748b',
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  locationCard: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'white',
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  closeLocationCard: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+  },
+  locationName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1e293b',
+    marginBottom: 8,
+    paddingRight: 32,
+  },
+  locationAddress: {
+    fontSize: 14,
+    color: '#64748b',
+    marginBottom: 4,
+  },
+  locationDistance: {
+    fontSize: 14,
+    color: '#10b981',
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  wasteTypesRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginBottom: 12,
+  },
+  wasteTypeBadge: {
+    backgroundColor: '#f1f5f9',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  wasteTypeBadgeText: {
+    fontSize: 12,
+    color: '#475569',
+    fontWeight: '500',
+  },
+  directionsButton: {
+    backgroundColor: '#10b981',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 14,
+    borderRadius: 8,
+    gap: 8,
+  },
+  directionsButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
 });
 
 export default function HistoryScreen() {
@@ -420,15 +576,20 @@ export default function HistoryScreen() {
   const [stats, setStats] = useState(null);
   const [selectedDetection, setSelectedDetection] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
+  const [disposalLocations, setDisposalLocations] = useState([]);
+  const [loadingLocations, setLoadingLocations] = useState(false);
+  const [showDisposalMap, setShowDisposalMap] = useState(false);
+  const [selectedMapLocation, setSelectedMapLocation] = useState(null);
 
   const fetchHistory = async () => {
     try {
       const response = await apiClient.get('/api/detections/history');
-      
+
       // Handle both array and object responses
       const detectionData = response.data.detections || response.data;
       setDetections(Array.isArray(detectionData) ? detectionData.map(ensureGuides) : []);
-      
+
       // Calculate stats from the data
       calculateStats(detectionData);
     } catch (error) {
@@ -452,7 +613,70 @@ export default function HistoryScreen() {
 
   useEffect(() => {
     fetchHistory();
+    getUserLocation();
   }, []);
+
+  const getUserLocation = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') return;
+
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+
+      setUserLocation({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+    } catch (error) {
+      console.error('Error getting location:', error);
+    }
+  };
+
+  const handleFindDisposal = async (detection) => {
+    if (!userLocation) {
+      Alert.alert(
+        'Location Required',
+        'Please enable location services to find nearby disposal locations.'
+      );
+      return;
+    }
+
+    try {
+      setLoadingLocations(true);
+      setSelectedDetection(detection);
+
+      const wasteTypes =
+        detection.detectedWasteTypes ||
+        detection.detections?.map((d) => d.class) ||
+        [];
+
+      const response = await apiClient.get('/api/disposal-locations/recommended', {
+        params: {
+          latitude: userLocation.latitude,
+          longitude: userLocation.longitude,
+          wasteTypes: wasteTypes.join(','),
+        },
+      });
+
+      if (response.data.success) {
+        setDisposalLocations(response.data.data || []);
+        setShowDisposalMap(true);
+      }
+    } catch (error) {
+      console.error('Error fetching disposal locations:', error);
+      Alert.alert('Error', 'Failed to fetch disposal locations.');
+    } finally {
+      setLoadingLocations(false);
+    }
+  };
+
+  const handleDirections = (location) => {
+    if (!userLocation) return;
+    const url = `https://www.openstreetmap.org/directions?from=${userLocation.latitude},${userLocation.longitude}&to=${location.location.coordinates[1]},${location.location.coordinates[0]}`;
+    Linking.openURL(url);
+  };
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -606,12 +830,29 @@ export default function HistoryScreen() {
 
                   <Text style={styles.timestamp}>{formatDate(detection.createdAt)}</Text>
 
-                  <TouchableOpacity
-                    style={styles.viewDetailsButton}
-                    onPress={() => handleViewDetails(detection)}
-                  >
-                    <Text style={styles.viewDetailsText}>View Details</Text>
-                  </TouchableOpacity>
+                  <View style={styles.cardActions}>
+                    <TouchableOpacity
+                      style={styles.viewDetailsButton}
+                      onPress={() => handleViewDetails(detection)}
+                    >
+                      <Text style={styles.viewDetailsText}>View Details</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.findDisposalButton}
+                      onPress={() => handleFindDisposal(detection)}
+                      disabled={loadingLocations}
+                    >
+                      {loadingLocations && selectedDetection?._id === detection._id ? (
+                        <ActivityIndicator size="small" color="white" />
+                      ) : (
+                        <>
+                          <Ionicons name="location" size={16} color="white" />
+                          <Text style={styles.findDisposalText}>Find Disposal</Text>
+                        </>
+                      )}
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             ))
@@ -701,6 +942,111 @@ export default function HistoryScreen() {
               </>
             )}
           </ScrollView>
+        </View>
+      </Modal>
+
+      {/* Disposal Locations Map Modal */}
+      <Modal visible={showDisposalMap} animationType="slide" onRequestClose={() => setShowDisposalMap(false)}>
+        <View style={styles.disposalModalContainer}>
+          <View style={styles.disposalModalHeader}>
+            <View>
+              <Text style={styles.disposalModalTitle}>Nearby Disposal Locations</Text>
+              <Text style={styles.disposalModalSubtitle}>
+                Found {disposalLocations.length} location{disposalLocations.length !== 1 ? 's' : ''}
+              </Text>
+            </View>
+            <TouchableOpacity onPress={() => { setShowDisposalMap(false); setSelectedMapLocation(null); }}>
+              <Ionicons name="close" size={28} color="#fff" />
+            </TouchableOpacity>
+          </View>
+
+          {userLocation && (
+            <MapView
+              style={styles.disposalMap}
+              initialRegion={{
+                latitude: userLocation.latitude,
+                longitude: userLocation.longitude,
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05,
+              }}
+              showsUserLocation={true}
+            >
+
+              <Circle
+                center={userLocation}
+                radius={500}
+                strokeColor="rgba(16, 185, 129, 0.5)"
+                fillColor="rgba(16, 185, 129, 0.1)"
+              />
+              {disposalLocations.map((location) => (
+                <Marker
+                  key={location._id}
+                  coordinate={{
+                    latitude: location.location.coordinates[1],
+                    longitude: location.location.coordinates[0],
+                  }}
+                  pinColor="#10b981"
+                  onPress={() => setSelectedMapLocation(location)}
+                />
+              ))}
+            </MapView>
+          )}
+
+          {!userLocation && (
+            <View style={styles.noLocationContainer}>
+              <Ionicons name="location-outline" size={48} color="#9ca3af" />
+              <Text style={styles.noLocationText}>Location not available</Text>
+            </View>
+          )}
+
+          {disposalLocations.length === 0 && (
+            <View style={styles.noLocationsOverlay}>
+              <Ionicons name="location-outline" size={48} color="#9ca3af" />
+              <Text style={styles.noLocationsText}>No disposal locations found nearby</Text>
+              <Text style={styles.noLocationsSubtext}>
+                Check with your local waste management authority for proper disposal.
+              </Text>
+            </View>
+          )}
+
+          {selectedMapLocation && (
+            <View style={styles.locationCard}>
+              <TouchableOpacity
+                style={styles.closeLocationCard}
+                onPress={() => setSelectedMapLocation(null)}
+              >
+                <Ionicons name="close" size={24} color="#666" />
+              </TouchableOpacity>
+              <Text style={styles.locationName}>{selectedMapLocation.name}</Text>
+              <Text style={styles.locationAddress}>{selectedMapLocation.address}</Text>
+              <Text style={styles.locationDistance}>{selectedMapLocation.distanceText} away</Text>
+
+              {selectedMapLocation.acceptedWasteTypes && (
+                <View style={styles.wasteTypesRow}>
+                  {selectedMapLocation.acceptedWasteTypes.slice(0, 4).map((type, i) => (
+                    <View key={i} style={styles.wasteTypeBadge}>
+                      <Text style={styles.wasteTypeBadgeText}>{type}</Text>
+                    </View>
+                  ))}
+                  {selectedMapLocation.acceptedWasteTypes.length > 4 && (
+                    <View style={styles.wasteTypeBadge}>
+                      <Text style={styles.wasteTypeBadgeText}>
+                        +{selectedMapLocation.acceptedWasteTypes.length - 4}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              )}
+
+              <TouchableOpacity
+                style={styles.directionsButton}
+                onPress={() => handleDirections(selectedMapLocation)}
+              >
+                <Ionicons name="navigate" size={20} color="white" />
+                <Text style={styles.directionsButtonText}>Get Directions</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </Modal>
     </>

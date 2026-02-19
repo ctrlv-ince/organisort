@@ -16,7 +16,7 @@ import {
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import MapView, { Marker, Circle, UrlTile } from 'react-native-maps';
+import MapView, { Marker, Circle } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import apiClient from '@/src/utils/apiClient';
 
@@ -259,7 +259,7 @@ export default function ScanScreen() {
             </View>
             <View style={styles.statCard}>
               <Text style={styles.statValue}>
-                {result.summary?.average_confidence 
+                {result.summary?.average_confidence
                   ? `${(result.summary.average_confidence * 100).toFixed(0)}%`
                   : 'N/A'}
               </Text>
@@ -341,12 +341,7 @@ export default function ScanScreen() {
               }}
               showsUserLocation={true}
             >
-              {/* OpenStreetMap tiles */}
-              <UrlTile
-                urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                maximumZ={19}
-                flipY={false}
-              />
+
 
               <Circle
                 center={userLocation}
