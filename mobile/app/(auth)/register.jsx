@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#2563eb' },
@@ -122,7 +123,7 @@ export default function RegisterScreen() {
                 accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
                 accessibilityState={{ pressed: showPassword }}
               >
-                <Text style={styles.toggleText}>{showPassword ? '🙈' : '👁️'}</Text>
+                <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={22} color="#64748b" />
               </TouchableOpacity>
             </View>
             {errors.password && <Text style={styles.error}>{errors.password}</Text>}
@@ -148,7 +149,7 @@ export default function RegisterScreen() {
                 accessibilityLabel={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
                 accessibilityState={{ pressed: showConfirmPassword }}
               >
-                <Text style={styles.toggleText}>{showConfirmPassword ? '🙈' : '👁️'}</Text>
+                <Ionicons name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'} size={22} color="#64748b" />
               </TouchableOpacity>
             </View>
             {errors.confirmPassword && <Text style={styles.error}>{errors.confirmPassword}</Text>}

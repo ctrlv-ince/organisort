@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 
-const CHART_COLORS = ['#ef4444', '#f97316', '#f59e0b', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899'];
+const CHART_COLORS = ['#ef4444', '#f97316', '#f59e0b', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6', '#6366f1', '#f43f5e'];
 
 /**
  * Analytics Page - Admin Dashboard
- * Comprehensive analytics and insights for organic waste detection
- * Shows trends, patterns, and detailed breakdowns across 45 waste types
+ * 10 comprehensive chart/graph visualizations for organic waste detection
  */
 const AnalyticsPage = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [timeRange, setTimeRange] = useState('30'); // days
+  const [timeRange, setTimeRange] = useState('30');
   const [detections, setDetections] = useState([]);
-  
+
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
@@ -25,26 +24,21 @@ const AnalyticsPage = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      // Fetch detection stats
       const statsResponse = await fetch(`${API_URL}/api/detections/stats`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-
       if (statsResponse.ok) {
         const statsData = await statsResponse.json();
         setStats(statsData);
       }
 
-      // Fetch detection history for trend analysis
       const historyResponse = await fetch(`${API_URL}/api/detections/history?limit=1000`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-
       if (historyResponse.ok) {
         const historyData = await historyResponse.json();
         setDetections(historyData.detections || []);
       }
-
     } catch (error) {
       console.error('Error fetching analytics:', error);
     } finally {
@@ -52,144 +46,196 @@ const AnalyticsPage = () => {
     }
   };
 
+  // ─── Helpers ───
   const formatDayKey = (dateValue) => {
     const date = new Date(dateValue);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
   };
 
-  // Calculate trend data
+  const getFilteredDetections = () => {
+    const days = parseInt(timeRange, 10);
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    return detections.filter(d => new Date(d.createdAt) >= cutoff);
+  };
+
+  const categories = {
+    'Fruits': ['apple', 'apple-core', 'apple-peel', 'avocado', 'banana-peel', 'orange', 'orange-peel', 'papaya', 'pear', 'pear-core', 'pear-peel', 'pineapple', 'watermelon', 'calamansi'],
+    'Vegetables': ['broccoli', 'cucumber', 'garlic', 'onion', 'tomato', 'potato', 'mushroom'],
+    'Proteins': ['bone', 'bone-fish', 'chicken-skin', 'fish', 'meat', 'shrimp', 'shrimp-shell', 'mussel', 'mussel-shell'],
+    'Eggs': ['egg-scramble', 'egg-shell', 'egg-yolk'],
+    'Grains': ['bread', 'bun', 'noodle', 'pasta', 'rice'],
+    'Other': ['congee', 'leaf', 'malunggay', 'pancake', 'tofu', 'good']
+  };
+
+  const getCategoryForType = (type) => {
+    for (const [cat, types] of Object.entries(categories)) {
+      if (types.includes(type)) return cat;
+    }
+    return 'Other';
+  };
+
+  // ─── Chart 1: Detection Activity Trend (Bar Chart) ───
   const getTrendData = () => {
-    const numberOfDays = parseInt(timeRange, 10);
-    if (!Number.isFinite(numberOfDays) || numberOfDays <= 0) return [];
-
-    // Build a day-by-day baseline so the chart always renders the selected range
+    const days = parseInt(timeRange, 10);
+    if (!Number.isFinite(days) || days <= 0) return [];
     const today = new Date();
-    const rangeStart = new Date(today);
-    rangeStart.setHours(0, 0, 0, 0);
-    rangeStart.setDate(rangeStart.getDate() - (numberOfDays - 1));
+    const start = new Date(today);
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() - (days - 1));
 
-    const dailyData = {};
-    for (let i = 0; i < numberOfDays; i += 1) {
-      const currentDay = new Date(rangeStart);
-      currentDay.setDate(rangeStart.getDate() + i);
-      const dayKey = formatDayKey(currentDay);
-      dailyData[dayKey] = {
-        date: dayKey,
-        scans: 0,
-        items: 0,
-        types: 0,
-      };
+    const daily = {};
+    for (let i = 0; i < days; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      const key = formatDayKey(d);
+      daily[key] = { date: key, scans: 0, items: 0 };
     }
 
-    // Prefer detailed history so trend works across all selected ranges
-    if (detections.length > 0) {
-      const typeSets = {};
-
-      detections.forEach((detection) => {
-        const createdAt = detection?.createdAt;
-        if (!createdAt) return;
-
-        const detectionDate = new Date(createdAt);
-        if (Number.isNaN(detectionDate.getTime()) || detectionDate < rangeStart || detectionDate > today) {
-          return;
-        }
-
-        const dayKey = formatDayKey(detectionDate);
-        if (!dailyData[dayKey]) return;
-
-        dailyData[dayKey].scans += 1;
-        dailyData[dayKey].items += detection.detections?.length || 0;
-
-        if (!typeSets[dayKey]) {
-          typeSets[dayKey] = new Set();
-        }
-
-        detection.detections?.forEach((item) => {
-          if (item?.class) {
-            typeSets[dayKey].add(item.class);
-          }
-        });
-      });
-
-      Object.entries(typeSets).forEach(([dayKey, typesSet]) => {
-        if (dailyData[dayKey]) {
-          dailyData[dayKey].types = typesSet.size;
-        }
-      });
-
-      return Object.values(dailyData);
-    }
-
-    // Fallback to stats.recentActivity if history has no records
-    stats?.recentActivity?.forEach((activity) => {
-      const dayKey = formatDayKey(activity.date);
-      if (!dailyData[dayKey]) return;
-
-      dailyData[dayKey].scans += activity.scans || 0;
-      dailyData[dayKey].items += activity.items || 0;
-      dailyData[dayKey].types += activity.uniqueWasteTypes || 0;
-    });
-
-    return Object.values(dailyData);
-  };
-
-  // Calculate waste type distribution
-  const getWasteTypeDistribution = () => {
-    if (!stats?.byWasteType) return [];
-    
-    const total = Object.values(stats.byWasteType).reduce((sum, count) => sum + count, 0);
-    
-    return Object.entries(stats.byWasteType)
-      .map(([type, count]) => ({
-        type,
-        count,
-        percentage: ((count / total) * 100).toFixed(1)
-      }))
-      .sort((a, b) => b.count - a.count);
-  };
-
-  // Get waste categories breakdown
-  const getCategoryBreakdown = () => {
-    const distribution = getWasteTypeDistribution();
-    
-    const categories = {
-      'Fruits': ['apple', 'apple-core', 'apple-peel', 'avocado', 'banana-peel', 'orange', 
-                 'orange-peel', 'papaya', 'pear', 'pear-core', 'pear-peel', 'pineapple', 
-                 'watermelon', 'calamansi'],
-      'Vegetables': ['broccoli', 'cucumber', 'garlic', 'onion', 'tomato', 'potato', 'mushroom'],
-      'Proteins': ['bone', 'bone-fish', 'chicken-skin', 'fish', 'meat', 'shrimp', 'shrimp-shell', 'mussel', 'mussel-shell'],
-      'Eggs': ['egg-scramble', 'egg-shell', 'egg-yolk'],
-      'Grains': ['bread', 'bun', 'noodle', 'pasta', 'rice'],
-      'Other': ['congee', 'leaf', 'malunggay', 'pancake', 'tofu', 'good']
-    };
-
-    const breakdown = {};
-    Object.keys(categories).forEach(category => {
-      breakdown[category] = 0;
-    });
-
-    distribution.forEach(item => {
-      let found = false;
-      Object.entries(categories).forEach(([category, types]) => {
-        if (types.includes(item.type)) {
-          breakdown[category] += item.count;
-          found = true;
-        }
-      });
-      if (!found) {
-        breakdown['Other'] += item.count;
+    const filtered = getFilteredDetections();
+    filtered.forEach(det => {
+      const key = formatDayKey(det.createdAt);
+      if (daily[key]) {
+        daily[key].scans++;
+        daily[key].items += det.detections?.length || 0;
       }
     });
+    return Object.values(daily);
+  };
 
+  // ─── Chart 3: Category Breakdown ───
+  const getCategoryBreakdown = () => {
+    if (!stats?.byWasteType) return [];
+    const breakdown = {};
+    Object.keys(categories).forEach(c => { breakdown[c] = 0; });
+    Object.entries(stats.byWasteType).forEach(([type, count]) => {
+      const cat = getCategoryForType(type);
+      breakdown[cat] = (breakdown[cat] || 0) + count;
+    });
     return Object.entries(breakdown)
       .map(([category, count]) => ({ category, count }))
-      .filter(item => item.count > 0)
+      .filter(i => i.count > 0)
       .sort((a, b) => b.count - a.count);
   };
 
+  // ─── Chart 5: Confidence Distribution ───
+  const getConfidenceDistribution = () => {
+    const filtered = getFilteredDetections();
+    const buckets = Array.from({ length: 10 }, (_, i) => ({
+      label: `${i * 10}-${(i + 1) * 10}%`,
+      min: i * 0.1,
+      max: (i + 1) * 0.1,
+      count: 0
+    }));
+    filtered.forEach(det => {
+      det.detections?.forEach(item => {
+        const conf = item.confidence || 0;
+        const idx = Math.min(Math.floor(conf * 10), 9);
+        buckets[idx].count++;
+      });
+    });
+    return buckets;
+  };
+
+  // ─── Chart 6: Weekly Usage Heatmap ───
+  const getWeeklyHeatmap = () => {
+    const filtered = getFilteredDetections();
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const grid = Array.from({ length: 7 }, () => Array(24).fill(0));
+
+    filtered.forEach(det => {
+      const d = new Date(det.createdAt);
+      grid[d.getDay()][d.getHours()]++;
+    });
+
+    let maxVal = 0;
+    grid.forEach(row => row.forEach(v => { if (v > maxVal) maxVal = v; }));
+    return { grid, dayNames, maxVal };
+  };
+
+  // ─── Chart 7: Items Per Scan Distribution ───
+  const getItemsPerScanDistribution = () => {
+    const filtered = getFilteredDetections();
+    const counts = {};
+    filtered.forEach(det => {
+      const n = det.detections?.length || 0;
+      const bucket = n >= 10 ? '10+' : String(n);
+      counts[bucket] = (counts[bucket] || 0) + 1;
+    });
+    const keys = Object.keys(counts).sort((a, b) => {
+      if (a === '10+') return 1;
+      if (b === '10+') return -1;
+      return parseInt(a) - parseInt(b);
+    });
+    return keys.map(k => ({ items: k, count: counts[k] }));
+  };
+
+  // ─── Chart 8: Waste Type Growth Over Time ───
+  const getWasteGrowth = () => {
+    const filtered = getFilteredDetections();
+    const top5 = stats?.topWasteTypes?.slice(0, 5).map(t => t.type) || [];
+    if (top5.length === 0) return { weeks: [], types: [] };
+
+    const weekMap = {};
+    filtered.forEach(det => {
+      const d = new Date(det.createdAt);
+      const weekStart = new Date(d);
+      weekStart.setDate(d.getDate() - d.getDay());
+      const weekKey = formatDayKey(weekStart);
+      if (!weekMap[weekKey]) {
+        weekMap[weekKey] = {};
+        top5.forEach(t => { weekMap[weekKey][t] = 0; });
+      }
+      det.detections?.forEach(item => {
+        if (top5.includes(item.class)) {
+          weekMap[weekKey][item.class] = (weekMap[weekKey][item.class] || 0) + 1;
+        }
+      });
+    });
+
+    const weeks = Object.keys(weekMap).sort();
+    return { weeks, types: top5, data: weekMap };
+  };
+
+  // ─── Chart 9: Category Radar ───
+  const getCategoryRadarData = () => {
+    const breakdown = getCategoryBreakdown();
+    const maxVal = Math.max(...breakdown.map(b => b.count), 1);
+    return breakdown.map(b => ({
+      ...b,
+      normalized: b.count / maxVal
+    }));
+  };
+
+  // ─── Chart 10: Daily Sparklines ───
+  const getTypeDailySparklines = () => {
+    const top6 = stats?.topWasteTypes?.slice(0, 6) || [];
+    if (top6.length === 0) return [];
+    const days = Math.min(parseInt(timeRange, 10), 14);
+    const today = new Date();
+    const filtered = getFilteredDetections();
+
+    return top6.map(wasteType => {
+      const dailyCounts = [];
+      for (let i = days - 1; i >= 0; i--) {
+        const target = new Date(today);
+        target.setDate(today.getDate() - i);
+        const key = formatDayKey(target);
+        let count = 0;
+        filtered.forEach(det => {
+          if (formatDayKey(det.createdAt) === key) {
+            det.detections?.forEach(item => {
+              if (item.class === wasteType.type) count++;
+            });
+          }
+        });
+        dailyCounts.push(count);
+      }
+      return { type: wasteType.type, total: wasteType.count, dailyCounts };
+    });
+  };
+
+  // ─── Render ───
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -202,41 +248,63 @@ const AnalyticsPage = () => {
   }
 
   const trendData = getTrendData();
-  const wasteDistribution = getWasteTypeDistribution();
+  const trendMax = Math.max(...trendData.map(d => d.scans), 1);
+  const itemsMax = Math.max(...trendData.map(d => d.items), 1);
   const categoryBreakdown = getCategoryBreakdown();
-  const trendMax = Math.max(...trendData.map((day) => day.scans), 1);
-  const chartHeight = 220;
-  const chartWidth = 900;
-  const scanLinePoints = trendData
-    .map((day, index) => {
-      const x = trendData.length > 1 ? (index / (trendData.length - 1)) * chartWidth : chartWidth / 2;
-      const y = chartHeight - (day.scans / trendMax) * chartHeight;
+  const confidenceDist = getConfidenceDistribution();
+  const confMax = Math.max(...confidenceDist.map(b => b.count), 1);
+  const heatmap = getWeeklyHeatmap();
+  const itemsPerScan = getItemsPerScanDistribution();
+  const ipsMax = Math.max(...itemsPerScan.map(d => d.count), 1);
+  const wasteGrowth = getWasteGrowth();
+  const radarData = getCategoryRadarData();
+  const sparklines = getTypeDailySparklines();
+
+  const categoryTotal = categoryBreakdown.reduce((s, c) => s + c.count, 0);
+
+  // SVG helpers for Chart 2 (line chart)
+  const chartW = 900;
+  const chartH = 220;
+  const makeLinePoints = (data, key, max) =>
+    data.map((d, i) => {
+      const x = data.length > 1 ? (i / (data.length - 1)) * chartW : chartW / 2;
+      const y = chartH - (d[key] / max) * chartH;
       return `${x},${y}`;
-    })
-    .join(' ');
+    }).join(' ');
 
-  const itemsLinePoints = trendData
-    .map((day, index) => {
-      const x = trendData.length > 1 ? (index / (trendData.length - 1)) * chartWidth : chartWidth / 2;
-      const y = chartHeight - ((day.items || 0) / Math.max(...trendData.map((entry) => entry.items), 1)) * chartHeight;
-      return `${x},${y}`;
-    })
-    .join(' ');
+  const scanLine = makeLinePoints(trendData, 'scans', trendMax);
+  const itemsLine = makeLinePoints(trendData, 'items', itemsMax);
 
-  const categoryTotal = categoryBreakdown.reduce((sum, category) => sum + category.count, 0);
-  const categorySegments = categoryBreakdown.map((item, index) => {
-    const percentage = categoryTotal ? item.count / categoryTotal : 0;
-    const offset = categoryBreakdown
-      .slice(0, index)
-      .reduce((sum, category) => sum + ((categoryTotal ? category.count / categoryTotal : 0) * 100), 0);
-
+  // Donut segments for Chart 3
+  const donutSegments = categoryBreakdown.map((item, idx) => {
+    const pct = categoryTotal ? item.count / categoryTotal : 0;
+    const offset = categoryBreakdown.slice(0, idx).reduce((s, c) => s + ((categoryTotal ? c.count / categoryTotal : 0) * 100), 0);
     return {
       ...item,
-      color: CHART_COLORS[index % CHART_COLORS.length],
-      strokeDasharray: `${percentage * 100} ${100 - percentage * 100}`,
-      strokeDashoffset: -offset,
+      color: CHART_COLORS[idx % CHART_COLORS.length],
+      dasharray: `${pct * 100} ${100 - pct * 100}`,
+      dashoffset: -offset
     };
   });
+
+  // Radar polygon for Chart 9
+  const radarSize = 120;
+  const radarCenter = 130;
+  const radarPoints = radarData.map((d, i) => {
+    const angle = (Math.PI * 2 * i) / radarData.length - Math.PI / 2;
+    const r = d.normalized * radarSize;
+    return `${radarCenter + r * Math.cos(angle)},${radarCenter + r * Math.sin(angle)}`;
+  }).join(' ');
+
+  // Waste growth max for Chart 8
+  let growthMax = 1;
+  if (wasteGrowth.weeks.length > 0 && wasteGrowth.data) {
+    wasteGrowth.weeks.forEach(w => {
+      let total = 0;
+      wasteGrowth.types.forEach(t => { total += wasteGrowth.data[w]?.[t] || 0; });
+      if (total > growthMax) growthMax = total;
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -251,11 +319,9 @@ const AnalyticsPage = () => {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-800">Waste Analytics</h1>
-              <p className="text-gray-600 mt-1">Insights and trends for organic waste detection</p>
+              <p className="text-gray-600 mt-1">10 comprehensive visualizations for organic waste detection insights</p>
             </div>
           </div>
-
-          {/* Time Range Selector */}
           <div>
             <label className="text-sm text-gray-600 mr-2">Time Range:</label>
             <select
@@ -272,258 +338,187 @@ const AnalyticsPage = () => {
         </div>
       </div>
 
-      {/* Key Metrics Summary */}
+      {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg shadow-lg p-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-green-100 text-sm font-medium">Total Scans</span>
-            <svg className="w-6 h-6 text-green-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-            </svg>
+            <svg className="w-6 h-6 text-green-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /></svg>
           </div>
           <p className="text-4xl font-bold">{stats?.totalDetections || 0}</p>
           <p className="text-green-100 text-xs mt-2">Detection sessions</p>
         </div>
-
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg shadow-lg p-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-blue-100 text-sm font-medium">Total Items</span>
-            <svg className="w-6 h-6 text-blue-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-            </svg>
+            <svg className="w-6 h-6 text-blue-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
           </div>
           <p className="text-4xl font-bold">{stats?.totalItems || 0}</p>
           <p className="text-blue-100 text-xs mt-2">Individual waste items</p>
         </div>
-
         <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg shadow-lg p-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-purple-100 text-sm font-medium">Avg Items/Scan</span>
-            <svg className="w-6 h-6 text-purple-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
+            <svg className="w-6 h-6 text-purple-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
           </div>
           <p className="text-4xl font-bold">{stats?.averageItemsPerScan || 0}</p>
           <p className="text-purple-100 text-xs mt-2">Items per detection</p>
         </div>
-
         <div className="bg-gradient-to-br from-amber-500 to-amber-600 text-white rounded-lg shadow-lg p-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-amber-100 text-sm font-medium">Avg Confidence</span>
-            <svg className="w-6 h-6 text-amber-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-            </svg>
+            <svg className="w-6 h-6 text-amber-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>
           </div>
           <p className="text-4xl font-bold">{(parseFloat(stats?.averageConfidence || 0) * 100).toFixed(1)}%</p>
           <p className="text-amber-100 text-xs mt-2">Model accuracy</p>
         </div>
       </div>
 
-      {/* Activity Trend Chart */}
+      {/* ═══════════════════════════════════════════════════ */}
+      {/* GRAPH 1: Detection Activity Trend (Bar Chart) */}
+      {/* ═══════════════════════════════════════════════════ */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+          <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded mr-3">1</span>
           <svg className="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
           </svg>
           Detection Activity Trend
         </h2>
-        
-        {trendData && trendData.length > 0 ? (
-          <div className="space-y-6">
-            {/* Bar chart */}
-            <div className="overflow-x-auto">
-              <div className="min-w-full inline-flex gap-2 items-end h-64 pb-8">
-                {trendData.map((day, idx) => {
-                  const height = (day.scans / trendMax) * 100;
-                  
-                  return (
-                    <div key={idx} className="flex-1 flex flex-col items-center group">
-                      <div className="relative w-full">
-                        {/* Tooltip */}
-                        <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-2 px-3 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                          <div className="font-semibold">{new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
-                          <div>Scans: {day.scans}</div>
-                          <div>Items: {day.items}</div>
-                          <div>Types: {day.types}</div>
-                        </div>
-                        
-                        {/* Bar */}
-                        <div 
-                          className="w-full bg-gradient-to-t from-green-600 to-green-400 rounded-t-lg transition-all hover:from-green-700 hover:to-green-500"
-                          style={{ height: `${height}%`, minHeight: height > 0 ? '8px' : '0' }}
-                        ></div>
+        {trendData.length > 0 ? (
+          <div className="overflow-x-auto">
+            <div className="min-w-full inline-flex gap-1 items-end h-56 pb-8">
+              {trendData.map((day, idx) => {
+                const height = (day.scans / trendMax) * 100;
+                return (
+                  <div key={idx} className="flex-1 flex flex-col items-center group min-w-[12px]">
+                    <div className="relative w-full">
+                      <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-2 px-3 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                        <div className="font-semibold">{new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+                        <div>Scans: {day.scans}</div>
+                        <div>Items: {day.items}</div>
                       </div>
-                      
-                      {/* Date label */}
-                      <span className="text-xs text-gray-600 mt-2 rotate-45 origin-left">
-                        {new Date(day.date).getDate()}
-                      </span>
+                      <div
+                        className="w-full bg-gradient-to-t from-green-600 to-green-400 rounded-t transition-all hover:from-green-700 hover:to-green-500 cursor-pointer"
+                        style={{ height: `${height}%`, minHeight: height > 0 ? '6px' : '2px' }}
+                      ></div>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Line chart */}
-            <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Scans vs Items Trend</h3>
-              <div className="overflow-x-auto">
-                <svg viewBox={`0 0 ${chartWidth} ${chartHeight + 30}`} className="min-w-[700px] w-full h-64">
-                  {[0, 0.25, 0.5, 0.75, 1].map((ratio) => (
-                    <line
-                      key={ratio}
-                      x1="0"
-                      x2={chartWidth}
-                      y1={chartHeight - ratio * chartHeight}
-                      y2={chartHeight - ratio * chartHeight}
-                      stroke="#e5e7eb"
-                      strokeWidth="1"
-                    />
-                  ))}
-
-                  <polyline
-                    fill="none"
-                    stroke="#16a34a"
-                    strokeWidth="3"
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    points={scanLinePoints}
-                  />
-
-                  <polyline
-                    fill="none"
-                    stroke="#2563eb"
-                    strokeWidth="3"
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    points={itemsLinePoints}
-                  />
-                </svg>
-              </div>
-              <div className="flex items-center justify-center gap-6 text-sm mt-2">
-                <div className="flex items-center">
-                  <span className="w-4 h-1 bg-green-600 rounded mr-2"></span>
-                  <span className="text-gray-600">Scans</span>
-                </div>
-                <div className="flex items-center">
-                  <span className="w-4 h-1 bg-blue-600 rounded mr-2"></span>
-                  <span className="text-gray-600">Items</span>
-                </div>
-              </div>
-            </div>
-            
-            {/* Legend */}
-            <div className="flex items-center justify-center gap-6 text-sm">
-              <div className="flex items-center">
-                <div className="w-4 h-4 bg-green-600 rounded mr-2"></div>
-                <span className="text-gray-600">Detection Scans</span>
-              </div>
+                    {(trendData.length <= 31 || idx % Math.ceil(trendData.length / 15) === 0) && (
+                      <span className="text-[10px] text-gray-500 mt-1">{new Date(day.date).getDate()}</span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         ) : (
-          <div className="text-center py-12 text-gray-500">
-            No trend data available
-          </div>
+          <div className="text-center py-12 text-gray-500">No trend data available</div>
         )}
       </div>
 
-      {/* Two Column Layout */}
+      {/* ═══════════════════════════════════════════════════ */}
+      {/* GRAPH 2: Scans vs Items Line Chart */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+          <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded mr-3">2</span>
+          <svg className="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+          </svg>
+          Scans vs Items Trend
+        </h2>
+        <div className="overflow-x-auto">
+          <svg viewBox={`0 0 ${chartW} ${chartH + 30}`} className="min-w-[600px] w-full h-56">
+            {[0, 0.25, 0.5, 0.75, 1].map(r => (
+              <line key={r} x1="0" x2={chartW} y1={chartH - r * chartH} y2={chartH - r * chartH} stroke="#e5e7eb" strokeWidth="1" />
+            ))}
+            <polyline fill="none" stroke="#16a34a" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" points={scanLine} />
+            <polyline fill="none" stroke="#2563eb" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" points={itemsLine} />
+          </svg>
+        </div>
+        <div className="flex items-center justify-center gap-6 text-sm mt-2">
+          <div className="flex items-center"><span className="w-4 h-1 bg-green-600 rounded mr-2"></span><span className="text-gray-600">Scans</span></div>
+          <div className="flex items-center"><span className="w-4 h-1 bg-blue-600 rounded mr-2"></span><span className="text-gray-600">Items Detected</span></div>
+        </div>
+      </div>
+
+      {/* Two-column */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Category Breakdown */}
+        {/* ═══════════════════════════════════════════════════ */}
+        {/* GRAPH 3: Waste Category Donut Chart */}
+        {/* ═══════════════════════════════════════════════════ */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
-            <svg className="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <span className="bg-purple-100 text-purple-700 text-xs font-bold px-2 py-1 rounded mr-3">3</span>
+            <svg className="w-6 h-6 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
             </svg>
-            Waste Category Breakdown
+            Waste Category Distribution
           </h2>
-          
-          {categoryBreakdown && categoryBreakdown.length > 0 ? (
+          {categoryBreakdown.length > 0 ? (
             <div className="space-y-4">
               <div className="flex justify-center pb-2">
                 <svg viewBox="0 0 42 42" className="w-44 h-44 -rotate-90">
                   <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#f3f4f6" strokeWidth="7"></circle>
-                  {categorySegments.map((segment) => (
-                    <circle
-                      key={segment.category}
-                      cx="21"
-                      cy="21"
-                      r="15.9155"
-                      fill="none"
-                      stroke={segment.color}
-                      strokeWidth="7"
-                      strokeDasharray={segment.strokeDasharray}
-                      strokeDashoffset={segment.strokeDashoffset}
-                    ></circle>
+                  {donutSegments.map(seg => (
+                    <circle key={seg.category} cx="21" cy="21" r="15.9155" fill="none" stroke={seg.color} strokeWidth="7" strokeDasharray={seg.dasharray} strokeDashoffset={seg.dashoffset}></circle>
                   ))}
                 </svg>
               </div>
-
               {categoryBreakdown.map((item, idx) => {
-                const total = categoryBreakdown.reduce((sum, cat) => sum + cat.count, 0);
-                const percentage = ((item.count / total) * 100).toFixed(1);
-                const color = CHART_COLORS[idx % CHART_COLORS.length];
-                
+                const pct = ((item.count / categoryTotal) * 100).toFixed(1);
                 return (
                   <div key={idx}>
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center">
-                        <div className="w-4 h-4 rounded mr-3" style={{ backgroundColor: color }}></div>
-                        <span className="text-gray-700 font-medium">{item.category}</span>
+                        <div className="w-3 h-3 rounded mr-2" style={{ backgroundColor: CHART_COLORS[idx % CHART_COLORS.length] }}></div>
+                        <span className="text-gray-700 font-medium text-sm">{item.category}</span>
                       </div>
                       <div className="text-right">
-                        <span className="text-gray-800 font-bold">{item.count}</span>
-                        <span className="text-gray-500 text-sm ml-2">({percentage}%)</span>
+                        <span className="text-gray-800 font-bold text-sm">{item.count}</span>
+                        <span className="text-gray-500 text-xs ml-1">({pct}%)</span>
                       </div>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div
-                        className="h-3 rounded-full transition-all"
-                        style={{ backgroundColor: color, width: `${percentage}%` }}
-                      ></div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="h-2 rounded-full" style={{ backgroundColor: CHART_COLORS[idx % CHART_COLORS.length], width: `${pct}%` }}></div>
                     </div>
                   </div>
                 );
               })}
             </div>
           ) : (
-            <div className="text-center py-12 text-gray-500">
-              No category data available
-            </div>
+            <div className="text-center py-12 text-gray-500">No category data available</div>
           )}
         </div>
 
-        {/* Top Waste Types */}
+        {/* ═══════════════════════════════════════════════════ */}
+        {/* GRAPH 4: Top 10 Waste Types Horizontal Bar */}
+        {/* ═══════════════════════════════════════════════════ */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
-            <svg className="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded mr-3">4</span>
+            <svg className="w-6 h-6 text-amber-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
             Top 10 Most Detected Items
           </h2>
-          
-          {stats?.topWasteTypes && stats.topWasteTypes.length > 0 ? (
+          {stats?.topWasteTypes?.length > 0 ? (
             <div className="space-y-3">
               {stats.topWasteTypes.map((item, idx) => {
                 const maxCount = stats.topWasteTypes[0]?.count || 1;
-                const percentage = (item.count / maxCount) * 100;
-                
+                const pct = (item.count / maxCount) * 100;
                 return (
                   <div key={idx} className="flex items-center">
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                      <span className="text-green-700 font-bold text-sm">#{idx + 1}</span>
+                    <div className="w-7 h-7 bg-amber-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                      <span className="text-amber-700 font-bold text-xs">#{idx + 1}</span>
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-medium text-gray-700 truncate">{item.type}</span>
-                        <span className="text-sm font-bold text-green-600 ml-2">{item.count}</span>
+                        <span className="text-sm font-bold text-amber-600 ml-2">{item.count}</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full"
-                          style={{ width: `${percentage}%` }}
-                        ></div>
+                        <div className="bg-gradient-to-r from-amber-500 to-amber-600 h-2 rounded-full" style={{ width: `${pct}%` }}></div>
                       </div>
                     </div>
                   </div>
@@ -531,67 +526,299 @@ const AnalyticsPage = () => {
               })}
             </div>
           ) : (
-            <div className="text-center py-12 text-gray-500">
-              No waste type data available
-            </div>
+            <div className="text-center py-12 text-gray-500">No data available</div>
           )}
         </div>
       </div>
 
-      {/* All Waste Types Table */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
-          <svg className="w-6 h-6 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
-          Complete Waste Type Distribution
-        </h2>
-        
-        {wasteDistribution && wasteDistribution.length > 0 ? (
+      {/* Two-column */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* ═══════════════════════════════════════════════════ */}
+        {/* GRAPH 5: Confidence Distribution Histogram */}
+        {/* ═══════════════════════════════════════════════════ */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+            <span className="bg-teal-100 text-teal-700 text-xs font-bold px-2 py-1 rounded mr-3">5</span>
+            <svg className="w-6 h-6 text-teal-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+            </svg>
+            Confidence Score Distribution
+          </h2>
+          <div className="flex items-end gap-2 h-48">
+            {confidenceDist.map((bucket, idx) => {
+              const height = (bucket.count / confMax) * 100;
+              return (
+                <div key={idx} className="flex-1 flex flex-col items-center group">
+                  <div className="relative w-full">
+                    <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                      {bucket.count} items
+                    </div>
+                    <div
+                      className="w-full rounded-t transition-all cursor-pointer"
+                      style={{
+                        height: `${height}%`,
+                        minHeight: bucket.count > 0 ? '4px' : '2px',
+                        backgroundColor: `hsl(${160 + idx * 12}, 70%, ${45 + idx * 3}%)`
+                      }}
+                    ></div>
+                  </div>
+                  <span className="text-[9px] text-gray-500 mt-1 text-center leading-tight">{bucket.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════ */}
+        {/* GRAPH 6: Weekly Usage Heatmap */}
+        {/* ═══════════════════════════════════════════════════ */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+            <span className="bg-rose-100 text-rose-700 text-xs font-bold px-2 py-1 rounded mr-3">6</span>
+            <svg className="w-6 h-6 text-rose-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Weekly Usage Heatmap
+          </h2>
           <div className="overflow-x-auto">
-            <table className="min-w-full">
-              <thead>
-                <tr className="border-b-2 border-gray-200">
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Rank</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Waste Type</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Count</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Percentage</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Distribution</th>
-                </tr>
-              </thead>
-              <tbody>
-                {wasteDistribution.slice(0, 20).map((item, idx) => (
-                  <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm text-gray-600">#{idx + 1}</td>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-800">{item.type}</td>
-                    <td className="px-4 py-3 text-sm text-gray-800 text-right font-semibold">{item.count}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 text-right">{item.percentage}%</td>
-                    <td className="px-4 py-3">
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className="bg-purple-600 h-2 rounded-full"
-                          style={{ width: `${item.percentage}%` }}
-                        ></div>
-                      </div>
-                    </td>
-                  </tr>
+            <div className="min-w-[500px]">
+              {/* Hour labels */}
+              <div className="flex ml-10 mb-1">
+                {[0, 3, 6, 9, 12, 15, 18, 21].map(h => (
+                  <div key={h} className="text-[9px] text-gray-400" style={{ width: `${(3 / 24) * 100}%`, minWidth: '0' }}>
+                    {h === 0 ? '12a' : h === 12 ? '12p' : h < 12 ? `${h}a` : `${h - 12}p`}
+                  </div>
                 ))}
-              </tbody>
-            </table>
-            
-            {wasteDistribution.length > 20 && (
-              <div className="mt-4 text-center">
-                <p className="text-sm text-gray-500">
-                  Showing top 20 of {wasteDistribution.length} waste types
-                </p>
               </div>
-            )}
+              {/* Grid */}
+              {heatmap.dayNames.map((day, dayIdx) => (
+                <div key={dayIdx} className="flex items-center mb-[2px]">
+                  <span className="text-[10px] text-gray-500 w-10 text-right mr-1 flex-shrink-0">{day}</span>
+                  <div className="flex flex-1 gap-[1px]">
+                    {heatmap.grid[dayIdx].map((val, hourIdx) => {
+                      const intensity = heatmap.maxVal > 0 ? val / heatmap.maxVal : 0;
+                      return (
+                        <div
+                          key={hourIdx}
+                          className="flex-1 h-5 rounded-sm transition-colors group relative cursor-pointer"
+                          style={{ backgroundColor: intensity === 0 ? '#f3f4f6' : `rgba(34, 197, 94, ${0.15 + intensity * 0.85})` }}
+                          title={`${heatmap.dayNames[dayIdx]} ${hourIdx}:00 - ${val} scans`}
+                        >
+                          <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-[10px] rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                            {day} {hourIdx}:00 — {val} scans
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+              {/* Legend */}
+              <div className="flex items-center justify-end gap-1 mt-2">
+                <span className="text-[10px] text-gray-400">Less</span>
+                {[0, 0.25, 0.5, 0.75, 1].map((v, i) => (
+                  <div key={i} className="w-3 h-3 rounded-sm" style={{ backgroundColor: v === 0 ? '#f3f4f6' : `rgba(34, 197, 94, ${0.15 + v * 0.85})` }}></div>
+                ))}
+                <span className="text-[10px] text-gray-400">More</span>
+              </div>
+            </div>
           </div>
-        ) : (
-          <div className="text-center py-12 text-gray-500">
-            No waste distribution data available
-          </div>
-        )}
+        </div>
+      </div>
+
+      {/* Two-column */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* ═══════════════════════════════════════════════════ */}
+        {/* GRAPH 7: Items Per Scan Distribution */}
+        {/* ═══════════════════════════════════════════════════ */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+            <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-1 rounded mr-3">7</span>
+            <svg className="w-6 h-6 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4" />
+            </svg>
+            Items Per Scan Distribution
+          </h2>
+          {itemsPerScan.length > 0 ? (
+            <div className="flex items-end gap-3 h-48">
+              {itemsPerScan.map((d, idx) => {
+                const height = (d.count / ipsMax) * 100;
+                return (
+                  <div key={idx} className="flex-1 flex flex-col items-center group">
+                    <div className="relative w-full">
+                      <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                        {d.count} scans
+                      </div>
+                      <div
+                        className="w-full bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-t cursor-pointer hover:from-indigo-700 hover:to-indigo-500 transition-all"
+                        style={{ height: `${height}%`, minHeight: d.count > 0 ? '4px' : '2px' }}
+                      ></div>
+                    </div>
+                    <span className="text-xs text-gray-600 mt-2 font-medium">{d.items}</span>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-gray-500">No data available</div>
+          )}
+          <p className="text-xs text-gray-400 text-center mt-2">Number of waste items detected per scan</p>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════ */}
+        {/* GRAPH 8: Waste Type Growth Over Time (Stacked) */}
+        {/* ═══════════════════════════════════════════════════ */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+            <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded mr-3">8</span>
+            <svg className="w-6 h-6 text-emerald-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+            Top 5 Waste Types Over Time
+          </h2>
+          {wasteGrowth.weeks.length > 0 ? (
+            <div>
+              <div className="flex items-end gap-2 h-48">
+                {wasteGrowth.weeks.map((week, wIdx) => {
+                  let cumHeight = 0;
+                  return (
+                    <div key={wIdx} className="flex-1 flex flex-col-reverse group relative">
+                      {wasteGrowth.types.map((type, tIdx) => {
+                        const val = wasteGrowth.data[week]?.[type] || 0;
+                        const ht = (val / growthMax) * 100;
+                        cumHeight += ht;
+                        return (
+                          <div
+                            key={tIdx}
+                            className="w-full transition-all"
+                            style={{
+                              height: `${ht}%`,
+                              backgroundColor: CHART_COLORS[tIdx % CHART_COLORS.length],
+                              minHeight: val > 0 ? '2px' : '0',
+                              borderRadius: tIdx === wasteGrowth.types.length - 1 ? '4px 4px 0 0' : '0'
+                            }}
+                          ></div>
+                        );
+                      })}
+                      <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-[10px] rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                        Week of {new Date(week).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="flex flex-wrap items-center gap-3 mt-3">
+                {wasteGrowth.types.map((t, i) => (
+                  <div key={i} className="flex items-center">
+                    <div className="w-3 h-3 rounded mr-1" style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}></div>
+                    <span className="text-xs text-gray-600">{t}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-12 text-gray-500">No growth data available</div>
+          )}
+        </div>
+      </div>
+
+      {/* Two-column */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* ═══════════════════════════════════════════════════ */}
+        {/* GRAPH 9: Category Comparison Radar */}
+        {/* ═══════════════════════════════════════════════════ */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+            <span className="bg-cyan-100 text-cyan-700 text-xs font-bold px-2 py-1 rounded mr-3">9</span>
+            <svg className="w-6 h-6 text-cyan-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+            </svg>
+            Category Comparison Radar
+          </h2>
+          {radarData.length > 0 ? (
+            <div className="flex justify-center">
+              <svg viewBox="0 0 260 260" className="w-64 h-64">
+                {/* Grid circles */}
+                {[0.25, 0.5, 0.75, 1].map(r => (
+                  <circle key={r} cx={radarCenter} cy={radarCenter} r={r * radarSize} fill="none" stroke="#e5e7eb" strokeWidth="1" />
+                ))}
+                {/* Axis lines */}
+                {radarData.map((_, i) => {
+                  const angle = (Math.PI * 2 * i) / radarData.length - Math.PI / 2;
+                  return (
+                    <line key={i} x1={radarCenter} y1={radarCenter} x2={radarCenter + radarSize * Math.cos(angle)} y2={radarCenter + radarSize * Math.sin(angle)} stroke="#e5e7eb" strokeWidth="1" />
+                  );
+                })}
+                {/* Data polygon */}
+                <polygon points={radarPoints} fill="rgba(34, 197, 94, 0.2)" stroke="#16a34a" strokeWidth="2" />
+                {/* Data points + labels */}
+                {radarData.map((d, i) => {
+                  const angle = (Math.PI * 2 * i) / radarData.length - Math.PI / 2;
+                  const r = d.normalized * radarSize;
+                  const labelR = radarSize + 18;
+                  return (
+                    <g key={i}>
+                      <circle cx={radarCenter + r * Math.cos(angle)} cy={radarCenter + r * Math.sin(angle)} r="4" fill="#16a34a" />
+                      <text
+                        x={radarCenter + labelR * Math.cos(angle)}
+                        y={radarCenter + labelR * Math.sin(angle)}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        className="text-[10px] fill-gray-600"
+                      >
+                        {d.category}
+                      </text>
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
+          ) : (
+            <div className="text-center py-12 text-gray-500">No data available</div>
+          )}
+        </div>
+
+        {/* ═══════════════════════════════════════════════════ */}
+        {/* GRAPH 10: Daily Scan Volume Sparkline Grid */}
+        {/* ═══════════════════════════════════════════════════ */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+            <span className="bg-pink-100 text-pink-700 text-xs font-bold px-2 py-1 rounded mr-3">10</span>
+            <svg className="w-6 h-6 text-pink-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4" />
+            </svg>
+            Per-Type Daily Sparklines
+          </h2>
+          {sparklines.length > 0 ? (
+            <div className="space-y-4">
+              {sparklines.map((sp, idx) => {
+                const spMax = Math.max(...sp.dailyCounts, 1);
+                const spW = 160;
+                const spH = 30;
+                const pts = sp.dailyCounts.map((v, i) => {
+                  const x = sp.dailyCounts.length > 1 ? (i / (sp.dailyCounts.length - 1)) * spW : spW / 2;
+                  const y = spH - (v / spMax) * spH;
+                  return `${x},${y}`;
+                }).join(' ');
+                return (
+                  <div key={idx} className="flex items-center">
+                    <div className="w-28 flex-shrink-0">
+                      <p className="text-sm font-medium text-gray-700 truncate">{sp.type}</p>
+                      <p className="text-xs text-gray-400">{sp.total} total</p>
+                    </div>
+                    <div className="flex-1 ml-3">
+                      <svg viewBox={`0 0 ${spW} ${spH}`} className="w-full h-8">
+                        <polyline fill="none" stroke={CHART_COLORS[idx % CHART_COLORS.length]} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points={pts} />
+                      </svg>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-gray-500">No sparkline data available</div>
+          )}
+        </div>
       </div>
 
       {/* Insights Panel */}
@@ -612,26 +839,20 @@ const AnalyticsPage = () => {
                   <p className="text-xs text-gray-500 mt-1">{stats.topWasteTypes[0].count} detections</p>
                 </div>
               )}
-              
               <div className="bg-white rounded-lg p-4 shadow-sm">
-                <p className="text-sm text-gray-600 mb-1">Total Unique Types Detected</p>
+                <p className="text-sm text-gray-600 mb-1">Total Unique Types</p>
                 <p className="text-lg font-bold text-blue-700">{Object.keys(stats?.byWasteType || {}).length}</p>
                 <p className="text-xs text-gray-500 mt-1">Out of 45 possible types</p>
               </div>
-              
               <div className="bg-white rounded-lg p-4 shadow-sm">
-                <p className="text-sm text-gray-600 mb-1">Average Detection Quality</p>
+                <p className="text-sm text-gray-600 mb-1">Detection Quality</p>
                 <p className="text-lg font-bold text-purple-700">
-                  {stats?.averageConfidence ? 
-                    (parseFloat(stats.averageConfidence) > 0.8 ? 'Excellent' :
-                     parseFloat(stats.averageConfidence) > 0.6 ? 'Good' : 'Fair') 
+                  {stats?.averageConfidence
+                    ? (parseFloat(stats.averageConfidence) > 0.8 ? 'Excellent' : parseFloat(stats.averageConfidence) > 0.6 ? 'Good' : 'Fair')
                     : 'N/A'}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {(parseFloat(stats?.averageConfidence || 0) * 100).toFixed(1)}% confidence
-                </p>
+                <p className="text-xs text-gray-500 mt-1">{(parseFloat(stats?.averageConfidence || 0) * 100).toFixed(1)}% confidence</p>
               </div>
-              
               {categoryBreakdown[0] && (
                 <div className="bg-white rounded-lg p-4 shadow-sm">
                   <p className="text-sm text-gray-600 mb-1">Dominant Category</p>
