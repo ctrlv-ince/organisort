@@ -19,6 +19,7 @@ import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import apiClient from '@/src/utils/apiClient';
 
 const { width } = Dimensions.get('window');
@@ -200,196 +201,198 @@ export default function ScanScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Scan Organic Waste</Text>
-        <Text style={styles.headerSubtitle}>
-          Detect waste and find nearby disposal locations
-        </Text>
-      </View>
-
-      {!capturedImage && (
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.primaryButton} onPress={openCamera}>
-            <Ionicons name="camera" size={24} color="white" />
-            <Text style={styles.buttonText}>Open Camera</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.secondaryButton} onPress={pickImage}>
-            <Ionicons name="images" size={24} color="#10b981" />
-            <Text style={styles.secondaryButtonText}>Choose from Gallery</Text>
-          </TouchableOpacity>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Scan Organic Waste</Text>
+          <Text style={styles.headerSubtitle}>
+            Detect waste and find nearby disposal locations
+          </Text>
         </View>
-      )}
 
-      {capturedImage && !result && (
-        <View style={styles.previewContainer}>
-          <Image source={{ uri: capturedImage }} style={styles.preview} />
-          <View style={styles.previewActions}>
-            <TouchableOpacity style={styles.retakeButton} onPress={retake}>
-              <Text style={styles.retakeButtonText}>Retake</Text>
+        {!capturedImage && (
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.primaryButton} onPress={openCamera}>
+              <Ionicons name="camera" size={24} color="white" />
+              <Text style={styles.buttonText}>Open Camera</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.analyzeButton, analyzing && styles.analyzeButtonDisabled]}
-              onPress={analyzeImage}
-              disabled={analyzing}
-            >
-              {analyzing ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <Text style={styles.analyzeButtonText}>Analyze</Text>
-              )}
+
+            <TouchableOpacity style={styles.secondaryButton} onPress={pickImage}>
+              <Ionicons name="images" size={24} color="#10b981" />
+              <Text style={styles.secondaryButtonText}>Choose from Gallery</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      )}
+        )}
 
-      {result && (
-        <View style={styles.resultContainer}>
-          <Image
-            source={{ uri: result.annotated_image }}
-            style={styles.resultImage}
-          />
-
-          <View style={styles.statsContainer}>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{result.summary?.total_detections || 0}</Text>
-              <Text style={styles.statLabel}>Items</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{result.summary?.unique_classes || 0}</Text>
-              <Text style={styles.statLabel}>Types</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>
-                {result.summary?.average_confidence
-                  ? `${(result.summary.average_confidence * 100).toFixed(0)}%`
-                  : 'N/A'}
-              </Text>
-              <Text style={styles.statLabel}>Confidence</Text>
+        {capturedImage && !result && (
+          <View style={styles.previewContainer}>
+            <Image source={{ uri: capturedImage }} style={styles.preview} />
+            <View style={styles.previewActions}>
+              <TouchableOpacity style={styles.retakeButton} onPress={retake}>
+                <Text style={styles.retakeButtonText}>Retake</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.analyzeButton, analyzing && styles.analyzeButtonDisabled]}
+                onPress={analyzeImage}
+                disabled={analyzing}
+              >
+                {analyzing ? (
+                  <ActivityIndicator color="white" />
+                ) : (
+                  <Text style={styles.analyzeButtonText}>Analyze</Text>
+                )}
+              </TouchableOpacity>
             </View>
           </View>
+        )}
 
-          <View style={styles.detectionsList}>
-            <Text style={styles.sectionTitle}>Detected Items</Text>
-            {result.detections?.map((detection, index) => (
-              <View key={index} style={styles.detectionItem}>
-                <Text style={styles.detectionClass}>{detection.class}</Text>
-                <Text style={styles.detectionConfidence}>
-                  {(detection.confidence * 100).toFixed(1)}%
-                </Text>
+        {result && (
+          <View style={styles.resultContainer}>
+            <Image
+              source={{ uri: result.annotated_image }}
+              style={styles.resultImage}
+            />
+
+            <View style={styles.statsContainer}>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>{result.summary?.total_detections || 0}</Text>
+                <Text style={styles.statLabel}>Items</Text>
               </View>
-            ))}
-          </View>
-
-          {disposalLocations.length > 0 && (
-            <View style={styles.disposalSection}>
-              <Text style={styles.sectionTitle}>Nearby Disposal Locations</Text>
-              <Text style={styles.disposalSubtitle}>
-                Found {disposalLocations.length} location{disposalLocations.length !== 1 ? 's' : ''} that accept this waste
-              </Text>
-
-              <TouchableOpacity
-                style={styles.viewMapButton}
-                onPress={() => setShowMap(true)}
-              >
-                <Ionicons name="map" size={20} color="white" />
-                <Text style={styles.viewMapButtonText}>View on Map</Text>
-              </TouchableOpacity>
-
-              {disposalLocations[0] && (
-                <View style={styles.nearestCard}>
-                  <View style={styles.nearestHeader}>
-                    <Ionicons name="location" size={20} color="#10b981" />
-                    <Text style={styles.nearestTitle}>Nearest Location</Text>
-                  </View>
-                  <Text style={styles.nearestName}>{disposalLocations[0].name}</Text>
-                  <Text style={styles.nearestDistance}>{disposalLocations[0].distanceText} away</Text>
-                  <TouchableOpacity
-                    style={styles.directionsButton}
-                    onPress={() => handleDirections(disposalLocations[0])}
-                  >
-                    <Ionicons name="navigate" size={16} color="white" />
-                    <Text style={styles.directionsButtonText}>Get Directions</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>{result.summary?.unique_classes || 0}</Text>
+                <Text style={styles.statLabel}>Types</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>
+                  {result.summary?.average_confidence
+                    ? `${(result.summary.average_confidence * 100).toFixed(0)}%`
+                    : 'N/A'}
+                </Text>
+                <Text style={styles.statLabel}>Confidence</Text>
+              </View>
             </View>
-          )}
 
-          <TouchableOpacity style={styles.retakeButton} onPress={retake}>
-            <Ionicons name="refresh" size={20} color="#10b981" />
-            <Text style={styles.retakeButtonText}>Scan Another</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+            <View style={styles.detectionsList}>
+              <Text style={styles.sectionTitle}>Detected Items</Text>
+              {result.detections?.map((detection, index) => (
+                <View key={index} style={styles.detectionItem}>
+                  <Text style={styles.detectionClass}>{detection.class}</Text>
+                  <Text style={styles.detectionConfidence}>
+                    {(detection.confidence * 100).toFixed(1)}%
+                  </Text>
+                </View>
+              ))}
+            </View>
 
-      <Modal visible={showMap} animationType="slide" onRequestClose={() => setShowMap(false)}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Disposal Locations</Text>
-            <TouchableOpacity style={styles.closeButton} onPress={() => setShowMap(false)}>
-              <Ionicons name="close" size={28} color="#fff" />
+            {disposalLocations.length > 0 && (
+              <View style={styles.disposalSection}>
+                <Text style={styles.sectionTitle}>Nearby Disposal Locations</Text>
+                <Text style={styles.disposalSubtitle}>
+                  Found {disposalLocations.length} location{disposalLocations.length !== 1 ? 's' : ''} that accept this waste
+                </Text>
+
+                <TouchableOpacity
+                  style={styles.viewMapButton}
+                  onPress={() => setShowMap(true)}
+                >
+                  <Ionicons name="map" size={20} color="white" />
+                  <Text style={styles.viewMapButtonText}>View on Map</Text>
+                </TouchableOpacity>
+
+                {disposalLocations[0] && (
+                  <View style={styles.nearestCard}>
+                    <View style={styles.nearestHeader}>
+                      <Ionicons name="location" size={20} color="#10b981" />
+                      <Text style={styles.nearestTitle}>Nearest Location</Text>
+                    </View>
+                    <Text style={styles.nearestName}>{disposalLocations[0].name}</Text>
+                    <Text style={styles.nearestDistance}>{disposalLocations[0].distanceText} away</Text>
+                    <TouchableOpacity
+                      style={styles.directionsButton}
+                      onPress={() => handleDirections(disposalLocations[0])}
+                    >
+                      <Ionicons name="navigate" size={16} color="white" />
+                      <Text style={styles.directionsButtonText}>Get Directions</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+            )}
+
+            <TouchableOpacity style={styles.retakeButton} onPress={retake}>
+              <Ionicons name="refresh" size={20} color="#10b981" />
+              <Text style={styles.retakeButtonText}>Scan Another</Text>
             </TouchableOpacity>
           </View>
+        )}
 
-          {userLocation && (
-            <MapView
-              style={styles.map}
-              initialRegion={{
-                latitude: userLocation.latitude,
-                longitude: userLocation.longitude,
-                latitudeDelta: 0.05,
-                longitudeDelta: 0.05,
-              }}
-              showsUserLocation={true}
-            >
-
-
-              <Circle
-                center={userLocation}
-                radius={500}
-                strokeColor="rgba(16, 185, 129, 0.5)"
-                fillColor="rgba(16, 185, 129, 0.1)"
-              />
-
-              {disposalLocations.map((location) => (
-                <Marker
-                  key={location._id}
-                  coordinate={{
-                    latitude: location.location.coordinates[1],
-                    longitude: location.location.coordinates[0],
-                  }}
-                  pinColor="#10b981"
-                  onPress={() => setSelectedLocation(location)}
-                />
-              ))}
-            </MapView>
-          )}
-
-          {selectedLocation && (
-            <View style={styles.locationCard}>
-              <TouchableOpacity
-                style={styles.closeLocationCard}
-                onPress={() => setSelectedLocation(null)}
-              >
-                <Ionicons name="close" size={24} color="#666" />
-              </TouchableOpacity>
-              <Text style={styles.locationName}>{selectedLocation.name}</Text>
-              <Text style={styles.locationAddress}>{selectedLocation.address}</Text>
-              <Text style={styles.locationDistance}>{selectedLocation.distanceText} away</Text>
-              <TouchableOpacity
-                style={styles.directionsButtonLarge}
-                onPress={() => handleDirections(selectedLocation)}
-              >
-                <Ionicons name="navigate" size={20} color="white" />
-                <Text style={styles.directionsButtonText}>Get Directions</Text>
+        <Modal visible={showMap} animationType="slide" onRequestClose={() => setShowMap(false)}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Disposal Locations</Text>
+              <TouchableOpacity style={styles.closeButton} onPress={() => setShowMap(false)}>
+                <Ionicons name="close" size={28} color="#fff" />
               </TouchableOpacity>
             </View>
-          )}
-        </View>
-      </Modal>
-    </ScrollView>
+
+            {userLocation && (
+              <MapView
+                style={styles.map}
+                initialRegion={{
+                  latitude: userLocation.latitude,
+                  longitude: userLocation.longitude,
+                  latitudeDelta: 0.05,
+                  longitudeDelta: 0.05,
+                }}
+                showsUserLocation={true}
+              >
+
+
+                <Circle
+                  center={userLocation}
+                  radius={500}
+                  strokeColor="rgba(16, 185, 129, 0.5)"
+                  fillColor="rgba(16, 185, 129, 0.1)"
+                />
+
+                {disposalLocations.map((location) => (
+                  <Marker
+                    key={location._id}
+                    coordinate={{
+                      latitude: location.location.coordinates[1],
+                      longitude: location.location.coordinates[0],
+                    }}
+                    pinColor="#10b981"
+                    onPress={() => setSelectedLocation(location)}
+                  />
+                ))}
+              </MapView>
+            )}
+
+            {selectedLocation && (
+              <View style={styles.locationCard}>
+                <TouchableOpacity
+                  style={styles.closeLocationCard}
+                  onPress={() => setSelectedLocation(null)}
+                >
+                  <Ionicons name="close" size={24} color="#666" />
+                </TouchableOpacity>
+                <Text style={styles.locationName}>{selectedLocation.name}</Text>
+                <Text style={styles.locationAddress}>{selectedLocation.address}</Text>
+                <Text style={styles.locationDistance}>{selectedLocation.distanceText} away</Text>
+                <TouchableOpacity
+                  style={styles.directionsButtonLarge}
+                  onPress={() => handleDirections(selectedLocation)}
+                >
+                  <Ionicons name="navigate" size={20} color="white" />
+                  <Text style={styles.directionsButtonText}>Get Directions</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        </Modal>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

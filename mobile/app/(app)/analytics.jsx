@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useAuth } from '@/src/context/AuthContext';
 import apiClient from '@/src/utils/apiClient';
+import { Ionicons } from '@expo/vector-icons';
 import Svg, { Circle, G, Text as SvgText } from 'react-native-svg';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -306,7 +307,7 @@ export default function AnalyticsScreen() {
         </View>
         <View style={styles.content}>
           <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>📊</Text>
+            <Ionicons name="bar-chart-outline" size={64} color="#94a3b8" style={{ marginBottom: 16, opacity: 0.5 }} />
             <Text style={styles.emptyText}>
               No data yet.{'\n'}Start scanning to see your analytics!
             </Text>
@@ -333,7 +334,7 @@ export default function AnalyticsScreen() {
         {/* Overview Stats */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionIcon}>📊</Text>
+            <Ionicons name="bar-chart-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
             <Text style={styles.sectionTitle}>Overview</Text>
           </View>
           <View style={styles.statsGrid}>
@@ -363,7 +364,7 @@ export default function AnalyticsScreen() {
         {/* Environmental Impact */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionIcon}>🌍</Text>
+            <Ionicons name="earth-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
             <Text style={styles.sectionTitle}>Environmental Impact</Text>
           </View>
           <View style={styles.impactCard}>
@@ -408,7 +409,7 @@ export default function AnalyticsScreen() {
         {/* Waste Composition */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionIcon}>🥧</Text>
+            <Ionicons name="pie-chart-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
             <Text style={styles.sectionTitle}>Waste Composition</Text>
           </View>
           <View style={styles.chartCard}>
@@ -459,7 +460,7 @@ export default function AnalyticsScreen() {
         {/* Most Common Waste Types */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionIcon}>📈</Text>
+            <Ionicons name="trending-up-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
             <Text style={styles.sectionTitle}>Top Waste Types</Text>
           </View>
           <View style={styles.chartCard}>
@@ -493,7 +494,7 @@ export default function AnalyticsScreen() {
         {/* Classification Breakdown */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionIcon}>🔬</Text>
+            <Ionicons name="flask-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
             <Text style={styles.sectionTitle}>Classification Stats</Text>
           </View>
           <View style={styles.statsGrid}>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '@/src/utils/apiClient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import AdminProtectedScreen from '@/src/components/AdminProtectedScreen';
 import {
   View,
@@ -12,8 +11,10 @@ import {
   RefreshControl,
   StyleSheet,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
@@ -37,7 +38,7 @@ const styles = StyleSheet.create({
   statusText: { fontSize: 14, fontWeight: 'bold' },
   footerText: { textAlign: 'center', color: '#64748b', fontSize: 14, marginTop: 32, marginBottom: 16 },
   footerSubtext: { textAlign: 'center', color: '#94a3b8', fontSize: 12 },
-  adminCard: { backgroundColor: '#f3f4f6', borderRadius: 12, padding: 24, marginBottom: 24, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 3, elevation: 3 },
+  adminCard: { backgroundColor: 'white', borderRadius: 12, padding: 24, marginBottom: 24, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 3, elevation: 3 },
   adminCardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
   adminCardIcon: { fontSize: 24, marginRight: 12, color: '#10b981' },
   adminCardTitle: { fontSize: 18, fontWeight: 'bold', color: '#1e293b' },
@@ -114,15 +115,28 @@ export default function AdminDashboard() {
     }
   };
 
-  const deleteUser = async (userId) => {
-    try {
-      await apiClient.delete(`/api/users/${userId}`);
-      Alert.alert('Success', 'User deleted successfully');
-      handleRefresh();
-    } catch (err) {
-      console.error('Failed to delete user:', err);
-      Alert.alert('Error', 'Failed to delete user');
-    }
+  const deleteUser = (userId) => {
+    Alert.alert(
+      'Delete User',
+      'Are you sure you want to delete this user? This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await apiClient.delete(`/api/users/${userId}`);
+              Alert.alert('Success', 'User deleted successfully');
+              handleRefresh();
+            } catch (err) {
+              console.error('Failed to delete user:', err);
+              Alert.alert('Error', 'Failed to delete user');
+            }
+          },
+        },
+      ]
+    );
   };
 
   if (loading) {
@@ -148,92 +162,93 @@ export default function AdminDashboard() {
 
   return (
     <AdminProtectedScreen>
-      <ScrollView
-        style={styles.container}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor='#10b981' />
-        }
-      >
-        <View style={styles.header}>
-          <View style={styles.headerTop}>
-            <Text style={styles.title}>Admin Dashboard</Text>
-            <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-              <Text style={styles.logoutText}>Logout</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.welcomeCard}>
-            <Text style={styles.welcomeText}>Welcome, {user?.displayName || 'Admin'}!</Text>
-            <Text style={styles.welcomeSubtext}>Manage all user accounts and system settings</Text>
-          </View>
-        </View>
-
-        <View style={styles.content}>
-          <View style={styles.adminCard}>
-            <View style={styles.adminCardHeader}>
-              <Text style={styles.adminCardIcon}>👥</Text>
-              <Text style={styles.adminCardTitle}>User Management</Text>
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <ScrollView
+          style={styles.container}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor='#10b981' />
+          }
+        >
+          <View style={styles.header}>
+            <View style={styles.headerTop}>
+              <Text style={styles.title}>Admin Dashboard</Text>
+              <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+                <Text style={styles.logoutText}>Logout</Text>
+              </TouchableOpacity>
             </View>
-            <Text style={[styles.cardLabel, { marginBottom: 16 }]}>
-              Total Users: {users?.length || 0}
-            </Text>
+            <View style={styles.welcomeCard}>
+              <Text style={styles.welcomeText}>Welcome, {user?.displayName || 'Admin'}!</Text>
+              <Text style={styles.welcomeSubtext}>Manage all user accounts and system settings</Text>
+            </View>
+          </View>
 
-            {users?.map((user, index) => (
-              <View key={user._id} style={styles.userCard}>
-                <View style={styles.userCardHeader}>
-                  <Text style={styles.userCardIcon}>👤</Text>
-                  <Text style={styles.userCardTitle}>{user.displayName || 'User'}</Text>
-                </View>
-                <View style={styles.userCardRow}>
-                  <Text style={styles.userCardLabel}>Email</Text>
-                  <Text style={styles.userCardValue}>{user.email}</Text>
-                </View>
-                <View style={styles.userCardRow}>
-                  <Text style={styles.userCardLabel}>Role</Text>
-                  <Text style={styles.userCardValue}>
-                    {user.role === 'admin' ? 'Admin' : 'User'}
-                  </Text>
-                </View>
-                <View style={styles.userCardRow}>
-                  <Text style={styles.userCardLabel}>Status</Text>
-                  <View style={[styles.statusBadge, user.isActive ? { backgroundColor: 'rgba(16, 185, 129, 0.2)' } : { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
-                    <Text style={[styles.statusText, user.isActive ? { color: '#10b981' } : { color: '#ef4444' }]}>
-                      {user.isActive ? 'Active' : 'Inactive'}
+          <View style={styles.content}>
+            <View style={styles.adminCard}>
+              <View style={styles.adminCardHeader}>
+                <Ionicons name="people-outline" size={24} color="#10b981" style={{ marginRight: 12 }} />
+                <Text style={styles.adminCardTitle}>User Management</Text>
+              </View>
+              <Text style={[styles.cardLabel, { marginBottom: 16 }]}>
+                Total Users: {users?.length || 0}
+              </Text>
+
+              {users?.map((user, index) => (
+                <View key={user._id} style={styles.userCard}>
+                  <View style={styles.userCardHeader}>
+                    <Ionicons name="person-outline" size={18} color="#10b981" style={{ marginRight: 12 }} />
+                    <Text style={styles.userCardTitle}>{user.displayName || 'User'}</Text>
+                  </View>
+                  <View style={styles.userCardRow}>
+                    <Text style={styles.userCardLabel}>Email</Text>
+                    <Text style={styles.userCardValue}>{user.email}</Text>
+                  </View>
+                  <View style={styles.userCardRow}>
+                    <Text style={styles.userCardLabel}>Role</Text>
+                    <Text style={styles.userCardValue}>
+                      {user.role === 'admin' ? 'Admin' : 'User'}
                     </Text>
                   </View>
-                </View>
-                <View style={styles.userCardRow}>
-                  <Text style={styles.userCardLabel}>Created</Text>
-                  <Text style={styles.userCardValue}>
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </Text>
-                </View>
-                <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
-                  <TouchableOpacity
-                    style={[
-                      styles.actionButton,
-                      user.isActive ? { backgroundColor: '#f59e0b' } : { backgroundColor: '#10b981' },
-                    ]}
-                    onPress={() => toggleUserStatus(user._id, user.isActive)}
-                  >
-                    <Text style={styles.actionButtonText}>
-                      {user.isActive ? 'Deactivate' : 'Activate'}
+                  <View style={styles.userCardRow}>
+                    <Text style={styles.userCardLabel}>Status</Text>
+                    <View style={[styles.statusBadge, user.isActive ? { backgroundColor: 'rgba(16, 185, 129, 0.2)' } : { backgroundColor: 'rgba(239, 68, 68, 0.2)' }]}>
+                      <Text style={[styles.statusText, user.isActive ? { color: '#10b981' } : { color: '#ef4444' }]}>
+                        {user.isActive ? 'Active' : 'Inactive'}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.userCardRow}>
+                    <Text style={styles.userCardLabel}>Created</Text>
+                    <Text style={styles.userCardValue}>
+                      {new Date(user.createdAt).toLocaleDateString()}
                     </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.actionButton, { backgroundColor: '#ef4444' }]}
-                    onPress={() => deleteUser(user._id)}
-                  >
-                    <Text style={styles.actionButtonText}>Delete</Text>
-                  </TouchableOpacity>
+                  </View>
+                  <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
+                    <TouchableOpacity
+                      style={[
+                        styles.actionButton,
+                        user.isActive ? { backgroundColor: '#f59e0b' } : { backgroundColor: '#10b981' },
+                      ]}
+                      onPress={() => toggleUserStatus(user._id, user.isActive)}
+                    >
+                      <Text style={styles.actionButtonText}>
+                        {user.isActive ? 'Deactivate' : 'Activate'}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.actionButton, { backgroundColor: '#ef4444' }]}
+                      onPress={() => deleteUser(user._id)}
+                    >
+                      <Text style={styles.actionButtonText}>Delete</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-            ))}
-          </View>
+              ))}
+            </View>
 
-          <Text style={styles.footerText}>Waste Detection Admin Panel v1.0.0</Text>
-          <Text style={styles.footerSubtext}>Firebase + MongoDB Synced</Text>
-        </View>
-      </ScrollView>
+            <Text style={styles.footerText}>OrganiSort Admin Panel v1.0.0</Text>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     </AdminProtectedScreen>
   );
 }

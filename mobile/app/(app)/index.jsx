@@ -365,12 +365,11 @@ export default function HomeScreen() {
                         }}
                         style={styles.historyImage}
                         resizeMode="cover"
-                        onError={(e) => { e.target && (e.target.style = { display: 'none' }); }}
                         defaultSource={require('@/assets/icon.png')}
                       />
                       <View style={styles.historyInfo}>
                         <Text style={styles.historyType}>
-                          {item.summary?.total_detections || item.detections?.length || 0} Items
+                          {item.detectedWasteTypes?.slice(0, 2).join(', ') || 'Detection'}
                         </Text>
                         <Text style={styles.historyDate}>
                           {new Date(item.createdAt).toLocaleDateString()} at{' '}

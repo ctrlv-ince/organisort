@@ -132,7 +132,7 @@ export default function LoginScreen() {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {/* Logo */}
           <View style={styles.logoContainer}>
-            <Text style={styles.logo}>♻️</Text>
+            <Ionicons name="leaf" size={48} color="#10b981" />
           </View>
 
           {/* Header */}
