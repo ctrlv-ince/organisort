@@ -21,7 +21,7 @@ export const ProtectedScreen = ({ children }) => {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#2563eb" />
+        <ActivityIndicator size="large" color="#10b981" />
         <Text style={styles.text}>Loading...</Text>
       </View>
     );

@@ -4,7 +4,7 @@ import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 export const LoadingSpinner = ({ message = 'Loading...', size = 'large' }) => {
   return (
     <View style={styles.container}>
-      <ActivityIndicator size={size} color="#2563eb" />
+      <ActivityIndicator size={size} color="#10b981" />
       {message && <Text style={styles.text}>{message}</Text>}
     </View>
   );

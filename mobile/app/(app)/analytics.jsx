@@ -18,7 +18,7 @@ const CHART_WIDTH = SCREEN_WIDTH - 48;
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
   header: {
-    backgroundColor: '#6366f1',
+    backgroundColor: '#10b981',
     paddingTop: 32,
     paddingBottom: 24,
     paddingHorizontal: 24,
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 24,
   },
   title: { fontSize: 30, fontWeight: 'bold', color: 'white', textAlign: 'center' },
-  subtitle: { fontSize: 16, color: '#c7d2fe', textAlign: 'center', marginTop: 8 },
+  subtitle: { fontSize: 16, color: '#d1fae5', textAlign: 'center', marginTop: 8 },
   content: { padding: 24 },
 
   // Section Styles
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
-  statValue: { fontSize: 28, fontWeight: 'bold', color: '#6366f1', marginBottom: 4 },
+  statValue: { fontSize: 28, fontWeight: 'bold', color: '#10b981', marginBottom: 4 },
   statLabel: { fontSize: 13, color: '#64748b', fontWeight: '600' },
   statSubtext: { fontSize: 11, color: '#94a3b8', marginTop: 4 },
 
@@ -107,14 +107,14 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#6366f1',
+    backgroundColor: '#10b981',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
   wasteTypeRankText: { color: 'white', fontSize: 14, fontWeight: 'bold' },
   wasteTypeName: { flex: 1, fontSize: 15, fontWeight: '600', color: '#1e293b' },
-  wasteTypeCount: { fontSize: 15, fontWeight: 'bold', color: '#6366f1', marginRight: 8 },
+  wasteTypeCount: { fontSize: 15, fontWeight: 'bold', color: '#10b981', marginRight: 8 },
   wasteTypePercentage: { fontSize: 13, color: '#64748b' },
 
   // Progress Bar
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#6366f1',
+    backgroundColor: '#10b981',
     borderRadius: 4,
   },
 
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   compositionLabel: { flex: 1, fontSize: 14, fontWeight: '600', color: '#1e293b' },
-  compositionValue: { fontSize: 16, fontWeight: 'bold', color: '#6366f1' },
+  compositionValue: { fontSize: 16, fontWeight: 'bold', color: '#10b981' },
 
   loadingContainer: {
     flex: 1,
@@ -292,7 +292,7 @@ export default function AnalyticsScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#6366f1" />
+        <ActivityIndicator size="large" color="#10b981" />
       </View>
     );
   }

@@ -14,18 +14,17 @@ import {
 } from 'react-native';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
-import axios from 'axios';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
-  header: { backgroundColor: '#2563eb', paddingTop: 32, paddingBottom: 24, paddingHorizontal: 24, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 },
+  header: { backgroundColor: '#10b981', paddingTop: 32, paddingBottom: 24, paddingHorizontal: 24, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 },
   headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
   title: { fontSize: 30, fontWeight: 'bold', color: 'white' },
   logoutBtn: { backgroundColor: '#ef4444', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8 },
   logoutText: { color: 'white', fontWeight: 'bold' },
   welcomeCard: { backgroundColor: 'rgba(255, 255, 255, 0.2)', borderRadius: 12, padding: 12 },
   welcomeText: { color: 'white', fontSize: 18, fontWeight: '600' },
-  welcomeSubtext: { color: '#e0e7ff', fontSize: 14, marginTop: 4 },
+  welcomeSubtext: { color: '#d1fae5', fontSize: 14, marginTop: 4 },
   content: { paddingHorizontal: 24, paddingVertical: 24 },
   card: { backgroundColor: 'white', borderRadius: 12, padding: 24, marginBottom: 24, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 3, elevation: 3 },
   cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
@@ -49,7 +48,7 @@ const styles = StyleSheet.create({
   userCardRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
   userCardLabel: { fontSize: 11, color: '#64748b' },
   userCardValue: { fontSize: 12, fontWeight: '500', color: '#1e293b' },
-  actionButton: { backgroundColor: '#3b82f6', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, alignItems: 'center' },
+  actionButton: { backgroundColor: '#10b981', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, alignItems: 'center' },
   actionButtonText: { color: 'white', fontWeight: 'bold', fontSize: 12 },
   errorCard: { backgroundColor: '#fef2f2', borderRadius: 12, padding: 16, marginBottom: 12, borderColor: '#fecaca', borderWidth: 1 },
   errorText: { color: '#991b1b', fontSize: 12 },
@@ -66,7 +65,7 @@ export default function AdminDashboard() {
   const fetchUsers = async () => {
     try {
       if (!user) return;
-      
+
       // Using the apiClient which automatically adds the token
       const response = await apiClient.get('/api/users');
       setUsers(response.data);
@@ -78,7 +77,7 @@ export default function AdminDashboard() {
       setRefreshing(false);
     }
   };
-      
+
 
   useEffect(() => {
     fetchUsers();
@@ -92,7 +91,7 @@ export default function AdminDashboard() {
 
   const handleLogout = async () => {
     Alert.alert('Logout', 'Are you sure you want to log out?', [
-      { text: 'Cancel', onPress: () => {}, style: 'cancel' },
+      { text: 'Cancel', onPress: () => { }, style: 'cancel' },
       {
         text: 'Logout',
         onPress: async () => {
@@ -106,19 +105,7 @@ export default function AdminDashboard() {
 
   const toggleUserStatus = async (userId, currentStatus) => {
     try {
-      const idToken = await user.getIdToken();
-      const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
-
-      await axios.put(
-        `${API_URL}/api/users/${userId}/status`,
-        { isActive: !currentStatus },
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        }
-      );
-
+      await apiClient.put(`/api/users/${userId}/status`, { isActive: !currentStatus });
       Alert.alert('Success', 'User status updated successfully');
       handleRefresh();
     } catch (err) {
@@ -129,18 +116,7 @@ export default function AdminDashboard() {
 
   const deleteUser = async (userId) => {
     try {
-      const idToken = await user.getIdToken();
-      const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
-
-      await axios.delete(
-        `${API_URL}/api/users/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        }
-      );
-
+      await apiClient.delete(`/api/users/${userId}`);
       Alert.alert('Success', 'User deleted successfully');
       handleRefresh();
     } catch (err) {
@@ -152,7 +128,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size='large' color='#2563eb' />
+        <ActivityIndicator size='large' color='#10b981' />
       </View>
     );
   }
@@ -175,7 +151,7 @@ export default function AdminDashboard() {
       <ScrollView
         style={styles.container}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor='#2563eb' />
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor='#10b981' />
         }
       >
         <View style={styles.header}>
@@ -186,7 +162,7 @@ export default function AdminDashboard() {
             </TouchableOpacity>
           </View>
           <View style={styles.welcomeCard}>
-            <Text style={styles.welcomeText}>Welcome, Admin! {user?.displayName || 'User'}! {String.fromCodePoint(0x1F929)}</Text>
+            <Text style={styles.welcomeText}>Welcome, {user?.displayName || 'Admin'}!</Text>
             <Text style={styles.welcomeSubtext}>Manage all user accounts and system settings</Text>
           </View>
         </View>

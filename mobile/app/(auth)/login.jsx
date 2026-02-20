@@ -16,12 +16,12 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#2563eb' },
+  container: { flex: 1, backgroundColor: '#10b981' },
   scrollContent: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 32 },
   logoContainer: { width: 96, height: 96, backgroundColor: 'white', borderRadius: 48, alignItems: 'center', justifyContent: 'center', marginBottom: 32, alignSelf: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 5 },
   logo: { fontSize: 48 },
   title: { fontSize: 36, fontWeight: 'bold', color: 'white', marginBottom: 8, textAlign: 'center' },
-  subtitle: { fontSize: 18, color: '#bfdbfe', textAlign: 'center', marginBottom: 48 },
+  subtitle: { fontSize: 18, color: '#d1fae5', textAlign: 'center', marginBottom: 48 },
   card: { backgroundColor: 'white', borderRadius: 24, paddingHorizontal: 24, paddingVertical: 32, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 12, elevation: 5, marginBottom: 24 },
   cardTitle: { fontSize: 20, fontWeight: 'bold', color: '#1e293b', marginBottom: 24, textAlign: 'center' },
   inputGroup: { marginBottom: 16 },
@@ -33,14 +33,14 @@ const styles = StyleSheet.create({
   toggleText: {},
   error: { color: '#ef4444', fontSize: 12, marginTop: 4 },
   button: { width: '100%', paddingVertical: 16, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
-  buttonPrimary: { backgroundColor: '#2563eb' },
+  buttonPrimary: { backgroundColor: '#10b981' },
   buttonDisabled: { backgroundColor: '#d1d5db' },
   buttonText: { color: 'white', fontWeight: 'bold', fontSize: 18 },
   divider: { flexDirection: 'row', alignItems: 'center', marginBottom: 24 },
   dividerLine: { flex: 1, height: 1, backgroundColor: '#d1d5db' },
   dividerText: { color: '#9ca3af', marginHorizontal: 12, fontSize: 14 },
-  googleButton: { width: '100%', paddingVertical: 16, borderRadius: 8, borderWidth: 2, borderColor: '#2563eb', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', backgroundColor: 'white' },
-  googleText: { color: '#2563eb', fontWeight: 'bold', fontSize: 16 },
+  googleButton: { width: '100%', paddingVertical: 16, borderRadius: 8, borderWidth: 2, borderColor: '#10b981', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', backgroundColor: 'white' },
+  googleText: { color: '#10b981', fontWeight: 'bold', fontSize: 16 },
   footer: { textAlign: 'center', color: 'white', fontSize: 12 },
 });
 
@@ -215,7 +215,7 @@ export default function LoginScreen() {
                   style={styles.googleButton}
                   onPress={handleGoogleSignIn}
                 >
-                  <Ionicons name="logo-google" size={22} color="#2563eb" style={{ marginRight: 12 }} />
+                  <Ionicons name="logo-google" size={22} color="#10b981" style={{ marginRight: 12 }} />
                   <Text style={styles.googleText}>Sign in with Google</Text>
                 </TouchableOpacity>
 

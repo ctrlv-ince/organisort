@@ -16,7 +16,7 @@ import apiClient from '@/src/utils/apiClient';
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
   header: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#10b981',
     paddingTop: 32,
     paddingBottom: 24,
     paddingHorizontal: 24,
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 24,
   },
   title: { fontSize: 30, fontWeight: 'bold', color: 'white', textAlign: 'center' },
-  subtitle: { fontSize: 16, color: '#bfdbfe', textAlign: 'center', marginTop: 8 },
+  subtitle: { fontSize: 16, color: '#d1fae5', textAlign: 'center', marginTop: 8 },
   content: { padding: 24 },
   formCard: {
     backgroundColor: 'white',
