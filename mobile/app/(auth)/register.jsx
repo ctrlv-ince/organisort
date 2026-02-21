@@ -13,6 +13,7 @@ import {
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#10b981' },
@@ -73,113 +74,115 @@ export default function RegisterScreen() {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Logo */}
-        <View style={styles.logoContainer}>
-          <Text style={styles.logo}>♻️</Text>
-        </View>
-
-        {/* Header */}
-        <Text style={styles.title}>OrganiSort</Text>
-        <Text style={styles.subtitle}>Waste Detection App</Text>
-
-        {/* Register Card */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Register</Text>
-
-          {/* Email Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="user@example.com"
-              placeholderTextColor="#9ca3af"
-              keyboardType="email-address"
-              value={email}
-              onChangeText={setEmail}
-              editable={!formLoading}
-            />
-            {errors.email && <Text style={styles.error}>{errors.email}</Text>}
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          {/* Logo */}
+          <View style={styles.logoContainer}>
+            <Ionicons name="leaf" size={48} color="#10b981" />
           </View>
 
-          {/* Password Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Password</Text>
-            <View style={styles.passwordContainer}>
+          {/* Header */}
+          <Text style={styles.title}>OrganiSort</Text>
+          <Text style={styles.subtitle}>Waste Detection App</Text>
+
+          {/* Register Card */}
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Register</Text>
+
+            {/* Email Input */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Email</Text>
               <TextInput
-                style={[styles.input, styles.passwordInput]}
-                placeholder="••••••••"
+                style={styles.input}
+                placeholder="user@example.com"
                 placeholderTextColor="#9ca3af"
-                secureTextEntry={!showPassword}
-                value={password}
-                onChangeText={setPassword}
+                keyboardType="email-address"
+                value={email}
+                onChangeText={setEmail}
                 editable={!formLoading}
               />
-              <TouchableOpacity
-                style={styles.toggleButton}
-                onPress={() => setShowPassword((current) => !current)}
-                accessibilityRole="button"
-                accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
-                accessibilityState={{ pressed: showPassword }}
-              >
-                <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={22} color="#64748b" />
-              </TouchableOpacity>
+              {errors.email && <Text style={styles.error}>{errors.email}</Text>}
             </View>
-            {errors.password && <Text style={styles.error}>{errors.password}</Text>}
+
+            {/* Password Input */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Password</Text>
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={[styles.input, styles.passwordInput]}
+                  placeholder="••••••••"
+                  placeholderTextColor="#9ca3af"
+                  secureTextEntry={!showPassword}
+                  value={password}
+                  onChangeText={setPassword}
+                  editable={!formLoading}
+                />
+                <TouchableOpacity
+                  style={styles.toggleButton}
+                  onPress={() => setShowPassword((current) => !current)}
+                  accessibilityRole="button"
+                  accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                  accessibilityState={{ pressed: showPassword }}
+                >
+                  <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={22} color="#64748b" />
+                </TouchableOpacity>
+              </View>
+              {errors.password && <Text style={styles.error}>{errors.password}</Text>}
+            </View>
+
+            {/* Confirm Password Input */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Confirm Password</Text>
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={[styles.input, styles.passwordInput]}
+                  placeholder="••••••••"
+                  placeholderTextColor="#9ca3af"
+                  secureTextEntry={!showConfirmPassword}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  editable={!formLoading}
+                />
+                <TouchableOpacity
+                  style={styles.toggleButton}
+                  onPress={() => setShowConfirmPassword((current) => !current)}
+                  accessibilityRole="button"
+                  accessibilityLabel={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                  accessibilityState={{ pressed: showConfirmPassword }}
+                >
+                  <Ionicons name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'} size={22} color="#64748b" />
+                </TouchableOpacity>
+              </View>
+              {errors.confirmPassword && <Text style={styles.error}>{errors.confirmPassword}</Text>}
+            </View>
+
+            {/* Register Button */}
+            <TouchableOpacity
+              style={[
+                styles.button,
+                styles.buttonPrimary,
+                (formLoading || loading) && styles.buttonDisabled
+              ]}
+              onPress={handleRegister}
+              disabled={formLoading || loading}
+            >
+              {formLoading || loading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text style={styles.buttonText}>Register</Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => router.replace('/(auth)/login')}>
+              <Text style={[styles.footer, { color: '#d1fae5', textDecorationLine: 'underline' }]}>Already have an account? Sign In</Text>
+            </TouchableOpacity>
           </View>
 
-          {/* Confirm Password Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Confirm Password</Text>
-            <View style={styles.passwordContainer}>
-              <TextInput
-                style={[styles.input, styles.passwordInput]}
-                placeholder="••••••••"
-                placeholderTextColor="#9ca3af"
-                secureTextEntry={!showConfirmPassword}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                editable={!formLoading}
-              />
-              <TouchableOpacity
-                style={styles.toggleButton}
-                onPress={() => setShowConfirmPassword((current) => !current)}
-                accessibilityRole="button"
-                accessibilityLabel={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
-                accessibilityState={{ pressed: showConfirmPassword }}
-              >
-                <Ionicons name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'} size={22} color="#64748b" />
-              </TouchableOpacity>
-            </View>
-            {errors.confirmPassword && <Text style={styles.error}>{errors.confirmPassword}</Text>}
-          </View>
-
-          {/* Register Button */}
-          <TouchableOpacity
-            style={[
-              styles.button,
-              styles.buttonPrimary,
-              (formLoading || loading) && styles.buttonDisabled
-            ]}
-            onPress={handleRegister}
-            disabled={formLoading || loading}
-          >
-            {formLoading || loading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text style={styles.buttonText}>Register</Text>
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => router.replace('/(auth)/login')}>
-            <Text style={[styles.footer, { color: '#d1fae5', textDecorationLine: 'underline' }]}>Already have an account? Sign In</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Footer */}
-        <Text style={styles.footer}>© 2026 OrganiSort • Waste Detection AI</Text>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          {/* Footer */}
+          <Text style={styles.footer}>© 2026 OrganiSort • Waste Detection AI</Text>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

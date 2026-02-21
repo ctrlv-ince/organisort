@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import apiClient from '@/src/utils/apiClient';
 
 const styles = StyleSheet.create({
@@ -106,61 +107,63 @@ export default function EditProfileScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 32 }}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Edit Profile</Text>
-        <Text style={styles.subtitle}>Update your account details</Text>
-      </View>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 32 }}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Edit Profile</Text>
+          <Text style={styles.subtitle}>Update your account details</Text>
+        </View>
 
-      <View style={styles.content}>
-        <View style={styles.formCard}>
-          <Text style={styles.label}>Email Address</Text>
-          <TextInput
-            style={[styles.input, styles.inputDisabled]}
-            value={user?.email || ''}
-            editable={false}
-          />
+        <View style={styles.content}>
+          <View style={styles.formCard}>
+            <Text style={styles.label}>Email Address</Text>
+            <TextInput
+              style={[styles.input, styles.inputDisabled]}
+              value={user?.email || ''}
+              editable={false}
+            />
 
-          <Text style={styles.label}>Display Name</Text>
-          <TextInput
-            style={styles.input}
-            value={displayName}
-            onChangeText={setDisplayName}
-            placeholder="Enter your display name"
-            autoCapitalize="words"
-            maxLength={50}
-          />
+            <Text style={styles.label}>Display Name</Text>
+            <TextInput
+              style={styles.input}
+              value={displayName}
+              onChangeText={setDisplayName}
+              placeholder="Enter your display name"
+              autoCapitalize="words"
+              maxLength={50}
+            />
 
-          <Text style={styles.label}>Photo URL (optional)</Text>
-          <TextInput
-            style={styles.input}
-            value={photoURL}
-            onChangeText={setPhotoURL}
-            placeholder="https://example.com/photo.jpg"
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-          <Text style={styles.helper}>Paste a public image URL for your avatar.</Text>
+            <Text style={styles.label}>Photo URL (optional)</Text>
+            <TextInput
+              style={styles.input}
+              value={photoURL}
+              onChangeText={setPhotoURL}
+              placeholder="https://example.com/photo.jpg"
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            <Text style={styles.helper}>Paste a public image URL for your avatar.</Text>
 
-          <View style={styles.buttonRow}>
-            <TouchableOpacity
-              style={[styles.button, styles.cancelButton]}
-              onPress={() => router.back()}
-              disabled={saving}
-            >
-              <Text style={styles.cancelText}>Cancel</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={[styles.button, styles.cancelButton]}
+                onPress={() => router.back()}
+                disabled={saving}
+              >
+                <Text style={styles.cancelText}>Cancel</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.button, styles.saveButton, saving && styles.saveButtonDisabled]}
-              onPress={handleSave}
-              disabled={saving}
-            >
-              {saving ? <ActivityIndicator color="white" /> : <Text style={styles.saveText}>Save</Text>}
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.saveButton, saving && styles.saveButtonDisabled]}
+                onPress={handleSave}
+                disabled={saving}
+              >
+                {saving ? <ActivityIndicator color="white" /> : <Text style={styles.saveText}>Save</Text>}
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

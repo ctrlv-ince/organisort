@@ -15,6 +15,7 @@ import { useAuth } from '@/src/context/AuthContext';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import apiClient from '@/src/utils/apiClient';
+import SkeletonLoader, { StatSkeleton } from '@/src/components/SkeletonLoader';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
@@ -212,9 +213,34 @@ export default function ProfileScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#10b981" />
-      </View>
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={styles.header}>
+          <Text style={styles.title}>My Profile</Text>
+          <Text style={styles.subtitle}>View your account & statistics</Text>
+        </View>
+        <View style={styles.content}>
+          {/* Avatar skeleton */}
+          <View style={[styles.profileHeader, { alignItems: 'center' }]}>
+            <SkeletonLoader width={120} height={120} borderRadius={60} style={{ marginBottom: 16 }} />
+            <SkeletonLoader width={160} height={20} style={{ marginBottom: 8 }} />
+            <SkeletonLoader width={200} height={14} style={{ marginBottom: 16 }} />
+            <SkeletonLoader width={100} height={32} borderRadius={20} />
+          </View>
+          {/* Stats skeleton */}
+          <View style={styles.statsSection}>
+            <SkeletonLoader width={120} height={20} style={{ marginBottom: 16 }} />
+            <View style={styles.statsGrid}>
+              <StatSkeleton />
+              <StatSkeleton />
+              <StatSkeleton />
+            </View>
+          </View>
+          {/* Info cards skeleton */}
+          <SkeletonLoader width="100%" height={56} borderRadius={12} style={{ marginBottom: 12 }} />
+          <SkeletonLoader width="100%" height={56} borderRadius={12} style={{ marginBottom: 12 }} />
+          <SkeletonLoader width="100%" height={56} borderRadius={12} style={{ marginBottom: 12 }} />
+        </View>
+      </SafeAreaView>
     );
   }
 

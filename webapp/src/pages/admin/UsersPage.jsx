@@ -100,10 +100,43 @@ const UsersPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-200 border-t-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading users...</p>
+      <div className="space-y-6">
+        {/* Header skeleton */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <div className="skeleton-shimmer h-8 w-48" />
+              <div className="skeleton-shimmer h-4 w-64" />
+            </div>
+            <div className="skeleton-shimmer h-10 w-32 rounded-lg" />
+          </div>
+        </div>
+        {/* Stats skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="bg-white rounded-lg shadow-md p-5 space-y-2">
+              <div className="skeleton-shimmer h-4 w-20" />
+              <div className="skeleton-shimmer h-8 w-12" />
+            </div>
+          ))}
+        </div>
+        {/* Table skeleton */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <div className="skeleton-shimmer h-6 w-32" />
+          </div>
+          {[1, 2, 3, 4, 5].map(i => (
+            <div key={i} className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="skeleton-shimmer h-10 w-10 rounded-full" />
+                <div className="space-y-2">
+                  <div className="skeleton-shimmer h-4 w-32" />
+                  <div className="skeleton-shimmer h-3 w-48" />
+                </div>
+              </div>
+              <div className="skeleton-shimmer h-8 w-20 rounded-lg" />
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -194,8 +227,8 @@ const UsersPage = () => {
                 key={role}
                 onClick={() => setRoleFilter(role)}
                 className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${roleFilter === role
-                    ? 'bg-purple-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-purple-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
               >
                 {role === 'all' ? `All (${users.length})` : role === 'admin' ? `Admins (${adminCount})` : `Users (${userCount})`}
@@ -239,8 +272,8 @@ const UsersPage = () => {
                     {/* Role Badge */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${user.role === 'admin'
-                          ? 'bg-amber-100 text-amber-800'
-                          : 'bg-green-100 text-green-800'
+                        ? 'bg-amber-100 text-amber-800'
+                        : 'bg-green-100 text-green-800'
                         }`}>
                         {user.role === 'admin' && (
                           <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -270,8 +303,8 @@ const UsersPage = () => {
                           onClick={() => handleUpdateRole(user._id, user.role === 'admin' ? 'user' : 'admin')}
                           disabled={actionLoading === user._id}
                           className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all disabled:opacity-50 ${user.role === 'admin'
-                              ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                              : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                            ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
                             }`}
                           title={user.role === 'admin' ? 'Demote to User' : 'Promote to Admin'}
                         >

@@ -77,24 +77,49 @@ const DetectionsPage = () => {
   // Filter detections based on search term
   const filteredDetections = detections.filter((detection) => {
     if (!searchTerm) return true;
-    
+
     const searchLower = searchTerm.toLowerCase();
     const matchesId = detection._id.toLowerCase().includes(searchLower);
     const matchesUser = detection.user?.toLowerCase().includes(searchLower);
     const matchesPrimaryType = detection.primaryWasteType?.toLowerCase().includes(searchLower);
-    const matchesAnyType = detection.detectedWasteTypes?.some(type => 
+    const matchesAnyType = detection.detectedWasteTypes?.some(type =>
       type.toLowerCase().includes(searchLower)
     );
-    
+
     return matchesId || matchesUser || matchesPrimaryType || matchesAnyType;
   });
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-200 border-t-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading detections...</p>
+      <div className="space-y-6">
+        {/* Header skeleton */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="space-y-2">
+              <div className="skeleton-shimmer h-8 w-48" />
+              <div className="skeleton-shimmer h-4 w-64" />
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <div className="skeleton-shimmer h-10 flex-1" />
+            <div className="skeleton-shimmer h-10 w-32" />
+          </div>
+        </div>
+        {/* Detection cards skeleton */}
+        <div className="grid md:grid-cols-2 gap-6">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="skeleton-shimmer h-48 w-full rounded-none" />
+              <div className="p-6 space-y-3">
+                <div className="skeleton-shimmer h-5 w-40" />
+                <div className="skeleton-shimmer h-4 w-60" />
+                <div className="flex gap-2">
+                  <div className="skeleton-shimmer h-6 w-16 rounded-full" />
+                  <div className="skeleton-shimmer h-6 w-20 rounded-full" />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );

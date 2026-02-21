@@ -12,6 +12,8 @@ import { useAuth } from '@/src/context/AuthContext';
 import apiClient from '@/src/utils/apiClient';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Circle, G, Text as SvgText } from 'react-native-svg';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import SkeletonLoader, { StatSkeleton } from '@/src/components/SkeletonLoader';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CHART_WIDTH = SCREEN_WIDTH - 48;
@@ -292,232 +294,248 @@ export default function AnalyticsScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#10b981" />
-      </View>
-    );
-  }
-
-  if (analytics.totalScans === 0) {
-    return (
-      <ScrollView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
           <Text style={styles.title}>Analytics</Text>
           <Text style={styles.subtitle}>Insights & Impact</Text>
         </View>
         <View style={styles.content}>
-          <View style={styles.emptyState}>
-            <Ionicons name="bar-chart-outline" size={64} color="#94a3b8" style={{ marginBottom: 16, opacity: 0.5 }} />
-            <Text style={styles.emptyText}>
-              No data yet.{'\n'}Start scanning to see your analytics!
-            </Text>
+          <View style={styles.statsGrid}>
+            <StatSkeleton />
+            <StatSkeleton />
+            <StatSkeleton />
           </View>
+          <SkeletonLoader width="100%" height={200} borderRadius={12} style={{ marginTop: 24, marginBottom: 16 }} />
+          <SkeletonLoader width="100%" height={200} borderRadius={12} style={{ marginBottom: 16 }} />
         </View>
-      </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
+  if (analytics.totalScans === 0) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <ScrollView style={{ flex: 1 }}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Analytics</Text>
+            <Text style={styles.subtitle}>Insights & Impact</Text>
+          </View>
+          <View style={styles.content}>
+            <View style={styles.emptyState}>
+              <Ionicons name="bar-chart-outline" size={64} color="#94a3b8" style={{ marginBottom: 16, opacity: 0.5 }} />
+              <Text style={styles.emptyText}>
+                No data yet.{'\n'}Start scanning to see your analytics!
+              </Text>
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#6366f1" />
-      }
-    >
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Analytics</Text>
-        <Text style={styles.subtitle}>Your Waste Detection Insights</Text>
-      </View>
-
-      <View style={styles.content}>
-        {/* Overview Stats */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="bar-chart-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
-            <Text style={styles.sectionTitle}>Overview</Text>
-          </View>
-          <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{analytics.totalScans}</Text>
-              <Text style={styles.statLabel}>Total Scans</Text>
-              <Text style={styles.statSubtext}>+{analytics.weeklyGrowth}% this week</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{analytics.totalItems}</Text>
-              <Text style={styles.statLabel}>Items Detected</Text>
-              <Text style={styles.statSubtext}>Across all scans</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{analytics.uniqueTypes}</Text>
-              <Text style={styles.statLabel}>Unique Types</Text>
-              <Text style={styles.statSubtext}>Different waste categories</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{analytics.averageConfidence}%</Text>
-              <Text style={styles.statLabel}>Avg Confidence</Text>
-              <Text style={styles.statSubtext}>Detection accuracy</Text>
-            </View>
-          </View>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <ScrollView
+        style={{ flex: 1 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#10b981" />
+        }
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Analytics</Text>
+          <Text style={styles.subtitle}>Your Waste Detection Insights</Text>
         </View>
 
-        {/* Environmental Impact */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="earth-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
-            <Text style={styles.sectionTitle}>Environmental Impact</Text>
-          </View>
-          <View style={styles.impactCard}>
-            <View style={styles.impactRow}>
-              <Text style={styles.impactIcon}>♻️</Text>
-              <View style={styles.impactContent}>
-                <Text style={styles.impactValue}>{analytics.impactStats.co2Saved} kg</Text>
-                <Text style={styles.impactLabel}>CO₂ Emissions Avoided</Text>
-              </View>
+        <View style={styles.content}>
+          {/* Overview Stats */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="bar-chart-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
+              <Text style={styles.sectionTitle}>Overview</Text>
             </View>
-            <View style={styles.impactRow}>
-              <Text style={styles.impactIcon}>🗑️</Text>
-              <View style={styles.impactContent}>
-                <Text style={styles.impactValue}>
-                  {analytics.impactStats.landfillDiverted} kg
-                </Text>
-                <Text style={styles.impactLabel}>Landfill Waste Diverted</Text>
+            <View style={styles.statsGrid}>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>{analytics.totalScans}</Text>
+                <Text style={styles.statLabel}>Total Scans</Text>
+                <Text style={styles.statSubtext}>+{analytics.weeklyGrowth}% this week</Text>
               </View>
-            </View>
-            <View style={styles.impactRow}>
-              <Text style={styles.impactIcon}>💧</Text>
-              <View style={styles.impactContent}>
-                <Text style={styles.impactValue}>{analytics.impactStats.waterSaved} L</Text>
-                <Text style={styles.impactLabel}>Water Conserved</Text>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>{analytics.totalItems}</Text>
+                <Text style={styles.statLabel}>Items Detected</Text>
+                <Text style={styles.statSubtext}>Across all scans</Text>
               </View>
-            </View>
-            <View style={[styles.impactRow, { borderBottomWidth: 0 }]}>
-              <Text style={styles.impactIcon}>🌳</Text>
-              <View style={styles.impactContent}>
-                <Text style={styles.impactValue}>
-                  {analytics.impactStats.treesEquivalent}
-                </Text>
-                <Text style={styles.impactLabel}>Trees Equivalent Impact</Text>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>{analytics.uniqueTypes}</Text>
+                <Text style={styles.statLabel}>Unique Types</Text>
+                <Text style={styles.statSubtext}>Different waste categories</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>{analytics.averageConfidence}%</Text>
+                <Text style={styles.statLabel}>Avg Confidence</Text>
+                <Text style={styles.statSubtext}>Detection accuracy</Text>
               </View>
             </View>
           </View>
-          <Text style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', marginTop: 8 }}>
-            *Estimates based on proper organic waste composting
-          </Text>
-        </View>
 
-        {/* Waste Composition */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="pie-chart-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
-            <Text style={styles.sectionTitle}>Waste Composition</Text>
-          </View>
-          <View style={styles.chartCard}>
-            <View style={styles.compositionItem}>
-              <View style={[styles.compositionColor, { backgroundColor: '#10b981' }]} />
-              <Text style={styles.compositionLabel}>Organic Waste</Text>
-              <Text style={styles.compositionValue}>{analytics.organicPercentage}%</Text>
+          {/* Environmental Impact */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="earth-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
+              <Text style={styles.sectionTitle}>Environmental Impact</Text>
             </View>
-            <View style={styles.progressBar}>
-              <View
-                style={[styles.progressFill, { width: `${analytics.organicPercentage}%` }]}
-              />
-            </View>
-
-            {analytics.nonOrganicPercentage > 0 && (
-              <>
-                <View style={[styles.compositionItem, { marginTop: 16 }]}>
-                  <View style={[styles.compositionColor, { backgroundColor: '#ef4444' }]} />
-                  <Text style={styles.compositionLabel}>Non-Organic Waste</Text>
-                  <Text style={styles.compositionValue}>
-                    {analytics.nonOrganicPercentage}%
+            <View style={styles.impactCard}>
+              <View style={styles.impactRow}>
+                <Ionicons name="leaf-outline" size={48} color="#10b981" />
+                <View style={styles.impactContent}>
+                  <Text style={styles.impactValue}>{analytics.impactStats.co2Saved} kg</Text>
+                  <Text style={styles.impactLabel}>CO₂ Emissions Avoided</Text>
+                </View>
+              </View>
+              <View style={styles.impactRow}>
+                <Text style={styles.impactIcon}>🗑️</Text>
+                <View style={styles.impactContent}>
+                  <Text style={styles.impactValue}>
+                    {analytics.impactStats.landfillDiverted} kg
                   </Text>
+                  <Text style={styles.impactLabel}>Landfill Waste Diverted</Text>
                 </View>
-                <View style={styles.progressBar}>
-                  <View
-                    style={[
-                      styles.progressFill,
-                      { width: `${analytics.nonOrganicPercentage}%`, backgroundColor: '#ef4444' },
-                    ]}
-                  />
+              </View>
+              <View style={styles.impactRow}>
+                <Text style={styles.impactIcon}>💧</Text>
+                <View style={styles.impactContent}>
+                  <Text style={styles.impactValue}>{analytics.impactStats.waterSaved} L</Text>
+                  <Text style={styles.impactLabel}>Water Conserved</Text>
                 </View>
-              </>
-            )}
-
-            <Text
-              style={{
-                fontSize: 12,
-                color: '#64748b',
-                marginTop: 16,
-                textAlign: 'center',
-              }}
-            >
-              Based on {analytics.totalItems} detected items
+              </View>
+              <View style={[styles.impactRow, { borderBottomWidth: 0 }]}>
+                <Text style={styles.impactIcon}>🌳</Text>
+                <View style={styles.impactContent}>
+                  <Text style={styles.impactValue}>
+                    {analytics.impactStats.treesEquivalent}
+                  </Text>
+                  <Text style={styles.impactLabel}>Trees Equivalent Impact</Text>
+                </View>
+              </View>
+            </View>
+            <Text style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', marginTop: 8 }}>
+              *Estimates based on proper organic waste composting
             </Text>
           </View>
-        </View>
 
-        {/* Most Common Waste Types */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="trending-up-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
-            <Text style={styles.sectionTitle}>Top Waste Types</Text>
-          </View>
-          <View style={styles.chartCard}>
-            <Text style={styles.chartTitle}>Most Frequently Detected</Text>
-            {analytics.topWasteTypes.map((item, index) => (
-              <View
-                key={item.name}
-                style={[
-                  styles.wasteTypeItem,
-                  index === analytics.topWasteTypes.length - 1 && { borderBottomWidth: 0 },
-                ]}
-              >
+          {/* Waste Composition */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="pie-chart-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
+              <Text style={styles.sectionTitle}>Waste Composition</Text>
+            </View>
+            <View style={styles.chartCard}>
+              <View style={styles.compositionItem}>
+                <View style={[styles.compositionColor, { backgroundColor: '#10b981' }]} />
+                <Text style={styles.compositionLabel}>Organic Waste</Text>
+                <Text style={styles.compositionValue}>{analytics.organicPercentage}%</Text>
+              </View>
+              <View style={styles.progressBar}>
                 <View
+                  style={[styles.progressFill, { width: `${analytics.organicPercentage}%` }]}
+                />
+              </View>
+
+              {analytics.nonOrganicPercentage > 0 && (
+                <>
+                  <View style={[styles.compositionItem, { marginTop: 16 }]}>
+                    <View style={[styles.compositionColor, { backgroundColor: '#ef4444' }]} />
+                    <Text style={styles.compositionLabel}>Non-Organic Waste</Text>
+                    <Text style={styles.compositionValue}>
+                      {analytics.nonOrganicPercentage}%
+                    </Text>
+                  </View>
+                  <View style={styles.progressBar}>
+                    <View
+                      style={[
+                        styles.progressFill,
+                        { width: `${analytics.nonOrganicPercentage}%`, backgroundColor: '#ef4444' },
+                      ]}
+                    />
+                  </View>
+                </>
+              )}
+
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: '#64748b',
+                  marginTop: 16,
+                  textAlign: 'center',
+                }}
+              >
+                Based on {analytics.totalItems} detected items
+              </Text>
+            </View>
+          </View>
+
+          {/* Most Common Waste Types */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="trending-up-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
+              <Text style={styles.sectionTitle}>Top Waste Types</Text>
+            </View>
+            <View style={styles.chartCard}>
+              <Text style={styles.chartTitle}>Most Frequently Detected</Text>
+              {analytics.topWasteTypes.map((item, index) => (
+                <View
+                  key={item.name}
                   style={[
-                    styles.wasteTypeRank,
-                    item.rank === 1 && { backgroundColor: '#fbbf24' },
-                    item.rank === 2 && { backgroundColor: '#94a3b8' },
-                    item.rank === 3 && { backgroundColor: '#f97316' },
+                    styles.wasteTypeItem,
+                    index === analytics.topWasteTypes.length - 1 && { borderBottomWidth: 0 },
                   ]}
                 >
-                  <Text style={styles.wasteTypeRankText}>{item.rank}</Text>
+                  <View
+                    style={[
+                      styles.wasteTypeRank,
+                      item.rank === 1 && { backgroundColor: '#fbbf24' },
+                      item.rank === 2 && { backgroundColor: '#94a3b8' },
+                      item.rank === 3 && { backgroundColor: '#f97316' },
+                    ]}
+                  >
+                    <Text style={styles.wasteTypeRankText}>{item.rank}</Text>
+                  </View>
+                  <Text style={styles.wasteTypeName}>{item.name}</Text>
+                  <Text style={styles.wasteTypeCount}>{item.count}</Text>
+                  <Text style={styles.wasteTypePercentage}>({item.percentage}%)</Text>
                 </View>
-                <Text style={styles.wasteTypeName}>{item.name}</Text>
-                <Text style={styles.wasteTypeCount}>{item.count}</Text>
-                <Text style={styles.wasteTypePercentage}>({item.percentage}%)</Text>
+              ))}
+            </View>
+          </View>
+
+          {/* Classification Breakdown */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="flask-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
+              <Text style={styles.sectionTitle}>Classification Stats</Text>
+            </View>
+            <View style={styles.statsGrid}>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>{analytics.uniqueTypes}</Text>
+                <Text style={styles.statLabel}>Waste Categories</Text>
+                <Text style={styles.statSubtext}>Identified types</Text>
               </View>
-            ))}
-          </View>
-        </View>
-
-        {/* Classification Breakdown */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="flask-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
-            <Text style={styles.sectionTitle}>Classification Stats</Text>
-          </View>
-          <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{analytics.uniqueTypes}</Text>
-              <Text style={styles.statLabel}>Waste Categories</Text>
-              <Text style={styles.statSubtext}>Identified types</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>
-                {(analytics.totalItems / analytics.totalScans).toFixed(1)}
-              </Text>
-              <Text style={styles.statLabel}>Items per Scan</Text>
-              <Text style={styles.statSubtext}>Average detection</Text>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>
+                  {(analytics.totalItems / analytics.totalScans).toFixed(1)}
+                </Text>
+                <Text style={styles.statLabel}>Items per Scan</Text>
+                <Text style={styles.statSubtext}>Average detection</Text>
+              </View>
             </View>
           </View>
-        </View>
 
-        {/* Footer */}
-        <Text style={{ textAlign: 'center', color: '#94a3b8', fontSize: 12, marginTop: 16 }}>
-          Last updated: {new Date().toLocaleDateString()}
-        </Text>
-      </View>
-    </ScrollView>
+          {/* Footer */}
+          <Text style={{ textAlign: 'center', color: '#94a3b8', fontSize: 12, marginTop: 16 }}>
+            Last updated: {new Date().toLocaleDateString()}
+          </Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

@@ -238,10 +238,31 @@ const AnalyticsPage = () => {
   // ─── Render ───
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-200 border-t-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading analytics...</p>
+      <div className="space-y-6">
+        {/* Header skeleton */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="space-y-2">
+            <div className="skeleton-shimmer h-8 w-48" />
+            <div className="skeleton-shimmer h-4 w-64" />
+          </div>
+        </div>
+        {/* Stats skeleton */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="bg-white rounded-lg shadow-md p-5 space-y-2">
+              <div className="skeleton-shimmer h-4 w-20" />
+              <div className="skeleton-shimmer h-8 w-16" />
+            </div>
+          ))}
+        </div>
+        {/* Chart placeholders */}
+        <div className="grid md:grid-cols-2 gap-6">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="bg-white rounded-lg shadow-md p-6 space-y-4">
+              <div className="skeleton-shimmer h-6 w-40" />
+              <div className="skeleton-shimmer h-48 w-full" />
+            </div>
+          ))}
         </div>
       </div>
     );

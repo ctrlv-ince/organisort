@@ -917,7 +917,7 @@ export default function HistoryScreen() {
             ))
           ) : (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyIcon}>📭</Text>
+              <Ionicons name="file-tray-outline" size={64} color="#94a3b8" style={styles.emptyIcon} />
               <Text style={styles.emptyText}>
                 No detection history yet.{'\n'}Start detecting waste to build your history!
               </Text>

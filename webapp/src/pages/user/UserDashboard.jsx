@@ -133,10 +133,42 @@ const UserDashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-amber-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-200 border-t-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading dashboard...</p>
+      <div className="flex h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-amber-50 overflow-hidden">
+        {/* Sidebar skeleton */}
+        <aside className="hidden lg:block w-64 bg-gradient-to-b from-green-700 to-green-900 text-white shadow-2xl">
+          <div className="p-6 border-b border-green-600">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-green-600 rounded-full" />
+              <div className="space-y-2">
+                <div className="bg-green-600 h-5 w-24 rounded" />
+                <div className="bg-green-600 h-3 w-16 rounded" />
+              </div>
+            </div>
+          </div>
+          <div className="p-4 space-y-3">
+            {[1, 2, 3, 4, 5, 6, 7].map(i => (
+              <div key={i} className="bg-green-600 h-10 rounded-lg" />
+            ))}
+          </div>
+        </aside>
+        {/* Content skeleton */}
+        <div className="flex-1 p-6 space-y-6 overflow-y-auto">
+          <div className="skeleton-shimmer h-24 rounded-lg" />
+          <div className="grid md:grid-cols-3 gap-6">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="bg-white rounded-lg shadow-md p-6 space-y-3">
+                <div className="skeleton-shimmer h-12 w-12 rounded-full" />
+                <div className="skeleton-shimmer h-8 w-16" />
+                <div className="skeleton-shimmer h-4 w-24" />
+              </div>
+            ))}
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6 space-y-4">
+            <div className="skeleton-shimmer h-6 w-40" />
+            {[1, 2, 3].map(i => (
+              <div key={i} className="skeleton-shimmer h-16 rounded-lg" />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -201,8 +233,8 @@ const UserDashboard = () => {
                 setSidebarOpen(false);
               }}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${activeTab === item.id
-                  ? 'bg-white text-green-800 shadow-lg font-semibold'
-                  : 'text-green-100 hover:bg-green-600 hover:text-white'
+                ? 'bg-white text-green-800 shadow-lg font-semibold'
+                : 'text-green-100 hover:bg-green-600 hover:text-white'
                 }`}
             >
               <span className={activeTab === item.id ? 'text-green-700' : ''}>

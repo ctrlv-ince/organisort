@@ -125,10 +125,40 @@ const ActivityLogs = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-200 border-t-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading activity logs...</p>
+      <div className="space-y-6">
+        {/* Header skeleton */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <div className="skeleton-shimmer h-12 w-12 rounded-lg mr-4" />
+              <div className="space-y-2">
+                <div className="skeleton-shimmer h-8 w-40" />
+                <div className="skeleton-shimmer h-4 w-56" />
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <div className="skeleton-shimmer h-10 flex-1" />
+            <div className="skeleton-shimmer h-10 w-32" />
+          </div>
+        </div>
+        {/* Log entries skeleton */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+            <div key={i} className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="skeleton-shimmer h-8 w-8 rounded" />
+                <div className="space-y-2">
+                  <div className="skeleton-shimmer h-4 w-48" />
+                  <div className="skeleton-shimmer h-3 w-32" />
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="skeleton-shimmer h-6 w-16 rounded-full" />
+                <div className="skeleton-shimmer h-4 w-24" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );

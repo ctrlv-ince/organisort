@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import SkeletonLoader from '@/src/components/SkeletonLoader';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
@@ -141,9 +142,25 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size='large' color='#10b981' />
-      </View>
+      <AdminProtectedScreen>
+        <SafeAreaView style={styles.container} edges={['top']}>
+          <View style={styles.header}>
+            <View style={styles.headerTop}>
+              <Text style={styles.title}>Admin Dashboard</Text>
+            </View>
+            <View style={styles.welcomeCard}>
+              <SkeletonLoader width={200} height={18} borderRadius={4} style={{ marginBottom: 8 }} />
+              <SkeletonLoader width={260} height={14} borderRadius={4} />
+            </View>
+          </View>
+          <View style={styles.content}>
+            <SkeletonLoader width={140} height={20} style={{ marginBottom: 16 }} />
+            <SkeletonLoader width="100%" height={120} borderRadius={12} style={{ marginBottom: 12 }} />
+            <SkeletonLoader width="100%" height={120} borderRadius={12} style={{ marginBottom: 12 }} />
+            <SkeletonLoader width="100%" height={120} borderRadius={12} style={{ marginBottom: 12 }} />
+          </View>
+        </SafeAreaView>
+      </AdminProtectedScreen>
     );
   }
 

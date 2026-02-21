@@ -146,8 +146,19 @@ const UserHome = ({ userData }) => {
         </h2>
 
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-green-200 border-t-green-600"></div>
+          <div className="space-y-4">
+            {[1, 2, 3, 4, 5].map(i => (
+              <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-4">
+                  <div className="skeleton-shimmer h-12 w-12 rounded-full" />
+                  <div className="space-y-2">
+                    <div className="skeleton-shimmer h-4 w-32" />
+                    <div className="skeleton-shimmer h-3 w-40" />
+                  </div>
+                </div>
+                <div className="skeleton-shimmer h-4 w-24" />
+              </div>
+            ))}
           </div>
         ) : detections.length > 0 ? (
           <div className="space-y-4">

@@ -262,8 +262,45 @@ const MyDetections = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-200 border-t-green-600"></div>
+      <div className="p-6 space-y-6">
+        {/* Header skeleton */}
+        <div className="skeleton-shimmer h-24 rounded-lg" />
+        {/* Search bar skeleton */}
+        <div className="bg-white rounded-lg shadow-md p-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="skeleton-shimmer h-10 flex-1" />
+            <div className="skeleton-shimmer h-10 w-40" />
+          </div>
+        </div>
+        {/* Detection cards skeleton */}
+        <div className="grid md:grid-cols-2 gap-6">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="skeleton-shimmer h-48 w-full rounded-none" />
+              <div className="p-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="skeleton-shimmer h-12 w-12 rounded-full" />
+                    <div className="space-y-2">
+                      <div className="skeleton-shimmer h-4 w-24" />
+                      <div className="skeleton-shimmer h-3 w-32" />
+                    </div>
+                  </div>
+                  <div className="skeleton-shimmer h-6 w-16" />
+                </div>
+                <div className="flex gap-2">
+                  <div className="skeleton-shimmer h-6 w-16 rounded-full" />
+                  <div className="skeleton-shimmer h-6 w-20 rounded-full" />
+                  <div className="skeleton-shimmer h-6 w-14 rounded-full" />
+                </div>
+                <div className="grid grid-cols-2 gap-2 pt-4 border-t border-gray-200">
+                  <div className="skeleton-shimmer h-10 rounded-lg" />
+                  <div className="skeleton-shimmer h-10 rounded-lg" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

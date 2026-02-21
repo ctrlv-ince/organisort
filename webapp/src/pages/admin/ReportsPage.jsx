@@ -434,11 +434,35 @@ const ReportsPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-200 border-t-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading report data...</p>
+      <div className="space-y-6 print:space-y-4">
+        {/* Header skeleton */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="space-y-2">
+              <div className="skeleton-shimmer h-8 w-48" />
+              <div className="skeleton-shimmer h-4 w-72" />
+            </div>
+            <div className="flex gap-2">
+              <div className="skeleton-shimmer h-10 w-28 rounded-lg" />
+              <div className="skeleton-shimmer h-10 w-28 rounded-lg" />
+            </div>
+          </div>
         </div>
+        {/* Filter controls skeleton */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex flex-wrap gap-4">
+            <div className="skeleton-shimmer h-10 w-40" />
+            <div className="skeleton-shimmer h-10 w-40" />
+            <div className="skeleton-shimmer h-10 w-32 rounded-lg" />
+          </div>
+        </div>
+        {/* Report sections skeleton */}
+        {[1, 2, 3].map(i => (
+          <div key={i} className="bg-white rounded-lg shadow-md p-6 space-y-4">
+            <div className="skeleton-shimmer h-6 w-48" />
+            <div className="skeleton-shimmer h-40 w-full" />
+          </div>
+        ))}
       </div>
     );
   }
@@ -528,8 +552,8 @@ const ReportsPage = () => {
               key={tab.id}
               onClick={() => setReportType(tab.id)}
               className={`p-4 rounded-lg border-2 transition-all ${reportType === tab.id
-                  ? `border-${tab.color}-600 bg-${tab.color}-50 text-${tab.color}-700`
-                  : `border-gray-200 hover:border-${tab.color}-300`
+                ? `border-${tab.color}-600 bg-${tab.color}-50 text-${tab.color}-700`
+                : `border-gray-200 hover:border-${tab.color}-300`
                 }`}
             >
               <div className="flex items-center">

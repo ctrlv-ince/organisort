@@ -334,8 +334,13 @@ const AdminDashboard = () => {
                       Account Information
                     </h2>
                     {loading ? (
-                      <div className="flex items-center justify-center h-48">
-                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-green-200 border-t-green-600"></div>
+                      <div className="space-y-4">
+                        {[1, 2, 3, 4].map(i => (
+                          <div key={i} className="space-y-2">
+                            <div className="skeleton-shimmer h-3 w-20" />
+                            <div className="skeleton-shimmer h-5 w-48" />
+                          </div>
+                        ))}
                       </div>
                     ) : userData ? (
                       <div className="space-y-4">

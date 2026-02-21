@@ -131,10 +131,44 @@ const WasteCategoriesPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-200 border-t-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading waste categories...</p>
+      <div className="space-y-6">
+        {/* Header skeleton */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="skeleton-shimmer h-14 w-14 rounded-lg mr-4" />
+              <div className="space-y-2">
+                <div className="skeleton-shimmer h-8 w-56" />
+                <div className="skeleton-shimmer h-4 w-72" />
+              </div>
+            </div>
+            <div className="skeleton-shimmer h-10 w-10 rounded-full" />
+          </div>
+        </div>
+        {/* Stats skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="bg-white rounded-lg shadow-md p-5 space-y-2">
+              <div className="skeleton-shimmer h-4 w-24" />
+              <div className="skeleton-shimmer h-8 w-12" />
+            </div>
+          ))}
+        </div>
+        {/* Category cards skeleton */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <div key={i} className="bg-white rounded-lg shadow-md p-6 space-y-3">
+              <div className="flex items-center space-x-3">
+                <div className="skeleton-shimmer h-10 w-10 rounded-lg" />
+                <div className="skeleton-shimmer h-6 w-32" />
+              </div>
+              <div className="skeleton-shimmer h-4 w-full" />
+              <div className="flex gap-2">
+                <div className="skeleton-shimmer h-6 w-16 rounded-full" />
+                <div className="skeleton-shimmer h-6 w-20 rounded-full" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -298,11 +332,10 @@ const WasteCategoriesPage = () => {
               <div className="space-y-2 text-xs">
                 <div className="flex items-center justify-between py-2 border-t border-gray-100">
                   <span className="text-gray-600 font-medium">Compostable:</span>
-                  <span className={`px-2 py-1 rounded-full font-bold ${
-                    type.compostable
+                  <span className={`px-2 py-1 rounded-full font-bold ${type.compostable
                       ? 'bg-green-100 text-green-800'
                       : 'bg-red-100 text-red-800'
-                  }`}>
+                    }`}>
                     {type.compostable ? 'Yes' : 'No'}
                   </span>
                 </div>
