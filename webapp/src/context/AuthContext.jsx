@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setError(null);
-      
+
       // Use custom API endpoint for email/password authentication
       const response = await axios.post(`${API_URL}/api/auth/login`, {
         email,
@@ -105,20 +105,26 @@ export const AuthProvider = ({ children }) => {
   const register = async (email, password) => {
     try {
       setError(null);
-      
+
       // Use custom API endpoint for registration
       const response = await axios.post(`${API_URL}/api/auth/register`, {
         email,
         password,
       });
 
-      // Store the JWT token in localStorage for API calls
+      if (response.data?.requires2FA) {
+        return {
+          requires2FA: true,
+          challengeToken: response.data.challengeToken,
+          message: response.data.message,
+        };
+      }
+
+      // Fallback: if backend ever returns a direct token (e.g. admin bypass)
       localStorage.setItem('token', response.data.token);
-      
-      // Update the user state with the user data from the response
       setUser(response.data.data);
       setError(null);
-      return response.data.data;
+      return { requires2FA: false, user: response.data.data };
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed');
       throw err;
@@ -133,7 +139,7 @@ export const AuthProvider = ({ children }) => {
 
     try {
       setError(null);
-      
+
       // Call logout endpoint to invalidate token
       if (token) {
         await axios.post(`${API_URL}/api/auth/logout`, {}, {
@@ -143,7 +149,7 @@ export const AuthProvider = ({ children }) => {
           },
         });
       }
-      
+
       // Clear the token from localStorage
       console.log('✅ User logged out');
     } catch (err) {

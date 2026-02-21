@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import useAuthFormValidation from '../hooks/useAuthFormValidation';
 import { validateLoginFields } from '../utils/authValidation';
@@ -23,6 +23,7 @@ const Login = () => {
 
   const { login, verifyEmailOtp, resendEmailOtp, googleLogin, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const values = useMemo(() => ({ email, password }), [email, password]);
   const {
@@ -42,6 +43,14 @@ const Login = () => {
   if (isAuthenticated) {
     navigate('/dashboard', { replace: true });
     return null;
+  }
+
+  // If arrived from registration with a 2FA challenge, show OTP immediately
+  if (location.state?.challengeToken && !challengeToken) {
+    setChallengeToken(location.state.challengeToken);
+    setOtpMessage(location.state.otpMessage || 'Enter the OTP sent to your email.');
+    // Clear the state so refreshing doesn't re-trigger
+    window.history.replaceState({}, '');
   }
 
   const emailError = touched.email ? fieldErrors.email : '';

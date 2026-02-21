@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/src/context/AuthContext';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 const styles = StyleSheet.create({
@@ -47,14 +47,15 @@ const styles = StyleSheet.create({
 export default function LoginScreen() {
   const { signInWithEmail, verifyEmailOtp, resendEmailOtp, signInWithGoogle, loading } = useAuth();
   const router = useRouter();
+  const params = useLocalSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [otp, setOtp] = useState('');
-  const [challengeToken, setChallengeToken] = useState('');
-  const [otpMessage, setOtpMessage] = useState('');
+  const [challengeToken, setChallengeToken] = useState(params.challengeToken || '');
+  const [otpMessage, setOtpMessage] = useState(params.otpMessage || '');
 
   const handleEmailSignIn = async () => {
     const newErrors = {};

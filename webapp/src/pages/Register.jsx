@@ -113,10 +113,20 @@ const Register = () => {
 
     setLoading(true);
     try {
-      await register(email, password); // should create user in Firebase and backend
-      navigate('/dashboard');
+      const result = await register(email, password);
+      if (result?.requires2FA) {
+        // Redirect to login page with OTP challenge state
+        navigate('/login', {
+          state: {
+            challengeToken: result.challengeToken,
+            otpMessage: result.message || 'Enter the OTP sent to your email to complete registration.',
+          },
+        });
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
-      setError(err.message || 'Registration failed');
+      setError(err.response?.data?.error || err.message || 'Registration failed');
     } finally {
       setLoading(false);
     }

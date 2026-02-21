@@ -177,13 +177,33 @@ const registerUser = async (req, res, next) => {
     // The _id is already generated and assigned by MongoDB, just convert to string
     user._id = user._id.toString();
 
-    const token = generateToken(user._id);
+    // Issue a 2FA email challenge (same flow as login for unverified users)
+    const otpCode = generateOtpCode();
+    const otpHash = await bcrypt.hash(otpCode, 10);
+    const challengeId = generateChallengeId();
+    const challengeExpiresAt = new Date(Date.now() + (OTP_TTL_MINUTES * 60 * 1000));
+    const resendAvailableAt = new Date(Date.now() + (OTP_RESEND_COOLDOWN_SECONDS * 1000));
+
+    user.twoFactorChallenge = {
+      otpHash,
+      expiresAt: challengeExpiresAt,
+      attempts: 0,
+      challengeId,
+      resendAvailableAt,
+    };
+    await user.save({ validateBeforeSave: false });
+
+    await sendOtpEmail(user.email, otpCode);
+
+    const challengeToken = buildChallengeToken(user._id, challengeId);
+
+    console.info('[auth.register] 2fa-challenge-issued');
 
     res.status(201).json({
       success: true,
-      message: 'User registered successfully',
-      token,
-      data: { _id: user._id, email: user.email, displayName: user.displayName, role: user.role },
+      requires2FA: true,
+      challengeToken,
+      message: 'Account created. Email OTP sent — verify to complete registration.',
     });
   } catch (error) {
     console.error('[auth.register] failed', error);

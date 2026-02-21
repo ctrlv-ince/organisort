@@ -64,10 +64,21 @@ export default function RegisterScreen() {
 
     try {
       setFormLoading(true);
-      await registerWithEmail(email, password);
-      router.replace('/(app)');
+      const result = await registerWithEmail(email, password);
+      if (result?.requires2FA) {
+        // Redirect to login screen with OTP challenge params
+        router.replace({
+          pathname: '/(auth)/login',
+          params: {
+            challengeToken: result.challengeToken,
+            otpMessage: result.message || 'Enter the OTP sent to your email to complete registration.',
+          },
+        });
+      } else {
+        router.replace('/(app)');
+      }
     } catch (error) {
-      Alert.alert('Registration Error', error.message || 'Registration failed');
+      Alert.alert('Registration Error', error?.response?.data?.error || error.message || 'Registration failed');
     } finally {
       setFormLoading(false);
     }

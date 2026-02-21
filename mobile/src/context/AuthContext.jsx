@@ -121,11 +121,18 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const response = await apiClient.post('/api/auth/register', { email, password });
 
-      // Store the JWT token in AsyncStorage for API calls
-      await AsyncStorage.setItem('token', response.data.token);
+      if (response.data?.requires2FA) {
+        return {
+          requires2FA: true,
+          challengeToken: response.data.challengeToken,
+          message: response.data.message,
+        };
+      }
 
-      // Update user state with user payload object
+      // Fallback: if backend ever returns a direct token (e.g. admin bypass)
+      await AsyncStorage.setItem('token', response.data.token);
       setUser(response.data?.data || null);
+      return { requires2FA: false, user: response.data?.data || null };
     } catch (error) {
       console.error('Email registration error:', error);
       throw error;
