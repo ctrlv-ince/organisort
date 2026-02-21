@@ -8,6 +8,7 @@ import ActivityLogs from './ActivityLogs';
 import AnalyticsPage from './AnalyticsPage';
 import WasteCategoriesPage from './WasteCategoriesPage';
 import ReportsPage from './ReportsPage';
+import UserSettings from '../user/UserSettings';
 
 /**
  * Admin Dashboard Page - Organic Waste Detection
@@ -467,8 +468,11 @@ const AdminDashboard = () => {
             {/* Reports Tab */}
             {activeTab === 'reports' && <ReportsPage />}
 
+            {/* Settings Tab */}
+            {activeTab === 'settings' && <UserSettings userData={userData} />}
+
             {/* Placeholder for other tabs */}
-            {!['home', 'users', 'detections', 'waste-types', 'logs', 'analytics', 'reports'].includes(activeTab) && (
+            {!['home', 'users', 'detections', 'waste-types', 'logs', 'analytics', 'reports', 'settings'].includes(activeTab) && (
               <div className="bg-white rounded-lg shadow-md p-8">
                 <div className="text-center">
                   <span className="text-6xl mb-4 block">🚧</span>

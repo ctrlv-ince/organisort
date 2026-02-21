@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       minlength: [6, 'Password must be at least 6 characters long'],
-      select: false, 
+      select: false,
     },
     displayName: {
       type: String,
@@ -43,6 +43,12 @@ const userSchema = new mongoose.Schema(
     createdAt: {
       type: Date,
       default: Date.now,
+    },
+    preferences: {
+      pushNotifications: { type: Boolean, default: true },
+      emailUpdates: { type: Boolean, default: false },
+      showTutorial: { type: Boolean, default: true },
+      autoSaveDetections: { type: Boolean, default: true },
     },
     role: {
       type: String,

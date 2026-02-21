@@ -3,6 +3,7 @@ const { unifiedAuth, admin } = require('../middleware/auth-middleware');
 const {
   getCurrentUser,
   updateUserProfile,
+  updateUserPreferences,
   getUserStats,
   getAllUsers,
   getAllUsersWithDetectionCount,
@@ -38,6 +39,15 @@ router.get('/me', unifiedAuth, getCurrentUser);
  * Body: { displayName?, photoURL? }
  */
 router.put('/profile', unifiedAuth, updateUserProfile);
+
+/**
+ * PUT /api/users/me/preferences
+ * Update current user preferences (pushNotifications, etc)
+ * 
+ * Requires: Bearer token in Authorization header
+ * Body: { pushNotifications?, emailUpdates?, showTutorial?, autoSaveDetections? }
+ */
+router.put('/me/preferences', unifiedAuth, updateUserPreferences);
 
 /**
  * GET /api/users/stats

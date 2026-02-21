@@ -385,28 +385,30 @@ const LandingPage = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="cta-section">
-          <div className="container-pro">
-            <div className="cta-content">
-              <h2>Ready to Detect Organic Waste?</h2>
-              <p>Create an account, access your dashboard, and manage your detections.</p>
-              <div className="cta-buttons">
-                <button
-                  onClick={() => navigate('/register')}
-                  className="btn-primary btn-large"
-                >
-                  Get Started
-                </button>
-                <button
-                  onClick={() => navigate('/login')}
-                  className="btn-outline btn-large"
-                >
-                  Sign In
-                </button>
+        {!user && (
+          <section className="cta-section">
+            <div className="container-pro">
+              <div className="cta-content">
+                <h2>Ready to Detect Organic Waste?</h2>
+                <p>Create an account, access your dashboard, and manage your detections.</p>
+                <div className="cta-buttons">
+                  <button
+                    onClick={() => navigate('/register')}
+                    className="btn-primary btn-large"
+                  >
+                    Get Started
+                  </button>
+                  <button
+                    onClick={() => navigate('/login')}
+                    className="btn-outline btn-large"
+                  >
+                    Sign In
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
 
       {/* Footer */}

@@ -5,15 +5,43 @@ import React, { useState } from 'react';
  * Manage user preferences and settings
  */
 const UserSettings = ({ userData }) => {
-  const [notifications, setNotifications] = useState(true);
-  const [emailUpdates, setEmailUpdates] = useState(false);
-  const [showTutorial, setShowTutorial] = useState(true);
-  const [autoSave, setAutoSave] = useState(true);
+  const [notifications, setNotifications] = useState(userData?.preferences?.pushNotifications ?? true);
+  const [emailUpdates, setEmailUpdates] = useState(userData?.preferences?.emailUpdates ?? false);
+  const [showTutorial, setShowTutorial] = useState(userData?.preferences?.showTutorial ?? true);
+  const [autoSave, setAutoSave] = useState(userData?.preferences?.autoSaveDetections ?? true);
   const [message, setMessage] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSave = () => {
-    setMessage('Settings saved successfully!');
-    setTimeout(() => setMessage(''), 3000);
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/users/me/preferences`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          pushNotifications: notifications,
+          emailUpdates,
+          showTutorial,
+          autoSaveDetections: autoSave
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to save preferences');
+
+      setMessage('Settings saved successfully!');
+    } catch (error) {
+      console.error(error);
+      setMessage('Failed to save settings. Please try again.');
+    } finally {
+      setIsSaving(false);
+      setTimeout(() => setMessage(''), 3000);
+    }
   };
 
   return (
@@ -108,9 +136,11 @@ const UserSettings = ({ userData }) => {
 
         <button
           onClick={handleSave}
-          className="mt-6 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition"
+          disabled={isSaving}
+          className={`mt-6 px-6 py-3 text-white font-semibold rounded-lg transition ${isSaving ? 'bg-green-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'
+            }`}
         >
-          Save Preferences
+          {isSaving ? 'Saving...' : 'Save Preferences'}
         </button>
       </div>
 

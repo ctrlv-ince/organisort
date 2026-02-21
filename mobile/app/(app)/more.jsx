@@ -145,11 +145,43 @@ export default function MoreScreen() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [emailUpdates, setEmailUpdates] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(true);
+  const [autoSave, setAutoSave] = useState(true);
+
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [achievements, setAchievements] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // Fetch initial preferences from backend
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      try {
+        const response = await apiClient.get('/api/users/me');
+        const prefs = response.data?.data?.preferences;
+        if (prefs) {
+          setNotificationsEnabled(prefs.pushNotifications ?? true);
+          setEmailUpdates(prefs.emailUpdates ?? false);
+          setShowTutorial(prefs.showTutorial ?? true);
+          setAutoSave(prefs.autoSaveDetections ?? true);
+        }
+      } catch (error) {
+        console.error('Failed to load user preferences:', error);
+      }
+    };
+    fetchPreferences();
+  }, []);
+
+  // Generic patch to backend
+  const updatePreference = async (key, value) => {
+    try {
+      await apiClient.put('/api/users/me/preferences', { [key]: value });
+    } catch (error) {
+      console.error(`Failed to sync ${key} preference:`, error);
+    }
+  };
 
   const handleLogout = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -268,11 +300,30 @@ export default function MoreScreen() {
   const handleToggleNotifications = async (value) => {
     Haptics.selectionAsync();
     setNotificationsEnabled(value);
+    updatePreference('pushNotifications', value);
     if (value) {
       await scheduleDailyReminder(18, 0); // 6:00 PM
     } else {
       await cancelAllReminders();
     }
+  };
+
+  const handleToggleEmailUpdates = (value) => {
+    Haptics.selectionAsync();
+    setEmailUpdates(value);
+    updatePreference('emailUpdates', value);
+  };
+
+  const handleToggleTutorial = (value) => {
+    Haptics.selectionAsync();
+    setShowTutorial(value);
+    updatePreference('showTutorial', value);
+  };
+
+  const handleToggleAutoSave = (value) => {
+    Haptics.selectionAsync();
+    setAutoSave(value);
+    updatePreference('autoSaveDetections', value);
   };
 
   const handleTestNotification = async () => {
@@ -343,6 +394,54 @@ export default function MoreScreen() {
                   onValueChange={handleToggleNotifications}
                   trackColor={{ false: '#cbd5e1', true: '#a7f3d0' }}
                   thumbColor={notificationsEnabled ? '#10b981' : '#f8fafc'}
+                />
+              </View>
+
+              <View style={styles.settingItem}>
+                <View style={styles.settingLeft}>
+                  <Ionicons name="mail-outline" size={22} color="#10b981" style={styles.menuIcon} />
+                  <View style={styles.menuContent}>
+                    <Text style={styles.menuTitle}>Email Updates</Text>
+                    <Text style={styles.menuSubtitle}>Receive weekly summary emails</Text>
+                  </View>
+                </View>
+                <Switch
+                  value={emailUpdates}
+                  onValueChange={handleToggleEmailUpdates}
+                  trackColor={{ false: '#cbd5e1', true: '#a7f3d0' }}
+                  thumbColor={emailUpdates ? '#10b981' : '#f8fafc'}
+                />
+              </View>
+
+              <View style={styles.settingItem}>
+                <View style={styles.settingLeft}>
+                  <Ionicons name="book-outline" size={22} color="#10b981" style={styles.menuIcon} />
+                  <View style={styles.menuContent}>
+                    <Text style={styles.menuTitle}>Show Tutorial</Text>
+                    <Text style={styles.menuSubtitle}>Display useful app hints</Text>
+                  </View>
+                </View>
+                <Switch
+                  value={showTutorial}
+                  onValueChange={handleToggleTutorial}
+                  trackColor={{ false: '#cbd5e1', true: '#a7f3d0' }}
+                  thumbColor={showTutorial ? '#10b981' : '#f8fafc'}
+                />
+              </View>
+
+              <View style={styles.settingItem}>
+                <View style={styles.settingLeft}>
+                  <Ionicons name="save-outline" size={22} color="#10b981" style={styles.menuIcon} />
+                  <View style={styles.menuContent}>
+                    <Text style={styles.menuTitle}>Auto-Save Scans</Text>
+                    <Text style={styles.menuSubtitle}>Automatically save detections</Text>
+                  </View>
+                </View>
+                <Switch
+                  value={autoSave}
+                  onValueChange={handleToggleAutoSave}
+                  trackColor={{ false: '#cbd5e1', true: '#a7f3d0' }}
+                  thumbColor={autoSave ? '#10b981' : '#f8fafc'}
                 />
               </View>
 

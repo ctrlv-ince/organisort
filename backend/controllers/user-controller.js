@@ -104,6 +104,47 @@ const updateUserProfile = async (req, res, next) => {
 };
 
 /**
+ * Update user preferences
+ * Requires: Authentication middleware (req.user)
+ */
+const updateUserPreferences = async (req, res, next) => {
+  try {
+    const { isFirebase, ...userData } = req.user;
+    const { pushNotifications, emailUpdates, showTutorial, autoSaveDetections } = req.body;
+
+    const userId = isFirebase ? userData.uid : userData._id;
+
+    // Use dot notation to update specific preference fields without overwriting everything
+    const updateData = {};
+    if (pushNotifications !== undefined) updateData['preferences.pushNotifications'] = Boolean(pushNotifications);
+    if (emailUpdates !== undefined) updateData['preferences.emailUpdates'] = Boolean(emailUpdates);
+    if (showTutorial !== undefined) updateData['preferences.showTutorial'] = Boolean(showTutorial);
+    if (autoSaveDetections !== undefined) updateData['preferences.autoSaveDetections'] = Boolean(autoSaveDetections);
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Preferences updated successfully',
+      data: user.preferences,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Get user statistics (for dashboard/admin)
  * Requires: Authentication middleware
  */
@@ -282,6 +323,7 @@ const deactivateUser = async (req, res, next) => {
 module.exports = {
   getCurrentUser,
   updateUserProfile,
+  updateUserPreferences,
   getUserStats,
   getAllUsers,
   getAllUsersWithDetectionCount,
