@@ -388,8 +388,8 @@ const LandingPage = () => {
         <section className="cta-section">
           <div className="container-pro">
             <div className="cta-content">
-              <h2>Ready to Use Your Actual OrganiSort System?</h2>
-              <p>Create an account, access your dashboard, and manage your real detection data.</p>
+              <h2>Ready to Detect Organic Waste?</h2>
+              <p>Create an account, access your dashboard, and manage your detections.</p>
               <div className="cta-buttons">
                 <button
                   onClick={() => navigate('/register')}
