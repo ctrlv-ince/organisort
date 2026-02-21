@@ -14,7 +14,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import apiClient from '@/src/utils/apiClient';
+import { sendTestNotification, scheduleDailyReminder, cancelAllReminders } from '@/src/utils/notifications';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
@@ -150,6 +152,7 @@ export default function MoreScreen() {
   const [loading, setLoading] = useState(false);
 
   const handleLogout = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     Alert.alert(
       'Logout',
       'Are you sure you want to log out?',
@@ -251,13 +254,30 @@ export default function MoreScreen() {
   };
 
   const openLeaderboard = () => {
+    Haptics.selectionAsync();
     setShowLeaderboard(true);
     fetchLeaderboard();
   };
 
   const openAchievements = () => {
+    Haptics.selectionAsync();
     setShowAchievements(true);
     loadAchievements();
+  };
+
+  const handleToggleNotifications = async (value) => {
+    Haptics.selectionAsync();
+    setNotificationsEnabled(value);
+    if (value) {
+      await scheduleDailyReminder(18, 0); // 6:00 PM
+    } else {
+      await cancelAllReminders();
+    }
+  };
+
+  const handleTestNotification = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await sendTestNotification();
   };
 
   return (
@@ -314,21 +334,33 @@ export default function MoreScreen() {
                 <View style={styles.settingLeft}>
                   <Ionicons name="notifications-outline" size={22} color="#10b981" style={styles.menuIcon} />
                   <View style={styles.menuContent}>
-                    <Text style={styles.menuTitle}>Notifications</Text>
-                    <Text style={styles.menuSubtitle}>Get detection reminders</Text>
+                    <Text style={styles.menuTitle}>Daily Reminders</Text>
+                    <Text style={styles.menuSubtitle}>Remind me to log waste</Text>
                   </View>
                 </View>
                 <Switch
                   value={notificationsEnabled}
-                  onValueChange={setNotificationsEnabled}
-                  trackColor={{ false: '#d1d5db', true: '#86efac' }}
-                  thumbColor={notificationsEnabled ? '#10b981' : '#f3f4f6'}
+                  onValueChange={handleToggleNotifications}
+                  trackColor={{ false: '#cbd5e1', true: '#a7f3d0' }}
+                  thumbColor={notificationsEnabled ? '#10b981' : '#f8fafc'}
                 />
               </View>
 
+              <TouchableOpacity style={styles.menuItem} onPress={handleTestNotification}>
+                <Ionicons name="paper-plane-outline" size={22} color="#10b981" style={styles.menuIcon} />
+                <View style={styles.menuContent}>
+                  <Text style={styles.menuTitle}>Test Notification</Text>
+                  <Text style={styles.menuSubtitle}>Send a dummy push alert</Text>
+                </View>
+                <Text style={styles.menuArrow}>›</Text>
+              </TouchableOpacity>
+
               <TouchableOpacity
                 style={styles.menuItem}
-                onPress={() => Alert.alert('Coming Soon', 'Language settings coming soon!')}
+                onPress={() => {
+                  Haptics.selectionAsync();
+                  Alert.alert('Coming Soon', 'Language settings coming soon!');
+                }}
               >
                 <Ionicons name="globe-outline" size={22} color="#10b981" style={styles.menuIcon} />
                 <View style={styles.menuContent}>
@@ -357,7 +389,10 @@ export default function MoreScreen() {
 
               <TouchableOpacity
                 style={styles.menuItem}
-                onPress={() => Alert.alert('Help & Support', 'Contact us at support@organisort.com')}
+                onPress={() => {
+                  Haptics.selectionAsync();
+                  Alert.alert('Help & Support', 'Contact us at support@organisort.com');
+                }}
               >
                 <Ionicons name="help-circle-outline" size={22} color="#10b981" style={styles.menuIcon} />
                 <View style={styles.menuContent}>
@@ -369,7 +404,10 @@ export default function MoreScreen() {
 
               <TouchableOpacity
                 style={styles.menuItem}
-                onPress={() => Alert.alert('Privacy Policy', 'Your data is secure with us. We never share your information.')}
+                onPress={() => {
+                  Haptics.selectionAsync();
+                  Alert.alert('Privacy Policy', 'Your data is secure with us. We never share your information.');
+                }}
               >
                 <Ionicons name="lock-closed-outline" size={22} color="#10b981" style={styles.menuIcon} />
                 <View style={styles.menuContent}>
@@ -381,7 +419,10 @@ export default function MoreScreen() {
 
               <TouchableOpacity
                 style={styles.menuItem}
-                onPress={() => Alert.alert('About OrganiSort', 'AI-Powered Waste Detection App\nVersion 1.0.0\n\n© 2026 OrganiSort Team')}
+                onPress={() => {
+                  Haptics.selectionAsync();
+                  Alert.alert('About OrganiSort', 'AI-Powered Waste Detection App\nVersion 1.0.0\n\n© 2026 OrganiSort Team');
+                }}
               >
                 <Ionicons name="information-circle-outline" size={22} color="#10b981" style={styles.menuIcon} />
                 <View style={styles.menuContent}>

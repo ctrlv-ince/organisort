@@ -27,6 +27,7 @@ const { width } = Dimensions.get('window');
 export default function ScanScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [isCameraActive, setIsCameraActive] = useState(false);
+  const [isFlashlightOn, setIsFlashlightOn] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState(null);
@@ -99,6 +100,7 @@ export default function ScanScreen() {
       }
     }
     setIsCameraActive(true);
+    setIsFlashlightOn(false);
     setCapturedImage(null);
     setResult(null);
     setDisposalLocations([]);
@@ -127,6 +129,7 @@ export default function ScanScreen() {
     });
 
     if (!result.canceled && result.assets[0]) {
+      await Haptics.selectionAsync();
       setCapturedImage(result.assets[0].uri);
       setResult(null);
       setDisposalLocations([]);
@@ -155,14 +158,21 @@ export default function ScanScreen() {
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         setResult(response.data);
       } else {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         Alert.alert('Analysis Failed', response.data.error || 'Could not analyze the image');
       }
     } catch (error) {
       console.error('Analysis error:', error);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert('Error', 'Failed to analyze the image. Please try again.');
     } finally {
       setAnalyzing(false);
     }
+  };
+
+  const handleToggleFlashlight = async () => {
+    await Haptics.selectionAsync();
+    setIsFlashlightOn(!isFlashlightOn);
   };
 
   const handleDirections = (location) => {
@@ -184,11 +194,21 @@ export default function ScanScreen() {
           style={styles.camera}
           ref={(ref) => (cameraRef = ref)}
           facing="back"
+          enableTorch={isFlashlightOn}
         >
           <View style={styles.cameraOverlay}>
             <TouchableOpacity style={styles.closeCamera} onPress={() => setIsCameraActive(false)}>
               <Ionicons name="close" size={32} color="white" />
             </TouchableOpacity>
+
+            <TouchableOpacity style={styles.flashlightToggle} onPress={handleToggleFlashlight}>
+              <Ionicons
+                name={isFlashlightOn ? "flash" : "flash-off"}
+                size={28}
+                color={isFlashlightOn ? "#fbbf24" : "white"}
+              />
+            </TouchableOpacity>
+
             <View style={styles.captureButtonContainer}>
               <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
                 <View style={styles.captureButtonInner} />
@@ -462,6 +482,14 @@ const styles = StyleSheet.create({
     top: 50,
     left: 20,
     padding: 8,
+  },
+  flashlightToggle: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    padding: 8,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: 20,
   },
   captureButtonContainer: {
     position: 'absolute',

@@ -7,7 +7,6 @@ const {
   getAllUsers,
   getAllUsersWithDetectionCount,
   updateUserRole,
-  updateUserRole,
   deactivateUser,
 } = require('../controllers/user-controller');
 

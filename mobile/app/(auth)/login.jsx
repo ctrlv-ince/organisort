@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#10b981' },
@@ -58,6 +59,7 @@ export default function LoginScreen() {
   const [otpMessage, setOtpMessage] = useState(params.otpMessage || '');
 
   const handleEmailSignIn = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const newErrors = {};
     if (!email) newErrors.email = 'Email is required';
     if (!password) newErrors.password = 'Password is required';
@@ -84,6 +86,7 @@ export default function LoginScreen() {
 
 
   const handleOtpVerification = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     if (!otp.trim()) {
       Alert.alert('OTP Required', 'Please enter the OTP sent to your email.');
       return;

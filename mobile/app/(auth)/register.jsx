@@ -14,6 +14,7 @@ import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Haptics from 'expo-haptics';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#10b981' },
@@ -51,6 +52,8 @@ export default function RegisterScreen() {
   const [errors, setErrors] = useState({});
 
   const handleRegister = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
     const newErrors = {};
     if (!email) newErrors.email = 'Email is required';
     if (!password) newErrors.password = 'Password is required';
