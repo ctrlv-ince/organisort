@@ -171,7 +171,7 @@ const getAllUsersWithDetectionCount = async (req, res, next) => {
       },
       {
         $project: {
-          detections: 0, 
+          detections: 0,
         },
       },
     ]);
@@ -212,21 +212,67 @@ const updateUserRole = async (req, res, next) => {
   }
 };
 
-const deleteUser = async (req, res, next) => {
+const { sendEmail } = require('../utils/email');
+
+const deactivateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const user = await User.findByIdAndDelete(id);
+    const { reason } = req.body;
 
+    if (!reason?.trim()) {
+      return res.status(400).json({ success: false, error: 'Deactivation reason is required' });
+    }
+
+    // Find and update the user to inactive
+    const user = await User.findById(id);
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        error: 'User not found',
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    if (!user.isActive) {
+      return res.status(400).json({ success: false, error: 'User is already deactivated' });
+    }
+
+    // Don't allow deactivating another admin like this to prevent lockout
+    if (user.role === 'admin' && req.user._id.toString() !== user._id.toString()) {
+      // You could allow it, but usually good to demote first. Let's just allow it for now but maybe warn.
+    }
+
+    user.isActive = false;
+    await user.save({ validateBeforeSave: false });
+
+    // Send deactivation email
+    const html = `
+      <div style="font-family:Arial,sans-serif;line-height:1.4;color:#0f172a;max-width:480px;margin:0 auto;">
+        <h2 style="margin-bottom:8px;color:#dc2626;">Account Deactivated</h2>
+        <p style="margin:0 0 16px;">Hello ${user.displayName || 'User'},</p>
+        <p style="margin:0 0 16px;">Your account on OrganiSort has been deactivated by an administrator for the following reason:</p>
+        <div style="padding:12px 16px;background:#fee2e2;border-left:4px solid #ef4444;border-radius:4px;margin-bottom:16px;">
+          <strong>${reason}</strong>
+        </div>
+        <p style="margin:16px 0 0;color:#334155;">If you believe this was a mistake, please contact support.</p>
+      </div>
+    `;
+
+    try {
+      await sendEmail({
+        recipientEmail: user.email,
+        subject: 'Account Deactivated - OrganiSort',
+        html,
+        textFallback: `Your account has been deactivated. Reason: ${reason}`,
+      });
+    } catch (emailError) {
+      console.error('[user.deactivate] email-failed', emailError);
+      // We still return success since the account WAS deactivated, but mention the email failed
+      return res.json({
+        success: true,
+        message: 'User deactivated successfully, but failed to send notification email.',
       });
     }
 
     res.json({
       success: true,
-      message: 'User deleted successfully',
+      message: 'User deactivated successfully and notification sent.',
     });
   } catch (error) {
     next(error);
@@ -240,5 +286,5 @@ module.exports = {
   getAllUsers,
   getAllUsersWithDetectionCount,
   updateUserRole,
-  deleteUser,
+  deactivateUser,
 };

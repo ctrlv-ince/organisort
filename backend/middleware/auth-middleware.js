@@ -27,37 +27,44 @@ const protect = async (req, res, next) => {
 
       // Verify the custom JWT
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      
+
       // Find the user in MongoDB by _id
       const user = await User.findById(decoded.id).select("-password");
-      
+
       if (!user) {
-        return res.status(401).json({ 
-          success: false, 
-          error: "User not found" 
+        return res.status(401).json({
+          success: false,
+          error: "User not found"
+        });
+      }
+
+      if (!user.isActive) {
+        return res.status(403).json({
+          success: false,
+          error: "Your account has been deactivated. Please contact support."
         });
       }
 
       // Ensure _id is a string for consistency
       user._id = user._id.toString();
-      
+
       // Attach user to request object
       req.user = user;
       return next();
 
     } catch (error) {
       console.error("JWT verification failed:", error.message);
-      return res.status(401).json({ 
-        success: false, 
-        error: "Not authorized, token failed" 
+      return res.status(401).json({
+        success: false,
+        error: "Not authorized, token failed"
       });
     }
   }
 
   if (!token) {
-    return res.status(401).json({ 
-      success: false, 
-      error: "Not authorized, no token" 
+    return res.status(401).json({
+      success: false,
+      error: "Not authorized, no token"
     });
   }
 };
@@ -113,6 +120,13 @@ const unifiedAuth = async (req, res, next) => {
         return res.status(401).json({
           success: false,
           error: 'User not found',
+        });
+      }
+
+      if (!user.isActive) {
+        return res.status(403).json({
+          success: false,
+          error: "Your account has been deactivated. Please contact support."
         });
       }
 

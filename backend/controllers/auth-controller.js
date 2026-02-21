@@ -3,73 +3,14 @@ const generateToken = require('../utils/jwt');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const { spawn } = require('child_process');
+const { sendEmail } = require('../utils/email');
 
 const OTP_LENGTH = 6;
 const OTP_TTL_MINUTES = Number(process.env.EMAIL_OTP_TTL_MINUTES || 10);
 const OTP_RESEND_COOLDOWN_SECONDS = Number(process.env.EMAIL_OTP_RESEND_COOLDOWN_SECONDS || 60);
 const OTP_MAX_ATTEMPTS = Number(process.env.EMAIL_OTP_MAX_ATTEMPTS || 5);
-const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com';
-const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
-const SMTP_SECURE = process.env.SMTP_SECURE === 'true';
-const SMTP_USER = process.env.SMTP_USER?.trim();
-const SMTP_PASS = process.env.SMTP_PASS?.replace(/\s+/g, '');
-const SMTP_FROM_EMAIL = process.env.SMTP_FROM_EMAIL?.trim() || SMTP_USER;
-const SMTP_TIMEOUT_MS = Number(process.env.SMTP_TIMEOUT_MS || 10000);
 const PASSWORD_RESET_TTL_MINUTES = Number(process.env.PASSWORD_RESET_TTL_MINUTES || 30);
 const WEBAPP_URL = process.env.WEBAPP_URL || 'http://localhost:5173';
-
-const runSmtpCurl = ({ recipientEmail, subject, html, textFallback }) => {
-  return new Promise((resolve, reject) => {
-    const smtpUrl = `smtp://${SMTP_HOST}:${SMTP_PORT}/`;
-    const args = [
-      '--silent',
-      '--show-error',
-      '--ssl',
-      '--url', smtpUrl,
-      '--user', `${SMTP_USER}:${SMTP_PASS}`,
-      '--mail-from', SMTP_FROM_EMAIL,
-      '--mail-rcpt', recipientEmail,
-      '--upload-file', '-',
-    ];
-
-    const payload = [
-      `From: OrganiSort <${SMTP_FROM_EMAIL}>`,
-      `To: ${recipientEmail}`,
-      `Subject: ${subject}`,
-      'MIME-Version: 1.0',
-      'Content-Type: text/html; charset=UTF-8',
-      '',
-      html,
-      '',
-      ...(textFallback ? [`Plain-text fallback: ${textFallback}`, ''] : []),
-    ].join('\r\n');
-
-    const child = spawn('curl', args, { timeout: SMTP_TIMEOUT_MS });
-
-    let stderr = '';
-    child.stderr.on('data', (d) => { stderr += d.toString(); });
-
-    child.on('close', (code) => {
-      if (code === 0) return resolve();
-      const err = new Error('Unable to send email via SMTP. Check SMTP credentials (for Gmail use an app password) and sender configuration.');
-      err.code = code;
-      err.statusCode = 502;
-      err.cause = { stderr };
-      reject(err);
-    });
-
-    child.on('error', (spawnErr) => {
-      const err = new Error('Unable to send email via SMTP. Check SMTP credentials (for Gmail use an app password) and sender configuration.');
-      err.statusCode = 502;
-      err.cause = { stderr, spawnErr };
-      reject(err);
-    });
-
-    child.stdin.write(payload);
-    child.stdin.end();
-  });
-};
 
 const generateOtpCode = () => {
   const min = 10 ** (OTP_LENGTH - 1);
@@ -86,10 +27,6 @@ const buildChallengeToken = (userId, challengeId) => jwt.sign(
 );
 
 const sendOtpEmail = async (email, otpCode) => {
-  if (!SMTP_USER || !SMTP_PASS || !SMTP_FROM_EMAIL) {
-    throw new Error('SMTP_USER, SMTP_PASS, and SMTP_FROM_EMAIL are required for email OTP delivery');
-  }
-
   const text = `${otpCode} is your OrganiSort login verification code. It expires in ${OTP_TTL_MINUTES} minutes.`;
   const html = `
     <div style="font-family:Arial,sans-serif;line-height:1.4;color:#0f172a;max-width:480px;margin:0 auto;">
@@ -103,7 +40,7 @@ const sendOtpEmail = async (email, otpCode) => {
     </div>
   `;
 
-  await runSmtpCurl({
+  await sendEmail({
     recipientEmail: email,
     subject: 'Your OrganiSort login verification code',
     html,
@@ -114,10 +51,6 @@ const sendOtpEmail = async (email, otpCode) => {
 };
 
 const sendPasswordResetEmail = async (email, resetToken) => {
-  if (!SMTP_USER || !SMTP_PASS || !SMTP_FROM_EMAIL) {
-    throw new Error('SMTP_USER, SMTP_PASS, and SMTP_FROM_EMAIL are required for password reset email delivery');
-  }
-
   const resetLink = `${WEBAPP_URL}/reset-password?token=${encodeURIComponent(resetToken)}`;
   const html = `
     <div style="font-family:Arial,sans-serif;line-height:1.4;color:#0f172a;max-width:480px;margin:0 auto;">
@@ -129,7 +62,7 @@ const sendPasswordResetEmail = async (email, resetToken) => {
     </div>
   `;
 
-  await runSmtpCurl({
+  await sendEmail({
     recipientEmail: email,
     subject: 'Reset your OrganiSort password',
     html,
@@ -229,6 +162,11 @@ const loginUser = async (req, res, next) => {
     if (!user || !(await user.matchPassword(password))) {
       console.warn('[auth.login] invalid-credentials');
       return res.status(401).json({ success: false, error: 'Invalid credentials' });
+    }
+
+    if (!user.isActive) {
+      console.warn('[auth.login] deactivated-user-attempted-login');
+      return res.status(403).json({ success: false, error: 'Your account has been deactivated. Please contact support.' });
     }
 
     const canSkipEmailOtp = user.emailVerified || user.role === 'admin';

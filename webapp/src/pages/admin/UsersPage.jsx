@@ -52,18 +52,41 @@ const UsersPage = () => {
     }
   };
 
-  const handleDeleteUser = async (userId) => {
-    if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
-    setActionLoading(userId);
+  const handleDeactivateUser = async (user) => {
+    if (!user.isActive) return;
+
+    const reason = window.prompt(`Please provide a reason for deactivating ${user.displayName || user.email}. This will be emailed to the user.`);
+    if (reason === null) return; // User cancelled
+    if (!reason.trim()) {
+      alert('A reason is required to deactivate a user.');
+      return;
+    }
+
+    if (!window.confirm(`Are you sure you want to deactivate ${user.displayName || user.email} with the reason: "${reason}"?\nThey will immediately lose access to the platform.`)) {
+      return;
+    }
+
+    setActionLoading(user._id);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/users/${userId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` },
+      const response = await fetch(`${API_URL}/api/users/${user._id}/deactivate`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ reason })
       });
-      if (response.ok) fetchUsers();
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to deactivate user');
+      }
+
+      fetchUsers();
     } catch (error) {
-      console.error('Error deleting user:', error);
+      console.error('Error deactivating user:', error);
+      alert(`Error deactivating user: ${error.message}`);
     } finally {
       setActionLoading(null);
     }
@@ -247,6 +270,7 @@ const UsersPage = () => {
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Created</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Last Active</th>
                   <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
@@ -284,10 +308,20 @@ const UsersPage = () => {
                       </span>
                     </td>
 
+                    {/* Status Badge */}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.isActive
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
+                        }`}>
+                        {user.isActive ? 'Active' : 'Deactivated'}
+                      </span>
+                    </td>
+
                     {/* Created Date */}
                     <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
                       <div className="text-sm text-gray-600">
-                        {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown'}
+                        {user.createdAt ? getTimeSince(user.createdAt) : 'Unknown'}
                       </div>
                     </td>
 
@@ -326,16 +360,19 @@ const UsersPage = () => {
                           )}
                         </button>
                         <button
-                          onClick={() => handleDeleteUser(user._id)}
-                          disabled={actionLoading === user._id}
-                          className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-all disabled:opacity-50"
-                          title="Delete User"
+                          onClick={() => handleDeactivateUser(user)}
+                          disabled={actionLoading === user._id || !user.isActive}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed ${user.isActive
+                              ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                              : 'bg-gray-100 text-gray-400'
+                            }`}
+                          title={user.isActive ? "Deactivate User" : "User is already deactivated"}
                         >
                           <span className="flex items-center">
                             <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                             </svg>
-                            Delete
+                            {user.isActive ? 'Deactivate' : 'Deactivated'}
                           </span>
                         </button>
                       </div>
