@@ -438,15 +438,23 @@ const LandingPage = () => {
               <a href="#news" className="footer-link">How It Works</a>
               <button onClick={() => navigate('/about')} className="footer-link">About</button>
               <button onClick={() => navigate('/contact')} className="footer-link">Contact</button>
-              <button onClick={() => navigate('/register')} className="footer-link">Sign Up</button>
+              {!user && (
+                <button onClick={() => navigate('/register')} className="footer-link">Sign Up</button>
+              )}
             </div>
 
             {/* Resources */}
             <div className="footer-col">
               <h3 className="footer-title">Resources</h3>
-              <a href="/login" className="footer-link">Login</a>
-              <a href="/register" className="footer-link">Register</a>
-              <a href="/dashboard" className="footer-link">Dashboard</a>
+              {!user && (
+                <>
+                  <a href="/login" className="footer-link">Login</a>
+                  <a href="/register" className="footer-link">Register</a>
+                </>
+              )}
+              {user && (
+                <a href="/dashboard" className="footer-link">Dashboard</a>
+              )}
               <a href="/about" className="footer-link">About</a>
               <a href="/contact" className="footer-link">Contact</a>
               <a href="#impact" className="footer-link">System Facts</a>
