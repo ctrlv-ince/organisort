@@ -294,14 +294,20 @@ export default function ScanScreen() {
 
             <View style={styles.detectionsList}>
               <Text style={styles.sectionTitle}>Detected Items</Text>
-              {result.detections?.map((detection, index) => (
-                <View key={index} style={styles.detectionItem}>
-                  <Text style={styles.detectionClass}>{detection.class}</Text>
-                  <Text style={styles.detectionConfidence}>
-                    {(detection.confidence * 100).toFixed(1)}%
-                  </Text>
+              {result.detections?.length > 0 ? (
+                result.detections.map((detection, index) => (
+                  <View key={index} style={styles.detectionItem}>
+                    <Text style={styles.detectionClass}>{detection.class}</Text>
+                    <Text style={styles.detectionConfidence}>
+                      {(detection.confidence * 100).toFixed(1)}%
+                    </Text>
+                  </View>
+                ))
+              ) : (
+                <View style={styles.detectionItem}>
+                  <Text style={styles.detectionClass}>No items were detected in this image.</Text>
                 </View>
-              ))}
+              )}
             </View>
 
             {disposalLocations.length > 0 && (

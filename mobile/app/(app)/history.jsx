@@ -898,9 +898,12 @@ export default function HistoryScreen() {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                      style={styles.findDisposalButton}
+                      style={[
+                        styles.findDisposalButton,
+                        (!detection.detections?.length && !detection.summary?.total_detections) ? { opacity: 0.5 } : null
+                      ]}
                       onPress={() => handleFindDisposal(detection)}
-                      disabled={loadingLocations}
+                      disabled={loadingLocations || (!detection.detections?.length && !detection.summary?.total_detections)}
                     >
                       {loadingLocations && selectedDetection?._id === detection._id ? (
                         <ActivityIndicator size="small" color="white" />
@@ -949,14 +952,18 @@ export default function HistoryScreen() {
 
                 <View style={styles.detailsCard}>
                   <Text style={styles.detailsTitle}>Detected Items:</Text>
-                  {selectedDetection.detections?.map((detection, index) => (
-                    <View key={index} style={styles.detectionItem}>
-                      <Text style={styles.detectionClass}>{detection.class}</Text>
-                      <Text style={styles.detectionConfidence}>
-                        Confidence: {(detection.confidence * 100).toFixed(1)}%
-                      </Text>
-                    </View>
-                  ))}
+                  {selectedDetection.detections?.length > 0 ? (
+                    selectedDetection.detections.map((detection, index) => (
+                      <View key={index} style={styles.detectionItem}>
+                        <Text style={styles.detectionClass}>{detection.class}</Text>
+                        <Text style={styles.detectionConfidence}>
+                          Confidence: {(detection.confidence * 100).toFixed(1)}%
+                        </Text>
+                      </View>
+                    ))
+                  ) : (
+                    <Text style={styles.detectionConfidence}>No items were detected in this image.</Text>
+                  )}
 
                   <Text style={styles.sectionTitle}>Waste Guides</Text>
                   {Object.entries(selectedDetection.waste_guides || {}).length > 0 ? (

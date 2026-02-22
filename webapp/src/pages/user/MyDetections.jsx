@@ -441,8 +441,8 @@ const MyDetections = () => {
                   </button>
                   <button
                     onClick={() => handleFindDisposal(detection)}
-                    disabled={loadingLocations}
-                    className="bg-green-600 hover:bg-green-700 text-white text-sm font-semibold py-2.5 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
+                    disabled={loadingLocations || (!detection.detections?.length && !detection.summary?.total_detections)}
+                    className={`bg-green-600 hover:bg-green-700 text-white text-sm font-semibold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1 ${(!detection.detections?.length && !detection.summary?.total_detections) ? 'opacity-50 cursor-not-allowed' : 'disabled:opacity-50'}`}
                   >
                     {loadingLocations && selectedDetection?._id === detection._id ? (
                       <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
@@ -541,7 +541,7 @@ const MyDetections = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-500">No item-level details available for this detection.</p>
+                  <p className="text-sm text-gray-500">No items were detected in this image.</p>
                 )}
               </div>
 
