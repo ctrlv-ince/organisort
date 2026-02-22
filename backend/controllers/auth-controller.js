@@ -98,8 +98,11 @@ const registerUser = async (req, res, next) => {
     let photoURL = null;
     if (req.file) {
       try {
+        const b64 = Buffer.from(req.file.buffer).toString('base64');
+        const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+
         const imageResult = await uploadImageToCloudinary({
-          imageData: req.file.buffer,
+          imageData: dataURI,
           folderName: 'organisort/avatars',
         });
         if (imageResult?.secureUrl) {

@@ -85,8 +85,11 @@ const updateUserProfile = async (req, res, next) => {
 
     // Handle optional avatar file upload
     if (req.file) {
+      const b64 = Buffer.from(req.file.buffer).toString('base64');
+      const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+
       const { secureUrl } = await uploadImageToCloudinary({
-        imageData: req.file.buffer.toString('base64'),
+        imageData: dataURI,
         folderName: 'organisort/avatars',
       });
       updateData.photoURL = secureUrl;

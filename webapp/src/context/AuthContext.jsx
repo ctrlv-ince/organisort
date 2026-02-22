@@ -143,6 +143,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
+   * Instantly sync the global user session state after a profile edit or preference change
+   * without needing to hard refresh or re-fetch from the API
+   */
+  const updateUserSession = (newUserData) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      ...newUserData,
+    }));
+  };
+
+  /**
    * Logout user
    */
   const logout = async () => {
@@ -218,6 +229,7 @@ export const AuthProvider = ({ children }) => {
     register,
     verifyEmailOtp,
     resendEmailOtp,
+    updateUserSession,
     isAuthenticated: !!user,
   };
 

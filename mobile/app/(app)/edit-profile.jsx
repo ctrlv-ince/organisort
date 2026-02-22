@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
 });
 
 export default function EditProfileScreen() {
-  const { user } = useAuth();
+  const { user, updateUserSession } = useAuth();
   const router = useRouter();
   const [displayName, setDisplayName] = useState(user?.displayName || '');
   const [avatarUri, setAvatarUri] = useState(null);
@@ -126,7 +126,11 @@ export default function EditProfileScreen() {
         headers['Content-Type'] = 'application/json';
       }
 
-      await apiClient.put('/api/users/profile', payload, { headers });
+      const response = await apiClient.put('/api/users/profile', payload, { headers });
+
+      if (response.data?.success && response.data?.data) {
+        updateUserSession(response.data.data);
+      }
 
       Alert.alert('Success', 'Your profile has been updated.', [
         {

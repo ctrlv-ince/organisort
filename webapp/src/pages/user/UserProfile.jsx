@@ -3,12 +3,14 @@ import InfoCard from '../../components/InfoCard';
 import PageHeaderCard from '../../components/PageHeaderCard';
 import PrimaryButton from '../../components/PrimaryButton';
 import { semanticColorClasses } from '../../components/uiTheme';
+import { useAuth } from '../../context/AuthContext';
 
 /**
  * UserProfile Page
  * View and edit user profile information
  */
 const UserProfile = ({ userData, setUserData }) => {
+  const { updateUserSession } = useAuth();
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState(userData?.displayName || '');
   const [avatarFile, setAvatarFile] = useState(null);
@@ -65,6 +67,7 @@ const UserProfile = ({ userData, setUserData }) => {
       if (response.ok) {
         const data = await response.json();
         setUserData(data.data);
+        updateUserSession(data.data);
         setMessage('Profile updated successfully!');
         setEditing(false);
       } else {
