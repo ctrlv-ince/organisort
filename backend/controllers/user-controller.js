@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Detection = require('../models/Detection');
+const { uploadImageToCloudinary, deleteCloudinaryImage } = require('../utils/cloudinary');
 
 /**
  * User Controller
@@ -78,7 +79,33 @@ const updateUserProfile = async (req, res, next) => {
     // Build update object with only provided fields
     const updateData = {};
     if (displayName !== undefined) updateData.displayName = displayName;
+
+    // Allow updating photoURL directly (useful for clearing it or from external providers)
     if (photoURL !== undefined) updateData.photoURL = photoURL;
+
+    // Handle optional avatar file upload
+    if (req.file) {
+      const { secureUrl } = await uploadImageToCloudinary({
+        imageData: req.file.buffer.toString('base64'),
+        folderName: 'organisort/avatars',
+      });
+      updateData.photoURL = secureUrl;
+
+      // Delete old avatar from Cloudinary if it exists
+      const oldPhotoURL = isFirebase ? userData.photoURL : (await User.findById(userId))?.photoURL;
+      if (oldPhotoURL && oldPhotoURL.includes('res.cloudinary.com')) {
+        try {
+          // Extract public ID from Cloudinary URL
+          const urlParts = oldPhotoURL.split('/');
+          const filename = urlParts[urlParts.length - 1];
+          const publicId = `organisort/avatars/${filename.split('.')[0]}`;
+          await deleteCloudinaryImage(publicId);
+        } catch (deleteError) {
+          console.error('Failed to delete old avatar:', deleteError);
+          // Don't throw, we still want to save the new profile
+        }
+      }
+    }
 
     const user = await User.findByIdAndUpdate(
       userId,

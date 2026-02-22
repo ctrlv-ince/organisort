@@ -116,10 +116,36 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const registerWithEmail = async (email, password) => {
+  const registerWithEmail = async (email, password, avatarUri = null) => {
     try {
       setLoading(true);
-      const response = await apiClient.post('/api/auth/register', { email, password });
+
+      let payload;
+      let headers = {};
+
+      if (avatarUri) {
+        payload = new FormData();
+        payload.append('email', email);
+        payload.append('password', password);
+
+        // React Native specific FormData file upload format
+        const filename = avatarUri.split('/').pop() || 'avatar.jpg';
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : 'image/jpeg';
+
+        payload.append('avatar', {
+          uri: avatarUri,
+          name: filename,
+          type,
+        });
+
+        headers['Content-Type'] = 'multipart/form-data';
+      } else {
+        payload = { email, password };
+        headers['Content-Type'] = 'application/json';
+      }
+
+      const response = await apiClient.post('/api/auth/register', payload, { headers });
 
       if (response.data?.requires2FA) {
         return {

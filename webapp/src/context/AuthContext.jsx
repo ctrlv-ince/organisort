@@ -100,17 +100,28 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
-   * Register with email and password
+   * Register with email and password (and optional avatar image)
    */
-  const register = async (email, password) => {
+  const register = async (email, password, avatarFile = null) => {
     try {
       setError(null);
 
+      let payload;
+      let headers = {};
+
+      if (avatarFile) {
+        payload = new FormData();
+        payload.append('email', email);
+        payload.append('password', password);
+        payload.append('avatar', avatarFile);
+        headers['Content-Type'] = 'multipart/form-data';
+      } else {
+        payload = { email, password };
+        headers['Content-Type'] = 'application/json';
+      }
+
       // Use custom API endpoint for registration
-      const response = await axios.post(`${API_URL}/api/auth/register`, {
-        email,
-        password,
-      });
+      const response = await axios.post(`${API_URL}/api/auth/register`, payload, { headers });
 
       if (response.data?.requires2FA) {
         return {

@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { sendEmail } = require('../utils/email');
+const { uploadImageToCloudinary } = require('../utils/cloudinary');
 
 const OTP_LENGTH = 6;
 const OTP_TTL_MINUTES = Number(process.env.EMAIL_OTP_TTL_MINUTES || 10);
@@ -93,6 +94,23 @@ const registerUser = async (req, res, next) => {
       return res.status(400).json({ success: false, error: 'User with that email already exists' });
     }
 
+    // Handle optional avatar upload
+    let photoURL = null;
+    if (req.file) {
+      try {
+        const imageResult = await uploadImageToCloudinary({
+          imageData: req.file.buffer,
+          folderName: 'organisort/avatars',
+        });
+        if (imageResult?.secureUrl) {
+          photoURL = imageResult.secureUrl;
+        }
+      } catch (uploadError) {
+        console.warn('[auth.register] avatar-upload-failed', uploadError.message);
+        // Continue registration even if avatar upload fails
+      }
+    }
+
     // Create new user (password will be hashed by pre-save hook in User model)
     // Let MongoDB generate the _id automatically for email/password users
     try {
@@ -100,6 +118,7 @@ const registerUser = async (req, res, next) => {
         email,
         password,
         displayName: displayName || '',
+        photoURL,
       });
       console.info('[auth.register] success');
     } catch (createError) {

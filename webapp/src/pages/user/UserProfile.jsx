@@ -11,6 +11,8 @@ import { semanticColorClasses } from '../../components/uiTheme';
 const UserProfile = ({ userData, setUserData }) => {
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState(userData?.displayName || '');
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -32,14 +34,33 @@ const UserProfile = ({ userData, setUserData }) => {
       }
 
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/users/profile`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ displayName: trimmedDisplayName }),
-      });
+
+      let fetchConfig = {};
+
+      if (avatarFile) {
+        const formData = new FormData();
+        formData.append('displayName', trimmedDisplayName);
+        formData.append('avatar', avatarFile);
+
+        fetchConfig = {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: formData,
+        };
+      } else {
+        fetchConfig = {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({ displayName: trimmedDisplayName }),
+        };
+      }
+
+      const response = await fetch(`${API_URL}/api/users/profile`, fetchConfig);
 
       if (response.ok) {
         const data = await response.json();
@@ -55,6 +76,18 @@ const UserProfile = ({ userData, setUserData }) => {
       setMessage('An error occurred');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setMessage('Image must be less than 5MB');
+        return;
+      }
+      setAvatarFile(file);
+      setAvatarPreview(URL.createObjectURL(file));
     }
   };
 
@@ -82,13 +115,31 @@ const UserProfile = ({ userData, setUserData }) => {
       {/* Profile Card */}
       <InfoCard>
         <div className="flex items-center space-x-6 mb-6">
-          {userData?.photoURL ? (
-            <img src={userData.photoURL} alt="Profile" className="w-24 h-24 rounded-full border-4 border-primary/25" />
-          ) : (
-            <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center text-4xl font-bold text-white">
-              {userData?.displayName?.[0] || userData?.email?.[0]?.toUpperCase() || 'U'}
-            </div>
-          )}
+          <div className="relative group">
+            {avatarPreview || userData?.photoURL ? (
+              <img src={avatarPreview || userData.photoURL} alt="Profile" className="w-24 h-24 rounded-full border-4 border-primary/25 object-cover" />
+            ) : (
+              <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center text-4xl font-bold text-white">
+                {userData?.displayName?.[0] || userData?.email?.[0]?.toUpperCase() || 'U'}
+              </div>
+            )}
+
+            {editing && (
+              <label className="absolute inset-0 flex items-center justify-center bg-black/40 text-white rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity z-10">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/gif"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                  disabled={!editing}
+                />
+              </label>
+            )}
+          </div>
           <div>
             <h2 className="text-2xl font-bold text-gray-800">{userData?.displayName || 'User'}</h2>
             <p className="text-gray-600">{userData?.email}</p>
@@ -134,6 +185,8 @@ const UserProfile = ({ userData, setUserData }) => {
                   onClick={() => {
                     setEditing(false);
                     setDisplayName(userData?.displayName || '');
+                    setAvatarFile(null);
+                    setAvatarPreview(null);
                   }}
                 >
                   Cancel

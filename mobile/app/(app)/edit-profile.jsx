@@ -13,6 +13,10 @@ import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import apiClient from '@/src/utils/apiClient';
+import * as ImagePicker from 'expo-image-picker';
+import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
@@ -72,12 +76,25 @@ export default function EditProfileScreen() {
   const { user } = useAuth();
   const router = useRouter();
   const [displayName, setDisplayName] = useState(user?.displayName || '');
-  const [photoURL, setPhotoURL] = useState(user?.photoURL || '');
+  const [avatarUri, setAvatarUri] = useState(null);
   const [saving, setSaving] = useState(false);
 
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
+    });
+
+    if (!result.canceled) {
+      setAvatarUri(result.assets[0].uri);
+    }
+  };
+
   const handleSave = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const trimmedName = displayName.trim();
-    const trimmedPhotoURL = photoURL.trim();
 
     if (!trimmedName) {
       Alert.alert('Invalid name', 'Display name cannot be empty.');
@@ -86,10 +103,30 @@ export default function EditProfileScreen() {
 
     setSaving(true);
     try {
-      await apiClient.put('/api/users/profile', {
-        displayName: trimmedName,
-        photoURL: trimmedPhotoURL || null,
-      });
+      let payload;
+      let headers = {};
+
+      if (avatarUri) {
+        payload = new FormData();
+        payload.append('displayName', trimmedName);
+
+        const filename = avatarUri.split('/').pop() || 'avatar.jpg';
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : 'image/jpeg';
+
+        payload.append('avatar', {
+          uri: avatarUri,
+          name: filename,
+          type,
+        });
+
+        headers['Content-Type'] = 'multipart/form-data';
+      } else {
+        payload = { displayName: trimmedName };
+        headers['Content-Type'] = 'application/json';
+      }
+
+      await apiClient.put('/api/users/profile', payload, { headers });
 
       Alert.alert('Success', 'Your profile has been updated.', [
         {
@@ -116,6 +153,41 @@ export default function EditProfileScreen() {
 
         <View style={styles.content}>
           <View style={styles.formCard}>
+
+            {/* Avatar Picker */}
+            <View style={{ alignItems: 'center', marginBottom: 20 }}>
+              <TouchableOpacity
+                onPress={pickImage}
+                style={{
+                  width: 90,
+                  height: 90,
+                  borderRadius: 45,
+                  backgroundColor: '#f3f4f6',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderWidth: 2,
+                  borderColor: avatarUri || user?.photoURL ? '#10b981' : '#e5e7eb',
+                  borderStyle: avatarUri || user?.photoURL ? 'solid' : 'dashed',
+                  overflow: 'hidden',
+                }}
+              >
+                {avatarUri || user?.photoURL ? (
+                  <Image
+                    source={{ uri: avatarUri || user?.photoURL }}
+                    style={{ width: '100%', height: '100%' }}
+                    contentFit="cover"
+                  />
+                ) : (
+                  <>
+                    <Ionicons name="camera-outline" size={32} color="#9ca3af" />
+                    <Text style={{ fontSize: 10, color: '#6b7280', marginTop: 4, fontWeight: '500' }}>
+                      Change
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </View>
+
             <Text style={styles.label}>Email Address</Text>
             <TextInput
               style={[styles.input, styles.inputDisabled]}
@@ -132,17 +204,6 @@ export default function EditProfileScreen() {
               autoCapitalize="words"
               maxLength={50}
             />
-
-            <Text style={styles.label}>Photo URL (optional)</Text>
-            <TextInput
-              style={styles.input}
-              value={photoURL}
-              onChangeText={setPhotoURL}
-              placeholder="https://example.com/photo.jpg"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-            <Text style={styles.helper}>Paste a public image URL for your avatar.</Text>
 
             <View style={styles.buttonRow}>
               <TouchableOpacity

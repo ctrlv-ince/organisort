@@ -15,6 +15,10 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import * as ImagePicker from 'expo-image-picker';
+import { Image } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
+import { Image } from 'expo-image';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#10b981' },
@@ -46,10 +50,24 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [avatarUri, setAvatarUri] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [errors, setErrors] = useState({});
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
+    });
+
+    if (!result.canceled) {
+      setAvatarUri(result.assets[0].uri);
+    }
+  };
 
   const handleRegister = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -67,7 +85,7 @@ export default function RegisterScreen() {
 
     try {
       setFormLoading(true);
-      const result = await registerWithEmail(email, password);
+      const result = await registerWithEmail(email, password, avatarUri);
       if (result?.requires2FA) {
         // Redirect to login screen with OTP challenge params
         router.replace({
@@ -103,6 +121,40 @@ export default function RegisterScreen() {
           {/* Register Card */}
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Register</Text>
+
+            {/* Avatar Picker */}
+            <View style={{ alignItems: 'center', marginBottom: 20 }}>
+              <TouchableOpacity
+                onPress={pickImage}
+                style={{
+                  width: 90,
+                  height: 90,
+                  borderRadius: 45,
+                  backgroundColor: '#f3f4f6',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderWidth: 2,
+                  borderColor: avatarUri ? '#10b981' : '#e5e7eb',
+                  borderStyle: avatarUri ? 'solid' : 'dashed',
+                  overflow: 'hidden',
+                }}
+              >
+                {avatarUri ? (
+                  <Image
+                    source={{ uri: avatarUri }}
+                    style={{ width: '100%', height: '100%' }}
+                    contentFit="cover"
+                  />
+                ) : (
+                  <>
+                    <Ionicons name="camera-outline" size={32} color="#9ca3af" />
+                    <Text style={{ fontSize: 10, color: '#6b7280', marginTop: 4, fontWeight: '500' }}>
+                      Add Photo
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </View>
 
             {/* Email Input */}
             <View style={styles.inputGroup}>

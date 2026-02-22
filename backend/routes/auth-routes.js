@@ -1,4 +1,5 @@
 const express = require("express");
+const multer = require("multer");
 const { protect } = require("../middleware/auth-middleware");
 const {
   registerUser,
@@ -11,12 +12,30 @@ const {
 
 const router = express.Router();
 
+// Configure multer for in-memory profile image storage
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit for avatars
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept images only
+    if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF)$/)) {
+      req.fileValidationError = 'Only image files are allowed!';
+      return cb(new Error('Only image files are allowed!'), false);
+    }
+    cb(null, true);
+  },
+});
+
 /**
  * POST /api/auth/register
  * Register a new user with email and password
  * Public route (no authentication required)
+ * Accepts multipart/form-data for optional avatar upload
  */
-router.post("/register", registerUser);
+router.post("/register", upload.single('avatar'), registerUser);
 
 /**
  * POST /api/auth/login

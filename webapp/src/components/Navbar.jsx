@@ -32,12 +32,18 @@ const Navbar = () => {
               <>
                 {/* User Profile */}
                 <div className="flex items-center gap-3">
-                  {user.photoURL && (
+                  {user.photoURL ? (
                     <img
                       src={user.photoURL}
                       alt={user.displayName || 'User'}
-                      className="w-10 h-10 rounded-full border-2 border-gray-200"
+                      className="w-10 h-10 rounded-full border-2 border-gray-200 object-cover"
                     />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center border-2 border-gray-200">
+                      <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
                   )}
                   <div className="hidden sm:block">
                     <p className="text-sm font-medium text-gray-800">

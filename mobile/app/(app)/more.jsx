@@ -14,7 +14,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import { Image } from 'expo-image';
 import apiClient from '@/src/utils/apiClient';
 import { sendTestNotification, scheduleDailyReminder, cancelAllReminders } from '@/src/utils/notifications';
 
@@ -335,10 +337,24 @@ export default function MoreScreen() {
     <>
       <SafeAreaView style={styles.container} edges={['top']}>
         <ScrollView style={{ flex: 1 }}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.title}>More</Text>
-            <Text style={styles.subtitle}>Settings, stats & more</Text>
+          {/* Profile Header */}
+          <View style={[styles.header, { alignItems: 'center' }]}>
+            {user?.photoURL ? (
+              <Image
+                source={{ uri: user.photoURL }}
+                style={{ width: 80, height: 80, rounded: 40, borderRadius: 40, borderWidth: 3, borderColor: '#ffffff', marginBottom: 16 }}
+                contentFit="cover"
+              />
+            ) : (
+              <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: '#34d399', borderWidth: 3, borderColor: '#ffffff', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#ffffff' }}>
+                  {user?.displayName ? user.displayName.charAt(0).toUpperCase() : (user?.email ? user.email.charAt(0).toUpperCase() : '?')}
+                </Text>
+              </View>
+            )}
+
+            <Text style={styles.title}>{user?.displayName || 'User Profile'}</Text>
+            <Text style={styles.subtitle}>{user?.email || 'Settings, stats & more'}</Text>
           </View>
 
           <View style={styles.content}>
