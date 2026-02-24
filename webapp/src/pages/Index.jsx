@@ -459,17 +459,6 @@ const LandingPage = () => {
               <a href="/contact" className="footer-link">Contact</a>
               <a href="#impact" className="footer-link">System Facts</a>
             </div>
-
-            {/* Contact */}
-            <div className="footer-col">
-              <h3 className="footer-title">Project Note</h3>
-              <p className="footer-contact">
-                This landing page now avoids fabricated milestones and placeholder marketing claims.
-              </p>
-              <p className="footer-contact">
-                It reflects the actual web/mobile/admin behavior in your current implementation.
-              </p>
-            </div>
           </div>
 
           <div className="footer-bottom">

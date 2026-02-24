@@ -430,6 +430,11 @@ const resetPassword = async (req, res, next) => {
       return res.status(400).json({ success: false, error: 'Invalid or expired reset token' });
     }
 
+    const isSamePassword = await user.matchPassword(password);
+    if (isSamePassword) {
+      return res.status(400).json({ success: false, error: 'New password must be different from your current password' });
+    }
+
     user.password = password;
     user.passwordReset = undefined;
     user.twoFactorChallenge = undefined;
