@@ -17,60 +17,69 @@ import apiClient from '@/src/utils/apiClient';
 import { CardSkeleton, StatSkeleton } from '@/src/components/SkeletonLoader';
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
+  container: { flex: 1, backgroundColor: '#f4f4f5' },
   header: {
-    backgroundColor: '#10b981',
-    paddingTop: 16,
-    paddingBottom: 24,
+    paddingTop: 24,
+    paddingBottom: 20,
     paddingHorizontal: 24,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
+    backgroundColor: '#f4f4f5',
   },
   headerTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 8,
   },
-  title: { fontSize: 30, fontWeight: 'bold', color: 'white' },
+  title: { fontSize: 34, fontWeight: '900', color: '#18181b', letterSpacing: -0.5 },
   welcomeCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 12,
-    padding: 12,
+    marginTop: 4,
   },
-  welcomeText: { color: 'white', fontSize: 18, fontWeight: '600' },
-  welcomeSubtext: { color: '#d1fae5', fontSize: 14, marginTop: 4 },
-  content: { paddingHorizontal: 24, paddingVertical: 24 },
+  welcomeText: { color: '#3f3f46', fontSize: 16, fontWeight: '600' },
+  welcomeSubtext: { color: '#71717a', fontSize: 14, marginTop: 2, fontWeight: '500' },
+  content: { paddingHorizontal: 20, paddingBottom: 40 },
 
   // Stats Cards
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 24,
+    gap: 12,
+    marginBottom: 32,
   },
   statCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    borderCurve: 'continuous',
     padding: 16,
     flex: 1,
-    marginHorizontal: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 2,
+    alignItems: 'center',
   },
-  statIcon: { marginBottom: 8 },
-  statValue: { fontSize: 24, fontWeight: 'bold', color: '#1e293b' },
-  statLabel: { fontSize: 12, color: '#64748b', marginTop: 4 },
+  statIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    borderCurve: 'continuous',
+    backgroundColor: '#f4f4f5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  statValue: { fontSize: 26, fontWeight: '900', color: '#18181b', letterSpacing: -0.5 },
+  statLabel: { fontSize: 11, color: '#a1a1aa', marginTop: 2, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 },
 
   // Quick Actions
-  actionSection: { marginBottom: 24 },
+  actionSection: { marginBottom: 32 },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1e293b',
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#18181b',
     marginBottom: 16,
+    letterSpacing: -0.5,
+    paddingHorizontal: 4,
   },
   quickActions: {
     flexDirection: 'row',
@@ -78,117 +87,124 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   quickActionCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 20,
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    borderCurve: 'continuous',
+    padding: 24,
     flex: 1,
     minWidth: '45%',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 2,
   },
-  quickActionIcon: { marginBottom: 12 },
+  quickActionIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    borderCurve: 'continuous',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
   quickActionText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1e293b',
-    textAlign: 'center',
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#18181b',
   },
 
   // Recent Detection History
   historyCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 16,
+    backgroundColor: '#ffffff',
+    borderRadius: 32,
+    borderCurve: 'continuous',
+    padding: 8,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 2,
   },
   historyItem: {
     flexDirection: 'row',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    padding: 12,
+    borderRadius: 24,
+    borderCurve: 'continuous',
+    backgroundColor: '#ffffff',
   },
   historyImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 8,
-    marginRight: 12,
-    backgroundColor: '#e2e8f0',
+    width: 64,
+    height: 64,
+    borderRadius: 18,
+    borderCurve: 'continuous',
+    marginRight: 16,
+    backgroundColor: '#f4f4f5',
   },
-  historyInfo: { flex: 1 },
+  historyInfo: { flex: 1, justifyContent: 'center' },
   historyType: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#1e293b',
+    fontWeight: '700',
+    color: '#18181b',
     marginBottom: 4,
   },
-  historyDate: { fontSize: 12, color: '#64748b', marginBottom: 4 },
-  historyConfidence: {
-    fontSize: 12,
-    color: '#10b981',
-    fontWeight: '600',
+  historyDate: { fontSize: 13, color: '#a1a1aa', fontWeight: '500' },
+  historyMetaContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+    gap: 6,
   },
-  wasteTypeBadge: {
-    backgroundColor: '#10b981',
+  historyPill: {
+    backgroundColor: '#f4f4f5',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 4,
-    marginTop: 4,
+    borderRadius: 8,
+    borderCurve: 'continuous',
   },
-  wasteTypeBadgeText: {
-    color: 'white',
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-  wasteTypesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 4,
+  historyPillText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#52525b',
   },
 
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 40,
+    paddingVertical: 48,
   },
-  emptyIcon: { marginBottom: 16, opacity: 0.5 },
-  emptyText: { fontSize: 16, color: '#64748b', textAlign: 'center' },
+  emptyIcon: { marginBottom: 16, opacity: 0.4 },
+  emptyText: { fontSize: 15, color: '#a1a1aa', textAlign: 'center', fontWeight: '500', lineHeight: 22 },
 
   viewAllButton: {
-    backgroundColor: '#10b981',
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingVertical: 16,
     alignItems: 'center',
-    marginTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#f4f4f5',
+    marginTop: 4,
   },
-  viewAllText: { color: 'white', fontWeight: '600', fontSize: 14 },
+  viewAllText: { color: '#10b981', fontWeight: '700', fontSize: 15 },
 
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 100,
+    backgroundColor: '#f4f4f5',
   },
 });
 
 
-function QuickActionCard({ icon, label, onPress }) {
+function QuickActionCard({ icon, label, onPress, color = '#10b981', bg = '#d1fae5' }) {
   return (
     <TouchableOpacity
       style={styles.quickActionCard}
       onPress={onPress}
-      activeOpacity={0.8}
+      activeOpacity={0.7}
     >
-      <Ionicons name={icon} size={36} color="#10b981" style={styles.quickActionIcon} />
+      <View style={[styles.quickActionIconContainer, { backgroundColor: bg }]}>
+        <Ionicons name={icon} size={24} color={color} />
+      </View>
       <Text style={styles.quickActionText}>{label}</Text>
     </TouchableOpacity>
   );
@@ -300,19 +316,25 @@ export default function HomeScreen() {
           {/* Stats Cards */}
           <View style={styles.statsContainer}>
             <View style={styles.statCard}>
-              <Ionicons name="analytics-outline" size={28} color="#10b981" style={styles.statIcon} />
+              <View style={styles.statIconContainer}>
+                <Ionicons name="scan-outline" size={22} color="#10b981" />
+              </View>
               <Text style={styles.statValue}>{stats.totalDetections}</Text>
               <Text style={styles.statLabel}>Total Scans</Text>
             </View>
             <View style={styles.statCard}>
-              <Ionicons name="cube-outline" size={28} color="#10b981" style={styles.statIcon} />
+              <View style={styles.statIconContainer}>
+                <Ionicons name="cube-outline" size={22} color="#3b82f6" />
+              </View>
               <Text style={styles.statValue}>{stats.totalItems}</Text>
-              <Text style={styles.statLabel}>Items Found</Text>
+              <Text style={styles.statLabel}>Cataloged</Text>
             </View>
             <View style={styles.statCard}>
-              <Ionicons name="pricetag-outline" size={28} color="#10b981" style={styles.statIcon} />
+              <View style={styles.statIconContainer}>
+                <Ionicons name="color-palette-outline" size={22} color="#8b5cf6" />
+              </View>
               <Text style={styles.statValue}>{stats.uniqueTypes}</Text>
-              <Text style={styles.statLabel}>Unique Types</Text>
+              <Text style={styles.statLabel}>Varieties</Text>
             </View>
           </View>
 
@@ -322,23 +344,31 @@ export default function HomeScreen() {
             <View style={styles.quickActions}>
               <QuickActionCard
                 icon="camera-outline"
-                label="Scan Waste"
+                label="Launch Scanner"
                 onPress={() => router.push('/scan')}
+                color="#10b981"
+                bg="#ecfdf5"
               />
               <QuickActionCard
                 icon="bar-chart-outline"
-                label="View History"
+                label="Activity Ledger"
                 onPress={() => router.push('/history')}
+                color="#3b82f6"
+                bg="#eff6ff"
               />
               <QuickActionCard
                 icon="person-outline"
-                label="My Profile"
+                label="Identity Profile"
                 onPress={() => router.push('/profile')}
+                color="#8b5cf6"
+                bg="#f5f3ff"
               />
               <QuickActionCard
                 icon="trophy-outline"
-                label="Leaderboard"
+                label="Social Rank"
                 onPress={() => router.push('/more')}
+                color="#f59e0b"
+                bg="#fffbeb"
               />
             </View>
           </View>
@@ -368,46 +398,25 @@ export default function HomeScreen() {
                         defaultSource={require('@/assets/icon.png')}
                       />
                       <View style={styles.historyInfo}>
-                        <Text style={styles.historyType}>
-                          {item.detectedWasteTypes?.slice(0, 2).join(', ') || 'Detection'}
+                        <Text style={styles.historyType} numberOfLines={1}>
+                          {item.detectedWasteTypes?.length > 0 ? item.detectedWasteTypes[0] : 'Unknown Object'}
                         </Text>
                         <Text style={styles.historyDate}>
-                          {new Date(item.createdAt).toLocaleDateString()} at{' '}
-                          {new Date(item.createdAt).toLocaleTimeString()}
+                          {new Date(item.createdAt).toLocaleDateString()}
                         </Text>
-                        <Text style={styles.historyConfidence}>
-                          {item.summary?.total_detections || 0} items •{' '}
-                          {item.summary?.unique_classes || 0} types
-                        </Text>
-                        {item.detectedWasteTypes &&
-                          item.detectedWasteTypes.length > 0 && (
-                            <View style={styles.wasteTypesContainer}>
-                              {item.detectedWasteTypes
-                                .slice(0, 3)
-                                .map((type, idx) => (
-                                  <View
-                                    key={idx}
-                                    style={styles.wasteTypeBadge}
-                                  >
-                                    <Text style={styles.wasteTypeBadgeText}>
-                                      {type}
-                                    </Text>
-                                  </View>
-                                ))}
-                              {item.detectedWasteTypes.length > 3 && (
-                                <View
-                                  style={[
-                                    styles.wasteTypeBadge,
-                                    { backgroundColor: '#6b7280' },
-                                  ]}
-                                >
-                                  <Text style={styles.wasteTypeBadgeText}>
-                                    +{item.detectedWasteTypes.length - 3}
-                                  </Text>
-                                </View>
-                              )}
+                        <View style={styles.historyMetaContainer}>
+                          <View style={styles.historyPill}>
+                            <Text style={styles.historyPillText}>{item.summary?.total_detections || 0} Items</Text>
+                          </View>
+                          {item.detectedWasteTypes && item.detectedWasteTypes.length > 1 && (
+                            <View style={styles.historyPill}>
+                              <Text style={styles.historyPillText}>+{item.detectedWasteTypes.length - 1}</Text>
                             </View>
                           )}
+                        </View>
+                      </View>
+                      <View style={{ justifyContent: 'center', paddingLeft: 8 }}>
+                        <Ionicons name="chevron-forward" size={20} color="#d4d4d8" />
                       </View>
                     </View>
                   ))}

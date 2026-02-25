@@ -18,124 +18,132 @@ import apiClient from '@/src/utils/apiClient';
 import SkeletonLoader, { StatSkeleton } from '@/src/components/SkeletonLoader';
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
+  container: { flex: 1, backgroundColor: '#f4f4f5' },
   header: {
-    backgroundColor: '#10b981',
-    paddingTop: 16,
-    paddingBottom: 24,
+    paddingTop: 32,
+    paddingBottom: 20,
     paddingHorizontal: 24,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
+    backgroundColor: '#f4f4f5',
   },
-  title: { fontSize: 30, fontWeight: 'bold', color: 'white', textAlign: 'center' },
-  subtitle: { fontSize: 16, color: '#d1fae5', textAlign: 'center', marginTop: 8 },
+  title: { fontSize: 34, fontWeight: '900', color: '#18181b', letterSpacing: -0.5 },
+  subtitle: { fontSize: 16, color: '#71717a', marginTop: 4, fontWeight: '500' },
   content: { padding: 24 },
 
   // Profile Header
   profileHeader: {
-    backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 24,
+    backgroundColor: '#ffffff',
+    borderRadius: 32,
+    borderCurve: 'continuous',
+    padding: 32,
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 32,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 2,
   },
   avatarContainer: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#10b981',
+    backgroundColor: '#f4f4f5',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
     borderWidth: 4,
-    borderColor: '#d1fae5',
+    borderColor: '#ffffff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
   },
   avatar: {
     width: 112,
     height: 112,
     borderRadius: 56,
   },
-  avatarText: { fontSize: 48, color: 'white', fontWeight: 'bold' },
-  displayName: { fontSize: 24, fontWeight: 'bold', color: '#1e293b', marginBottom: 4 },
-  email: { fontSize: 14, color: '#64748b', marginBottom: 16 },
+  avatarText: { fontSize: 40, color: '#18181b', fontWeight: '900', letterSpacing: -0.5 },
+  displayName: { fontSize: 26, fontWeight: '900', color: '#18181b', marginBottom: 6, letterSpacing: -0.5 },
+  email: { fontSize: 15, color: '#71717a', marginBottom: 20, fontWeight: '500' },
   badge: {
-    backgroundColor: '#10b981',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    backgroundColor: '#18181b',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
     borderRadius: 20,
+    borderCurve: 'continuous',
   },
-  badgeText: { color: 'white', fontSize: 14, fontWeight: '600' },
+  badgeText: { color: '#ffffff', fontSize: 14, fontWeight: '700' },
 
   // Stats Section
-  statsSection: { marginBottom: 24 },
-  sectionTitle: { fontSize: 20, fontWeight: 'bold', color: '#1e293b', marginBottom: 16 },
+  statsSection: { marginBottom: 32 },
+  sectionTitle: { fontSize: 20, fontWeight: '800', color: '#18181b', marginBottom: 20, letterSpacing: -0.5 },
   statsGrid: { flexDirection: 'row', justifyContent: 'space-between', gap: 12 },
   statCard: {
     flex: 1,
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    borderCurve: 'continuous',
+    padding: 20,
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 2,
   },
-  statIcon: { marginBottom: 8 },
-  statValue: { fontSize: 24, fontWeight: 'bold', color: '#10b981' },
-  statLabel: { fontSize: 12, color: '#64748b', marginTop: 4, textAlign: 'center' },
+  statIcon: { marginBottom: 12, opacity: 0.8 },
+  statValue: { fontSize: 28, fontWeight: '900', color: '#18181b', letterSpacing: -0.5 },
+  statLabel: { fontSize: 12, color: '#a1a1aa', marginTop: 4, textAlign: 'center', fontWeight: '700', textTransform: 'uppercase' },
 
   // Info Cards
-  infoSection: { marginBottom: 24 },
+  infoSection: { marginBottom: 32 },
   infoCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    borderCurve: 'continuous',
+    padding: 20,
     marginBottom: 12,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 2,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   infoLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  infoIcon: { marginRight: 12 },
+  infoIcon: { marginRight: 16, opacity: 0.8 },
   infoContent: { flex: 1 },
-  infoLabel: { fontSize: 12, color: '#64748b', marginBottom: 4 },
-  infoValue: { fontSize: 16, fontWeight: '600', color: '#1e293b' },
-  infoArrow: { fontSize: 20, color: '#9ca3af' },
+  infoLabel: { fontSize: 13, color: '#71717a', marginBottom: 4, fontWeight: '500' },
+  infoValue: { fontSize: 16, fontWeight: '700', color: '#18181b' },
+  infoArrow: { fontSize: 24, color: '#d4d4d8', fontWeight: '300' },
 
   // Action Buttons
   actionButton: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    borderCurve: 'continuous',
+    padding: 20,
     marginBottom: 12,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 2,
     flexDirection: 'row',
     alignItems: 'center',
   },
-  actionIcon: { marginRight: 12 },
-  actionText: { fontSize: 16, fontWeight: '600', color: '#1e293b', flex: 1 },
+  actionIcon: { marginRight: 16, opacity: 0.8 },
+  actionText: { fontSize: 16, fontWeight: '700', color: '#18181b', flex: 1 },
 
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: 100,
+    backgroundColor: '#f4f4f5',
   },
 });
 
@@ -286,17 +294,17 @@ export default function ProfileScreen() {
             <Text style={styles.sectionTitle}>Your Statistics</Text>
             <View style={styles.statsGrid}>
               <View style={styles.statCard}>
-                <Ionicons name="analytics-outline" size={28} color="#10b981" style={styles.statIcon} />
+                <Ionicons name="analytics-outline" size={28} color="#18181b" style={styles.statIcon} />
                 <Text style={styles.statValue}>{stats.totalDetections}</Text>
                 <Text style={styles.statLabel}>Total Scans</Text>
               </View>
               <View style={styles.statCard}>
-                <Ionicons name="cube-outline" size={28} color="#10b981" style={styles.statIcon} />
+                <Ionicons name="cube-outline" size={28} color="#18181b" style={styles.statIcon} />
                 <Text style={styles.statValue}>{stats.totalItems}</Text>
                 <Text style={styles.statLabel}>Items Detected</Text>
               </View>
               <View style={styles.statCard}>
-                <Ionicons name="pricetag-outline" size={28} color="#10b981" style={styles.statIcon} />
+                <Ionicons name="pricetag-outline" size={28} color="#18181b" style={styles.statIcon} />
                 <Text style={styles.statValue}>{stats.uniqueTypes}</Text>
                 <Text style={styles.statLabel}>Unique Types</Text>
               </View>
@@ -309,7 +317,7 @@ export default function ProfileScreen() {
 
             <View style={styles.infoCard}>
               <View style={styles.infoLeft}>
-                <Ionicons name="mail-outline" size={24} color="#10b981" style={styles.infoIcon} />
+                <Ionicons name="mail-outline" size={24} color="#18181b" style={styles.infoIcon} />
                 <View style={styles.infoContent}>
                   <Text style={styles.infoLabel}>Email Address</Text>
                   <Text style={styles.infoValue}>{user?.email}</Text>
@@ -319,7 +327,7 @@ export default function ProfileScreen() {
 
             <View style={styles.infoCard}>
               <View style={styles.infoLeft}>
-                <Ionicons name="person-outline" size={24} color="#10b981" style={styles.infoIcon} />
+                <Ionicons name="person-outline" size={24} color="#18181b" style={styles.infoIcon} />
                 <View style={styles.infoContent}>
                   <Text style={styles.infoLabel}>Display Name</Text>
                   <Text style={styles.infoValue}>
@@ -331,7 +339,7 @@ export default function ProfileScreen() {
 
             <View style={styles.infoCard}>
               <View style={styles.infoLeft}>
-                <Ionicons name="calendar-outline" size={24} color="#10b981" style={styles.infoIcon} />
+                <Ionicons name="calendar-outline" size={24} color="#18181b" style={styles.infoIcon} />
                 <View style={styles.infoContent}>
                   <Text style={styles.infoLabel}>Member Since</Text>
                   <Text style={styles.infoValue}>
@@ -343,7 +351,7 @@ export default function ProfileScreen() {
 
             <View style={styles.infoCard}>
               <View style={styles.infoLeft}>
-                <Ionicons name="checkmark-circle-outline" size={24} color="#10b981" style={styles.infoIcon} />
+                <Ionicons name="checkmark-circle-outline" size={24} color="#18181b" style={styles.infoIcon} />
                 <View style={styles.infoContent}>
                   <Text style={styles.infoLabel}>Account Status</Text>
                   <Text style={styles.infoValue}>
@@ -362,7 +370,7 @@ export default function ProfileScreen() {
               style={styles.actionButton}
               onPress={() => router.push('/history')}
             >
-              <Ionicons name="bar-chart-outline" size={24} color="#10b981" style={styles.actionIcon} />
+              <Ionicons name="bar-chart-outline" size={24} color="#18181b" style={styles.actionIcon} />
               <Text style={styles.actionText}>View Detection History</Text>
               <Text style={styles.infoArrow}>›</Text>
             </TouchableOpacity>
@@ -371,7 +379,7 @@ export default function ProfileScreen() {
               style={styles.actionButton}
               onPress={() => router.push('/edit-profile')}
             >
-              <Ionicons name="create-outline" size={24} color="#10b981" style={styles.actionIcon} />
+              <Ionicons name="create-outline" size={24} color="#18181b" style={styles.actionIcon} />
               <Text style={styles.actionText}>Edit Profile</Text>
               <Text style={styles.infoArrow}>›</Text>
             </TouchableOpacity>
@@ -381,7 +389,7 @@ export default function ProfileScreen() {
                 style={styles.actionButton}
                 onPress={() => router.push('/admin')}
               >
-                <Ionicons name="shield-outline" size={24} color="#10b981" style={styles.actionIcon} />
+                <Ionicons name="shield-outline" size={24} color="#18181b" style={styles.actionIcon} />
                 <Text style={styles.actionText}>Admin Dashboard</Text>
                 <Text style={styles.infoArrow}>›</Text>
               </TouchableOpacity>

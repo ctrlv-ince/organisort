@@ -1,5 +1,17 @@
 // webapp/src/pages/user/MyDetections.jsx - Updated with disposal location finder
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import PageHeaderCard from '../../components/PageHeaderCard';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+};
 
 // ---------------------------------------------------------------------------
 // Client-side fallback guide data (mirrors backend constants).
@@ -262,40 +274,23 @@ const MyDetections = () => {
 
   if (loading) {
     return (
-      <div className="p-6 space-y-6">
-        {/* Header skeleton */}
-        <div className="skeleton-shimmer h-24 rounded-lg" />
-        {/* Search bar skeleton */}
-        <div className="bg-white rounded-lg shadow-md p-4">
+      <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-8">
+        <div className="skeleton-shimmer h-32 rounded-[2rem]" />
+        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6">
           <div className="flex flex-col sm:flex-row gap-4">
-            <div className="skeleton-shimmer h-10 flex-1" />
-            <div className="skeleton-shimmer h-10 w-40" />
+            <div className="skeleton-shimmer h-12 rounded-xl flex-1" />
+            <div className="skeleton-shimmer h-12 rounded-xl w-40" />
           </div>
         </div>
-        {/* Detection cards skeleton */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <div key={i} className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
               <div className="skeleton-shimmer h-48 w-full rounded-none" />
-              <div className="p-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="skeleton-shimmer h-12 w-12 rounded-full" />
-                    <div className="space-y-2">
-                      <div className="skeleton-shimmer h-4 w-24" />
-                      <div className="skeleton-shimmer h-3 w-32" />
-                    </div>
-                  </div>
-                  <div className="skeleton-shimmer h-6 w-16" />
-                </div>
-                <div className="flex gap-2">
-                  <div className="skeleton-shimmer h-6 w-16 rounded-full" />
-                  <div className="skeleton-shimmer h-6 w-20 rounded-full" />
-                  <div className="skeleton-shimmer h-6 w-14 rounded-full" />
-                </div>
-                <div className="grid grid-cols-2 gap-2 pt-4 border-t border-gray-200">
-                  <div className="skeleton-shimmer h-10 rounded-lg" />
-                  <div className="skeleton-shimmer h-10 rounded-lg" />
+              <div className="p-8 space-y-4">
+                <div className="skeleton-shimmer h-12 w-12 rounded-2xl" />
+                <div className="space-y-2">
+                  <div className="skeleton-shimmer h-4 w-32" />
+                  <div className="skeleton-shimmer h-3 w-40" />
                 </div>
               </div>
             </div>
@@ -306,407 +301,414 @@ const MyDetections = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-xl p-6 text-white">
-        <h1 className="text-3xl font-bold mb-2 flex items-center">
-          <svg className="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
-          My Detections
-        </h1>
-        <p className="text-blue-100">View your complete waste detection history and find disposal locations</p>
-      </div>
+    <motion.div
+      className="p-6 md:p-10 max-w-7xl mx-auto space-y-8"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.div variants={itemVariants}>
+        <PageHeaderCard
+          title="My Detections"
+          subtitle="View your complete waste detection history and find disposal locations."
+          variant="info"
+          icon={(
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+          )}
+        />
+      </motion.div>
 
-      <div className="bg-white rounded-lg shadow-md p-4">
+      <motion.div variants={itemVariants} className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6">
         <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
+          <div className="flex-1 relative">
+            <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
             <input
               type="text"
               placeholder="Search by waste type..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-2xl bg-slate-50 focus:bg-white focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-gray-900"
             />
           </div>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+            className="px-5 py-4 border border-gray-200 rounded-2xl bg-slate-50 focus:bg-white focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold text-gray-700 min-w-[200px]"
           >
-            <option value="recent">Most Recent</option>
+            <option value="recent">Most Recent First</option>
             <option value="oldest">Oldest First</option>
-            <option value="items">Most Items</option>
+            <option value="items">Items Discovered (High to Low)</option>
           </select>
         </div>
-        <p className="text-sm text-gray-600 mt-3">
-          Showing {sortedDetections.length} detection{sortedDetections.length !== 1 ? 's' : ''}
+        <p className="text-sm font-bold text-gray-400 mt-4 uppercase tracking-widest ml-2">
+          Displaying {sortedDetections.length} Activity {sortedDetections.length !== 1 ? 'Logs' : 'Log'}
         </p>
-      </div>
+      </motion.div>
 
       {sortedDetections.length > 0 ? (
-        <div className="grid md:grid-cols-2 gap-6">
-          {sortedDetections.map((detection, idx) => (
-            <div key={detection._id || idx} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-              {getDetectionImageUrl(detection) && (
-                <img
-                  src={getDetectionImageUrl(detection)}
-                  alt={`Detection from ${new Date(detection.createdAt).toLocaleString()}`}
-                  className="w-full h-48 object-cover bg-gray-100"
-                  loading="lazy"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.style.display = 'none';
-                    const placeholder = document.createElement('div');
-                    placeholder.className = 'w-full h-48 bg-gray-100 flex items-center justify-center';
-                    placeholder.innerHTML = '<svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>';
-                    e.target.parentNode.insertBefore(placeholder, e.target);
-                  }}
-                />
-              )}
+        <motion.div variants={itemVariants} className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <AnimatePresence>
+            {sortedDetections.map((detection, idx) => (
+              <motion.div
+                key={detection._id || idx}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+                className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all group flex flex-col"
+              >
+                <div className="relative overflow-hidden w-full h-56 bg-slate-100">
+                  {getDetectionImageUrl(detection) ? (
+                    <img
+                      src={getDetectionImageUrl(detection)}
+                      alt={`Detection on ${new Date(detection.createdAt).toLocaleString()}`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.style.display = 'none';
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'w-full h-full bg-slate-100 flex items-center justify-center';
+                        placeholder.innerHTML = '<svg class="w-12 h-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>';
+                        e.target.parentNode.insertBefore(placeholder, e.target);
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <svg className="w-12 h-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  )}
+                  {detection.summary?.highest_confidence && (
+                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-lg border border-white flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                      <span className="text-xs font-bold text-gray-900 tracking-wider">{(detection.summary.highest_confidence * 100).toFixed(0)}% CONF</span>
+                    </div>
+                  )}
+                </div>
 
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="bg-green-100 p-3 rounded-full">
-                      <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="p-6 flex flex-col flex-1">
+                  <div className="flex items-center space-x-4 mb-5">
+                    <div className="bg-blue-50 border border-blue-100 p-3.5 rounded-2xl flex-shrink-0">
+                      <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                       </svg>
                     </div>
                     <div>
-                      <p className="font-bold text-gray-800">
-                        {detection.detections?.length || 0} Items
+                      <p className="text-sm font-bold text-gray-500 tracking-widest uppercase mb-1">
+                        {new Date(detection.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                       </p>
-                      <p className="text-sm text-gray-500">
-                        {new Date(detection.createdAt).toLocaleString()}
+                      <p className="font-extrabold text-gray-900 text-xl tracking-tight">
+                        {detection.detections?.length || 0} Items Found
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-green-600">
-                      {detection.summary?.average_confidence
-                        ? `${(detection.summary.average_confidence * 100).toFixed(1)}%`
-                        : 'N/A'}
-                    </p>
-                    <p className="text-xs text-gray-500">confidence</p>
-                  </div>
-                </div>
 
-                {detection.detectedWasteTypes && detection.detectedWasteTypes.length > 0 && (
-                  <div className="mb-4">
-                    <p className="text-xs font-semibold text-gray-600 mb-2">Detected Types:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {detection.detectedWasteTypes.slice(0, 3).map((type, i) => (
-                        <span key={i} className="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-                          {type}
-                        </span>
-                      ))}
-                      {detection.detectedWasteTypes.length > 3 && (
-                        <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
-                          +{detection.detectedWasteTypes.length - 3} more
-                        </span>
+                  {detection.detectedWasteTypes && detection.detectedWasteTypes.length > 0 && (
+                    <div className="mb-6 flex-1">
+                      <div className="flex flex-wrap gap-2">
+                        {detection.detectedWasteTypes.slice(0, 3).map((type, i) => (
+                          <span key={i} className="px-3 py-1.5 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold rounded-lg capitalize tracking-wide">
+                            {type.replace(/-/g, ' ')}
+                          </span>
+                        ))}
+                        {detection.detectedWasteTypes.length > 3 && (
+                          <span className="px-3 py-1.5 bg-gray-50 border border-gray-100 text-gray-500 text-xs font-bold rounded-lg">
+                            +{detection.detectedWasteTypes.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-3 mt-auto">
+                    <button
+                      onClick={() => openDetails(detection)}
+                      className="w-full bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-200 text-sm font-bold uppercase tracking-widest py-3.5 rounded-xl transition-all active:scale-95"
+                    >
+                      Details
+                    </button>
+                    <button
+                      onClick={() => handleFindDisposal(detection)}
+                      disabled={loadingLocations || (!detection.detections?.length && !detection.summary?.total_detections)}
+                      className={`w-full bg-green-600 hover:bg-green-700 text-white text-sm font-bold uppercase tracking-widest py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 ${(!detection.detections?.length && !detection.summary?.total_detections) ? 'opacity-50 cursor-not-allowed shadow-none' : 'disabled:opacity-50'}`}
+                    >
+                      {loadingLocations && selectedDetection?._id === detection._id ? (
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/40 border-t-white"></div>
+                      ) : (
+                        <>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                          Disposal
+                        </>
                       )}
-                    </div>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-3 gap-2 pt-4 border-t border-gray-200 mb-4">
-                  <div className="text-center">
-                    <p className="text-lg font-bold text-blue-600">
-                      {detection.summary?.unique_classes || 0}
-                    </p>
-                    <p className="text-xs text-gray-500">Unique</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-lg font-bold text-purple-600">
-                      {detection.summary?.total_detections || 0}
-                    </p>
-                    <p className="text-xs text-gray-500">Total</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-lg font-bold text-amber-600">
-                      {detection.summary?.highest_confidence
-                        ? `${(detection.summary.highest_confidence * 100).toFixed(0)}%`
-                        : 'N/A'}
-                    </p>
-                    <p className="text-xs text-gray-500">Highest</p>
+                    </button>
                   </div>
                 </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => openDetails(detection)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2.5 rounded-lg transition-colors"
-                  >
-                    View Details
-                  </button>
-                  <button
-                    onClick={() => handleFindDisposal(detection)}
-                    disabled={loadingLocations || (!detection.detections?.length && !detection.summary?.total_detections)}
-                    className={`bg-green-600 hover:bg-green-700 text-white text-sm font-semibold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1 ${(!detection.detections?.length && !detection.summary?.total_detections) ? 'opacity-50 cursor-not-allowed' : 'disabled:opacity-50'}`}
-                  >
-                    {loadingLocations && selectedDetection?._id === detection._id ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                    ) : (
-                      <>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        Find Disposal
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       ) : (
-        <div className="bg-white rounded-lg shadow-md p-12 text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
-            <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <motion.div variants={itemVariants} className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-16 text-center">
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-slate-50 border border-slate-100 rounded-[2rem] mb-6 shadow-sm">
+            <svg className="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
             </svg>
           </div>
-          <p className="text-gray-500 text-lg font-medium mb-2">No detections found</p>
-          <p className="text-gray-400 text-sm">
-            {searchTerm ? 'Try a different search term' : 'Start scanning waste to see your history'}
+          <p className="text-gray-900 text-2xl font-bold tracking-tight mb-2">No detections found</p>
+          <p className="text-gray-500 font-medium">
+            {searchTerm ? 'Try a different search term or clear the filter.' : 'Launch the mobile app and start scanning waste to see your history here.'}
           </p>
-        </div>
+        </motion.div>
       )}
 
-      {selectedDetection && !showDisposalModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4" onClick={closeDetails}>
-          <div
-            className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
+      {/* Details Modal */}
+      <AnimatePresence>
+        {selectedDetection && !showDisposalModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
+            onClick={closeDetails}
           >
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-800">Detection Details</h2>
-              <button
-                onClick={closeDetails}
-                className="text-sm font-semibold px-3 py-1.5 rounded-md bg-red-500 hover:bg-red-600 text-white transition-colors"
-              >
-                Close
-              </button>
-            </div>
-
-            <div className="p-6 space-y-5">
-              {getDetectionImageUrl(selectedDetection) && (
-                <img
-                  src={getDetectionImageUrl(selectedDetection)}
-                  alt="Detection detail"
-                  className="w-full max-h-[420px] object-contain rounded-lg bg-gray-100"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.style.display = 'none';
-                    const placeholder = document.createElement('div');
-                    placeholder.className = 'w-full h-48 bg-gray-100 flex items-center justify-center rounded-lg';
-                    placeholder.innerHTML = '<svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>';
-                    e.target.parentNode.insertBefore(placeholder, e.target);
-                  }}
-                />
-              )}
-
-              <div className="grid sm:grid-cols-3 gap-3">
-                <div className="bg-blue-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500">Detected Items</p>
-                  <p className="text-lg font-bold text-blue-700">{selectedDetection.summary?.total_detections || selectedDetection.detections?.length || 0}</p>
-                </div>
-                <div className="bg-emerald-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500">Avg Confidence</p>
-                  <p className="text-lg font-bold text-emerald-700">
-                    {selectedDetection.summary?.average_confidence
-                      ? `${(selectedDetection.summary.average_confidence * 100).toFixed(1)}%`
-                      : 'N/A'}
-                  </p>
-                </div>
-                <div className="bg-amber-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500">Scanned At</p>
-                  <p className="text-sm font-semibold text-amber-700">{new Date(selectedDetection.createdAt).toLocaleString()}</p>
-                </div>
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-white rounded-[2rem] shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bg-white border-b border-gray-100 px-8 py-5 flex items-center justify-between z-10">
+                <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Detection Report</h2>
+                <button
+                  onClick={closeDetails}
+                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-all active:scale-95"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
               </div>
 
-              <div>
-                <h3 className="text-lg font-bold text-gray-800 mb-3">Detected Objects</h3>
-                {selectedDetection.detections?.length ? (
-                  <div className="space-y-2">
-                    {selectedDetection.detections.map((item, index) => (
-                      <div key={index} className="bg-gray-50 border-l-4 border-green-500 rounded-md p-3">
-                        <p className="font-semibold text-gray-800">{item.class || item.name || 'Unknown item'}</p>
-                        <p className="text-sm text-gray-600">
-                          Confidence: {item.confidence ? `${(item.confidence * 100).toFixed(1)}%` : 'N/A'}
-                        </p>
-                      </div>
-                    ))}
+              <div className="p-8 overflow-y-auto space-y-8">
+                {getDetectionImageUrl(selectedDetection) && (
+                  <div className="w-full bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 shadow-inner max-h-[400px]">
+                    <img
+                      src={getDetectionImageUrl(selectedDetection)}
+                      alt="Detection detail"
+                      className="w-full h-full object-contain"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.style.display = 'none';
+                      }}
+                    />
                   </div>
-                ) : (
-                  <p className="text-sm text-gray-500">No items were detected in this image.</p>
                 )}
-              </div>
 
-              <div>
-                <h3 className="text-lg font-bold text-gray-800 mb-3">Waste Guides</h3>
-                {getWasteGuideEntries(selectedDetection).length ? (
-                  <div className="space-y-2">
-                    {getWasteGuideEntries(selectedDetection).map(([className, guide]) => (
-                      <div key={className} className="bg-blue-50 border border-blue-100 rounded-md p-3">
-                        <p className="font-semibold text-blue-900">{className}</p>
-                        <p className="text-sm text-blue-800">{guide.description || 'No description available.'}</p>
-                        <p className="text-xs text-blue-700 mt-1">
-                          Category: {guide.category || 'Unknown'} • Compostable: {guide.compostable === null ? 'Unknown' : guide.compostable ? 'Yes' : 'No'}
-                          {guide.avgDecompositionDays ? ` • Decomposition: ${guide.avgDecompositionDays} days` : ''}
-                          {guide.count ? ` • Count: ${guide.count}` : ''}
-                        </p>
-                      </div>
-                    ))}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6">
+                    <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-1">Items Found</p>
+                    <p className="text-4xl font-extrabold text-blue-900">{selectedDetection.summary?.total_detections || selectedDetection.detections?.length || 0}</p>
                   </div>
-                ) : (
-                  <p className="text-sm text-gray-500">No waste-guide metadata available for this detection.</p>
-                )}
-              </div>
-
-              <div>
-                <h3 className="text-lg font-bold text-gray-800 mb-3">Waste Disposal Guides</h3>
-                {getWasteDisposalGuideEntries(selectedDetection).length ? (
-                  <div className="space-y-3">
-                    {getWasteDisposalGuideEntries(selectedDetection).map(([className, guide]) => (
-                      <div key={className} className="bg-emerald-50 border border-emerald-100 rounded-md p-3">
-                        <p className="font-semibold text-emerald-900">{className}</p>
-                        <p className="text-sm text-emerald-800">Bin: {(guide.bin || 'residual').toUpperCase()}</p>
-                        {Array.isArray(guide.instructions) && guide.instructions.length > 0 && (
-                          <ul className="list-disc list-inside text-sm text-emerald-800 mt-1 space-y-1">
-                            {guide.instructions.map((instruction, index) => (
-                              <li key={`${className}-instruction-${index}`}>{instruction}</li>
-                            ))}
-                          </ul>
-                        )}
-                        {guide.notes && (
-                          <p className="text-xs text-emerald-700 mt-1">Note: {guide.notes}</p>
-                        )}
-                        {guide.count ? (
-                          <p className="text-xs text-emerald-700 mt-1">Detected count: {guide.count}</p>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500">No waste-disposal guide available for this detection.</p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showDisposalModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4" onClick={() => setShowDisposalModal(false)}>
-          <div
-            className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="sticky top-0 bg-gradient-to-r from-green-600 to-green-700 px-6 py-4 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-bold text-white">Nearby Disposal Locations</h2>
-                <p className="text-green-100 text-sm">Found {disposalLocations.length} location{disposalLocations.length !== 1 ? 's' : ''}</p>
-              </div>
-              <button
-                onClick={() => setShowDisposalModal(false)}
-                className="text-white hover:bg-white/20 rounded-lg p-2 transition-colors"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="p-6">
-              {userLocation && (
-                <div className="mb-6 rounded-lg overflow-hidden border border-gray-200">
-                  <iframe
-                    title="Current location map"
-                    src={getUserLocationMapEmbedUrl()}
-                    className="w-full h-72"
-                    loading="lazy"
-                  />
-                  <div className="bg-gray-50 px-4 py-2 border-t border-gray-200">
-                    <p className="text-xs text-gray-600">
-                      Your current location is highlighted on the map.
+                  <div className="bg-green-50 border border-green-100 rounded-2xl p-6">
+                    <p className="text-xs font-bold uppercase tracking-widest text-green-500 mb-1">Avg Confidence</p>
+                    <p className="text-4xl font-extrabold text-green-900">
+                      {selectedDetection.summary?.average_confidence
+                        ? `${(selectedDetection.summary.average_confidence * 100).toFixed(1)}%`
+                        : 'N/A'}
                     </p>
                   </div>
-                </div>
-              )}
-
-              {disposalLocations.length > 0 ? (
-                <div className="space-y-4">
-                  {disposalLocations.map((location, index) => (
-                    <div key={location._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded">
-                              #{index + 1}
-                            </span>
-                            <h3 className="text-lg font-bold text-gray-800">{location.name}</h3>
-                          </div>
-                          <p className="text-sm text-gray-600 mb-1">{location.address}</p>
-                          <p className="text-sm font-semibold text-green-600">{location.distanceText} away</p>
-                        </div>
-                      </div>
-
-                      {location.acceptedWasteTypes && (
-                        <div className="mb-3">
-                          <p className="text-xs text-gray-500 mb-2">Accepts:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {location.acceptedWasteTypes.slice(0, 5).map((type, i) => (
-                              <span key={i} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
-                                {type}
-                              </span>
-                            ))}
-                            {location.acceptedWasteTypes.length > 5 && (
-                              <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
-                                +{location.acceptedWasteTypes.length - 5} more
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {location.recommendation && (
-                        <div className="bg-blue-50 border-l-4 border-blue-500 p-3 mb-3 rounded">
-                          <p className="text-sm text-blue-800">{location.recommendation}</p>
-                        </div>
-                      )}
-
-                      <button
-                        onClick={() => handleOpenMap(location)}
-                        className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                        </svg>
-                        View on OpenStreetMap
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
+                  <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6">
+                    <p className="text-xs font-bold uppercase tracking-widest text-amber-500 mb-1">Scanned Date</p>
+                    <p className="text-xl font-bold text-amber-900 mt-2 tracking-tight">{new Date(selectedDetection.createdAt).toLocaleDateString()}</p>
+                    <p className="text-xs font-bold text-amber-700/60 mt-0.5">{new Date(selectedDetection.createdAt).toLocaleTimeString()}</p>
                   </div>
-                  <p className="text-gray-600 font-medium mb-2">No disposal locations found nearby</p>
-                  <p className="text-gray-500 text-sm">Please check with your local waste management authority for proper disposal methods.</p>
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-4 tracking-tight">Classification Details</h3>
+                    {selectedDetection.detections?.length ? (
+                      <div className="space-y-3">
+                        {selectedDetection.detections.map((item, index) => (
+                          <div key={index} className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between group hover:border-slate-300 transition-colors">
+                            <p className="font-bold text-gray-900 capitalize tracking-wide">{item.class ? item.class.replace(/-/g, ' ') : item.name || 'Unknown item'}</p>
+                            <span className="font-bold bg-white px-3 py-1 rounded-lg border border-slate-200 text-sm shadow-sm group-hover:shadow text-green-600">
+                              {item.confidence ? `${(item.confidence * 100).toFixed(1)}%` : 'N/A'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-slate-50 border border-slate-200 p-6 rounded-2xl text-center">
+                        <p className="text-sm font-semibold text-gray-500">No specific items isolated in this image.</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-4 tracking-tight">Recycling Path</h3>
+                      {getWasteDisposalGuideEntries(selectedDetection).length ? (
+                        <div className="space-y-4">
+                          {getWasteDisposalGuideEntries(selectedDetection).map(([className, guide]) => (
+                            <div key={className} className="bg-green-50 border border-green-200 rounded-2xl p-5 relative overflow-hidden">
+                              <div className="absolute top-0 left-0 w-1.5 h-full bg-green-500 rounded-l-2xl"></div>
+                              <p className="font-bold text-green-900 capitalize text-lg tracking-tight mb-2">{className.replace(/-/g, ' ')}</p>
+                              <div className="inline-block bg-white text-green-800 font-extrabold uppercase tracking-widest text-[10px] px-3 py-1.5 rounded-lg border border-green-200 shadow-sm mb-3">
+                                {guide.bin || 'residual'}
+                              </div>
+                              {Array.isArray(guide.instructions) && guide.instructions.length > 0 && (
+                                <ul className="list-disc list-inside text-sm text-green-800 space-y-1.5 font-medium ml-1">
+                                  {guide.instructions.map((instruction, index) => (
+                                    <li key={`${className}-instruction-${index}`}>{instruction}</li>
+                                  ))}
+                                </ul>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500 font-medium">No waste disposal data connected.</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Disposal Mapping Modal */}
+      <AnimatePresence>
+        {showDisposalModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
+            onClick={() => setShowDisposalModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-white rounded-[2rem] shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 px-8 py-6 flex items-center justify-between shadow-sm z-10 shrink-0">
+                <div>
+                  <h2 className="text-2xl font-bold text-white tracking-tight">Nearby Drop-off Points</h2>
+                  <p className="text-emerald-100 font-medium mt-1">Found {disposalLocations.length} authenticated location{disposalLocations.length !== 1 ? 's' : ''}</p>
+                </div>
+                <button
+                  onClick={() => setShowDisposalModal(false)}
+                  className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/20 hover:bg-white/30 text-white transition-all active:scale-95"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="p-8 overflow-y-auto w-full grid md:grid-cols-2 gap-8 bg-slate-50">
+                {/* Left side: map */}
+                <div className="w-full">
+                  {userLocation && (
+                    <div className="rounded-[2rem] overflow-hidden border border-gray-200 shadow-md bg-white">
+                      <iframe
+                        title="Current location map"
+                        src={getUserLocationMapEmbedUrl()}
+                        className="w-full h-[400px] md:h-[500px]"
+                        loading="lazy"
+                      />
+                      <div className="bg-white px-6 py-4 border-t border-gray-100 flex items-center gap-3">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-[0_0_0_2px_rgba(59,130,246,0.3)] animate-pulse"></div>
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+                          Your Position
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Right side: Locations List */}
+                <div className="w-full overflow-y-auto max-h-[500px] pr-2 space-y-4">
+                  {disposalLocations.length > 0 ? (
+                    disposalLocations.map((location, index) => (
+                      <div key={location._id} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all">
+                        <div className="flex items-start justify-between mb-4">
+                          <div>
+                            <div className="flex items-center gap-3 mb-1.5">
+                              <span className="flex items-center justify-center bg-emerald-100 text-emerald-800 text-sm font-extrabold w-8 h-8 rounded-lg shadow-sm">
+                                {index + 1}
+                              </span>
+                              <h3 className="text-xl font-bold text-gray-900 tracking-tight">{location.name}</h3>
+                            </div>
+                            <p className="text-sm font-medium text-gray-500 mb-2.5 ml-11">{location.address}</p>
+                            <div className="ml-11 inline-block bg-slate-100 border border-slate-200 px-3 py-1 rounded-lg">
+                              <p className="text-xs font-extrabold text-gray-600 uppercase tracking-widest">{location.distanceText} drive</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {location.acceptedWasteTypes && (
+                          <div className="mt-5 pt-4 border-t border-gray-100">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Facility Accepts</p>
+                            <div className="flex flex-wrap gap-2">
+                              {location.acceptedWasteTypes.slice(0, 4).map((type, i) => (
+                                <span key={i} className="px-3 py-1.5 bg-green-50 border border-green-100 text-green-700 text-xs font-bold rounded-lg lowercase tracking-wide">
+                                  {type}
+                                </span>
+                              ))}
+                              {location.acceptedWasteTypes.length > 4 && (
+                                <span className="px-3 py-1.5 bg-slate-50 border border-slate-200 text-slate-500 text-xs font-bold rounded-lg">
+                                  +{location.acceptedWasteTypes.length - 4} items
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        <button
+                          onClick={() => handleOpenMap(location)}
+                          className="w-full mt-6 bg-slate-900 hover:bg-black text-white font-bold tracking-wide uppercase text-xs py-3.5 px-4 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                          </svg>
+                          Get Directions
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="h-full flex flex-col items-center justify-center py-16 px-6 text-center border-2 border-dashed border-gray-200 rounded-3xl bg-white">
+                      <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mb-6 border border-slate-100 shadow-sm">
+                        <svg className="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                      </div>
+                      <p className="text-gray-900 font-bold text-xl tracking-tight mb-2">No facilities located nearby</p>
+                      <p className="text-gray-500 font-medium text-sm leading-relaxed max-w-sm">We couldn't lock onto any affiliated disposal drop-offs in your specific region. Please check with local sorting authorities.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 

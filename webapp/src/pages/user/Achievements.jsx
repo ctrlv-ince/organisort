@@ -1,4 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import PageHeaderCard from '../../components/PageHeaderCard';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+};
 
 /**
  * Achievements Page
@@ -81,29 +93,16 @@ const Achievements = ({ userData }) => {
 
   if (loading) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-8">
         {/* Header skeleton */}
-        <div className="skeleton-shimmer h-24 rounded-lg" />
+        <div className="skeleton-shimmer h-32 rounded-[2rem]" />
         {/* Stats skeleton */}
         <div className="grid md:grid-cols-3 gap-6">
           {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white rounded-lg shadow-md p-6 space-y-3">
-              <div className="skeleton-shimmer h-14 w-14 rounded-full mx-auto" />
-              <div className="skeleton-shimmer h-8 w-16 mx-auto" />
-              <div className="skeleton-shimmer h-4 w-24 mx-auto" />
-            </div>
-          ))}
-        </div>
-        {/* Achievement grid skeleton */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className="bg-white rounded-lg shadow-md p-6 flex items-start space-x-4">
-              <div className="skeleton-shimmer h-14 w-14 rounded-full flex-shrink-0" />
-              <div className="flex-1 space-y-2">
-                <div className="skeleton-shimmer h-5 w-32" />
-                <div className="skeleton-shimmer h-4 w-48" />
-                <div className="skeleton-shimmer h-3 w-20" />
-              </div>
+            <div key={i} className="bg-white rounded-[2rem] shadow-sm p-8 space-y-4 border border-gray-100">
+              <div className="skeleton-shimmer h-14 w-14 rounded-2xl" />
+              <div className="skeleton-shimmer h-8 w-16" />
+              <div className="skeleton-shimmer h-4 w-24" />
             </div>
           ))}
         </div>
@@ -112,94 +111,102 @@ const Achievements = ({ userData }) => {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <motion.div
+      className="p-6 md:p-10 max-w-6xl mx-auto space-y-8"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header */}
-      <div className="bg-gradient-to-r from-amber-600 to-amber-800 rounded-lg shadow-xl p-6 text-white">
-        <h1 className="text-3xl font-bold mb-2 flex items-center">
-          <svg className="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-          </svg>
-          Achievements
-        </h1>
-        <p className="text-amber-100">Track your progress and earn rewards</p>
-      </div>
+      <motion.div variants={itemVariants}>
+        <PageHeaderCard
+          title="Achievements"
+          subtitle="Track your progress and earn rewards safely."
+          variant="warn"
+          icon={
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+            </svg>
+          }
+        />
+      </motion.div>
 
       {/* Progress Overview */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <motion.div variants={itemVariants} className="bg-white rounded-[2rem] shadow-sm hover:shadow-lg transition-all border border-gray-100 p-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-800">Overall Progress</h2>
-          <span className="text-2xl font-bold text-amber-600">{unlockedCount}/{achievements.length}</span>
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Overall Progress</h2>
+          <span className="text-3xl font-extrabold text-amber-500">{unlockedCount}/{achievements.length}</span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
-          <div className="bg-gradient-to-r from-amber-500 to-amber-600 h-4 rounded-full transition-all duration-500" style={{ width: `${progress}%` }}></div>
+        <div className="w-full bg-slate-100 rounded-full h-3 mb-2 overflow-hidden">
+          <div className="bg-amber-400 h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${progress}%` }}></div>
         </div>
-        <p className="text-sm text-gray-600">{progress.toFixed(0)}% Complete</p>
-      </div>
+        <p className="text-sm text-gray-500 font-medium">{progress.toFixed(0)}% Complete</p>
+      </motion.div>
 
       {/* Stats */}
-      <div className="grid md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-green-100 rounded-full mb-2">
+      <motion.div variants={itemVariants} className="grid md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-lg transition-all border border-gray-100 p-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-green-50 rounded-2xl mb-4 border border-green-100">
             <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
             </svg>
           </div>
-          <p className="text-3xl font-bold text-green-700">{totalScans}</p>
-          <p className="text-gray-600 font-medium">Total Scans</p>
+          <p className="text-4xl font-extrabold text-gray-900 mb-1">{totalScans}</p>
+          <p className="text-gray-500 font-semibold uppercase tracking-wider text-xs">Total Scans</p>
         </div>
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-100 rounded-full mb-2">
+        <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-lg transition-all border border-gray-100 p-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-50 rounded-2xl mb-4 border border-blue-100">
             <svg className="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
           </div>
-          <p className="text-3xl font-bold text-blue-700">{totalItems}</p>
-          <p className="text-gray-600 font-medium">Items Detected</p>
+          <p className="text-4xl font-extrabold text-gray-900 mb-1">{totalItems}</p>
+          <p className="text-gray-500 font-semibold uppercase tracking-wider text-xs">Items Detected</p>
         </div>
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-amber-100 rounded-full mb-2">
-            <svg className="w-7 h-7 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-lg transition-all border border-gray-100 p-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-amber-50 rounded-2xl mb-4 border border-amber-100">
+            <svg className="w-7 h-7 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
             </svg>
           </div>
-          <p className="text-3xl font-bold text-amber-700">{unlockedCount}</p>
-          <p className="text-gray-600 font-medium">Badges Earned</p>
+          <p className="text-4xl font-extrabold text-gray-900 mb-1">{unlockedCount}</p>
+          <p className="text-gray-500 font-semibold uppercase tracking-wider text-xs">Badges Earned</p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Achievements Grid */}
-      <div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">All Achievements</h2>
+      <motion.div variants={itemVariants}>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6 tracking-tight">All Achievements</h2>
         <div className="grid md:grid-cols-2 gap-6">
           {achievements.map((achievement) => (
-            <div key={achievement.id} className={`rounded-lg shadow-md p-6 transition-all ${achievement.unlocked ? 'bg-gradient-to-br from-amber-50 to-amber-100 border-2 border-amber-300' : 'bg-white border-2 border-gray-200 opacity-60'}`}>
-              <div className="flex items-start space-x-4">
-                <div className={`flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center ${achievement.unlocked ? 'bg-amber-100 text-amber-600' : 'bg-gray-100 text-gray-400'}`}>
+            <div key={achievement.id} className={`rounded-[2rem] shadow-sm p-6 hover:shadow-lg transition-all duration-300 ${achievement.unlocked ? 'bg-gradient-to-br from-white to-amber-50/30 border border-amber-200 ring-1 ring-amber-100/50' : 'bg-white border border-gray-100 opacity-60'}`}>
+              <div className="flex items-start space-x-5">
+                <div className={`flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center border shadow-sm ${achievement.unlocked ? 'bg-amber-100 text-amber-500 border-amber-200' : 'bg-slate-50 text-slate-300 border-slate-100'}`}>
                   {achievementIcons[achievement.icon] || achievementIcons.star}
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-bold text-gray-800">{achievement.name}</h3>
+                <div className="flex-1 pt-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <h3 className="text-xl font-bold text-gray-900">{achievement.name}</h3>
                     {achievement.unlocked && (
-                      <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg className="w-6 h-6 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                       </svg>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">{achievement.description}</p>
+                  <p className="text-sm text-gray-500 mb-3 font-medium">{achievement.description}</p>
                   <div className="flex items-center justify-between">
-                    <span className={`text-xs font-semibold px-2 py-1 rounded-full ${achievement.unlocked ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-600'}`}>
+                    <span className={`text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider ${achievement.unlocked ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
                       {achievement.unlocked ? 'Unlocked' : 'Locked'}
                     </span>
-                    <span className="text-xs text-gray-500">{achievement.requirement}</span>
+                    <span className="text-xs text-slate-400 font-bold tracking-wide uppercase">{achievement.requirement}</span>
                   </div>
                 </div>
               </div>
             </div>
           ))}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

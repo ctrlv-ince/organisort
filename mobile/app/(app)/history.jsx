@@ -127,15 +127,13 @@ const ensureGuides = (detection) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#f4f4f5',
   },
   header: {
-    backgroundColor: '#10b981',
-    paddingTop: 16,
-    paddingBottom: 24,
+    paddingTop: 24,
+    paddingBottom: 20,
     paddingHorizontal: 24,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
+    backgroundColor: '#f4f4f5',
   },
   headerContent: {
     flexDirection: 'row',
@@ -143,19 +141,27 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   backButton: {
-    padding: 8,
-  },
-  backButtonText: {
-    color: 'white',
-    fontSize: 24,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    borderCurve: 'continuous',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
   headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: 'white',
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#18181b',
+    letterSpacing: -0.5,
   },
   headerPlaceholder: {
-    width: 40,
+    width: 44,
   },
   content: {
     padding: 24,
@@ -163,46 +169,54 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 24,
+    gap: 12,
+    marginBottom: 32,
   },
   statCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    borderCurve: 'continuous',
+    padding: 20,
     flex: 1,
-    marginHorizontal: 4,
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 2,
   },
   statValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#10b981',
+    fontSize: 28,
+    fontWeight: '900',
+    color: '#18181b',
+    letterSpacing: -0.5,
   },
   statLabel: {
     fontSize: 12,
-    color: '#64748b',
+    color: '#a1a1aa',
     marginTop: 4,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   historyCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    marginBottom: 16,
+    backgroundColor: '#ffffff',
+    borderRadius: 32,
+    borderCurve: 'continuous',
+    padding: 8,
+    marginBottom: 24,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
-    overflow: 'hidden',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 2,
   },
   historyImage: {
     width: '100%',
-    height: 200,
-    backgroundColor: '#e2e8f0',
+    height: 220,
+    borderRadius: 24,
+    borderCurve: 'continuous',
+    backgroundColor: '#f4f4f5',
   },
   historyContent: {
     padding: 16,
@@ -211,280 +225,299 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   wasteType: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1e293b',
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#18181b',
     flex: 1,
+    letterSpacing: -0.5,
   },
   deleteButton: {
-    padding: 8,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#fff1f2',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  deleteButtonText: {
-    color: '#ef4444',
-    fontSize: 20,
+  timestamp: {
+    fontSize: 14,
+    color: '#a1a1aa',
+    fontWeight: '500',
+    marginBottom: 16,
   },
   detectionInfo: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   infoBadge: {
-    backgroundColor: '#f1f5f9',
+    backgroundColor: '#f4f4f5',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 16,
+    borderRadius: 12,
+    borderCurve: 'continuous',
     marginRight: 8,
     marginBottom: 8,
   },
   infoBadgeText: {
-    fontSize: 12,
-    color: '#475569',
-    fontWeight: '600',
-  },
-  categoryBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    marginBottom: 8,
-  },
-  categoryBadgeText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  timestamp: {
-    fontSize: 12,
-    color: '#94a3b8',
-    marginTop: 4,
-    marginBottom: 8,
+    fontSize: 13,
+    color: '#52525b',
+    fontWeight: '700',
   },
   detectedTypesSection: {
-    marginBottom: 4,
+    marginBottom: 12,
   },
   detectedTypesLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#64748b',
-    marginBottom: 6,
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#a1a1aa',
+    marginBottom: 8,
   },
   detectedTypesList: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
+    gap: 8,
   },
   detectedTypeBadge: {
-    backgroundColor: '#dcfce7',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    backgroundColor: '#f4f4f5',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: 12,
+    borderCurve: 'continuous',
   },
   detectedTypeBadgeText: {
-    fontSize: 12,
-    color: '#166534',
-    fontWeight: '500',
+    fontSize: 13,
+    color: '#18181b',
+    fontWeight: '600',
   },
   cardActions: {
     flexDirection: 'row',
-    gap: 8,
-    marginTop: 12,
+    gap: 12,
+    marginTop: 16,
   },
   viewDetailsButton: {
     flex: 1,
-    backgroundColor: '#3b82f6',
-    paddingVertical: 12,
-    borderRadius: 8,
+    backgroundColor: '#f4f4f5',
+    paddingVertical: 16,
+    borderRadius: 16,
+    borderCurve: 'continuous',
     alignItems: 'center',
   },
   viewDetailsText: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 14,
+    color: '#18181b',
+    fontWeight: '700',
+    fontSize: 15,
   },
   findDisposalButton: {
     flex: 1,
-    backgroundColor: '#10b981',
-    paddingVertical: 12,
-    borderRadius: 8,
+    backgroundColor: '#18181b',
+    paddingVertical: 16,
+    borderRadius: 16,
+    borderCurve: 'continuous',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    gap: 6,
+    gap: 8,
   },
   findDisposalText: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 14,
+    color: '#ffffff',
+    fontWeight: '700',
+    fontSize: 15,
   },
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 60,
+    paddingVertical: 80,
   },
   emptyIcon: {
-    fontSize: 64,
-    marginBottom: 16,
-    opacity: 0.5,
+    marginBottom: 24,
+    opacity: 0.3,
   },
   emptyText: {
     fontSize: 16,
-    color: '#64748b',
+    color: '#a1a1aa',
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: 32,
+    fontWeight: '500',
+    lineHeight: 24,
   },
   emptyButton: {
-    backgroundColor: '#10b981',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
+    backgroundColor: '#18181b',
+    paddingHorizontal: 32,
+    paddingVertical: 16,
+    borderRadius: 16,
+    borderCurve: 'continuous',
   },
   emptyButtonText: {
-    color: 'white',
-    fontWeight: '600',
+    color: '#ffffff',
+    fontWeight: '700',
     fontSize: 16,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 100,
+    backgroundColor: '#f4f4f5',
   },
+
   // Modal Styles
   modalContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.9)',
+    backgroundColor: '#f4f4f5',
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    paddingTop: 50,
+    padding: 24,
+    paddingTop: 60,
+    backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f4f4f5',
   },
   modalTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#18181b',
+    letterSpacing: -0.5,
   },
   closeButton: {
-    backgroundColor: '#ef4444',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  closeButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#f4f4f5',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   modalContent: {
     flex: 1,
-    padding: 20,
+    padding: 24,
   },
   modalImage: {
     width: '100%',
-    height: 400,
-    borderRadius: 12,
-    marginBottom: 20,
-    resizeMode: 'contain',
+    height: 360,
+    borderRadius: 32,
+    borderCurve: 'continuous',
+    marginBottom: 24,
+    backgroundColor: '#e4e4e7',
   },
   detailsCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 20,
+    backgroundColor: '#ffffff',
+    borderRadius: 32,
+    borderCurve: 'continuous',
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 2,
+    marginBottom: 40,
   },
   detailsTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#18181b',
+    marginBottom: 20,
+    letterSpacing: -0.5,
+  },
+  sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1e293b',
+    fontWeight: '800',
+    color: '#18181b',
+    marginTop: 24,
     marginBottom: 16,
+    letterSpacing: -0.5,
   },
   detectionItem: {
-    backgroundColor: '#f8fafc',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 10,
-    borderLeftWidth: 4,
-    borderLeftColor: '#10b981',
+    backgroundColor: '#f4f4f5',
+    padding: 16,
+    borderRadius: 16,
+    borderCurve: 'continuous',
+    marginBottom: 12,
   },
   detectionClass: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#1e293b',
+    fontWeight: '700',
+    color: '#18181b',
     marginBottom: 4,
   },
   detectionConfidence: {
     fontSize: 14,
-    color: '#64748b',
+    color: '#71717a',
+    fontWeight: '500',
   },
   guideCard: {
-    backgroundColor: '#eff6ff',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 10,
+    backgroundColor: '#fafafa',
+    borderRadius: 16,
+    borderCurve: 'continuous',
+    padding: 16,
+    marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#bfdbfe',
+    borderColor: '#f4f4f5',
   },
   guideTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#1e3a8a',
-    marginBottom: 4,
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#18181b',
+    marginBottom: 6,
   },
   guideText: {
-    fontSize: 13,
-    color: '#1e40af',
-    marginBottom: 2,
+    fontSize: 14,
+    color: '#52525b',
+    marginBottom: 4,
+    lineHeight: 20,
   },
   disposalGuideCard: {
-    backgroundColor: '#ecfdf5',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 10,
+    backgroundColor: '#fafafa',
+    borderRadius: 16,
+    borderCurve: 'continuous',
+    padding: 16,
+    marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#a7f3d0',
+    borderColor: '#f4f4f5',
   },
   disposalGuideTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#065f46',
-    marginBottom: 4,
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#18181b',
+    marginBottom: 6,
   },
   disposalGuideText: {
-    fontSize: 13,
-    color: '#047857',
-    marginBottom: 2,
+    fontSize: 14,
+    color: '#52525b',
+    marginBottom: 4,
+    lineHeight: 20,
   },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#0f172a',
-    marginTop: 16,
-    marginBottom: 8,
-  },
+
   // Disposal Map Modal Styles
   disposalModalContainer: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#f4f4f5',
   },
   disposalModalHeader: {
-    backgroundColor: '#10b981',
+    backgroundColor: '#ffffff',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    paddingTop: 50,
+    padding: 24,
+    paddingTop: 60,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f4f4f5',
   },
   disposalModalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#18181b',
+    letterSpacing: -0.5,
   },
   disposalModalSubtitle: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.8)',
+    fontSize: 14,
+    color: '#a1a1aa',
     marginTop: 2,
+    fontWeight: '500',
   },
   disposalMap: {
     flex: 1,
@@ -496,104 +529,117 @@ const styles = StyleSheet.create({
   },
   noLocationText: {
     fontSize: 16,
-    color: '#64748b',
-    marginTop: 12,
+    color: '#a1a1aa',
+    marginTop: 16,
+    fontWeight: '500',
   },
   noLocationsOverlay: {
     position: 'absolute',
-    bottom: 100,
-    left: 20,
-    right: 20,
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 24,
+    bottom: 120,
+    left: 24,
+    right: 24,
+    backgroundColor: '#ffffff',
+    borderRadius: 32,
+    borderCurve: 'continuous',
+    padding: 32,
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 16 },
+    shadowOpacity: 0.1,
+    shadowRadius: 32,
     elevation: 5,
   },
   noLocationsText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1e293b',
-    marginTop: 12,
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#18181b',
+    marginTop: 16,
+    textAlign: 'center',
   },
   noLocationsSubtext: {
-    fontSize: 13,
-    color: '#64748b',
+    fontSize: 14,
+    color: '#a1a1aa',
     textAlign: 'center',
-    marginTop: 4,
+    marginTop: 8,
+    lineHeight: 22,
   },
   locationCard: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'white',
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    backgroundColor: '#ffffff',
+    padding: 32,
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: -8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 24,
     elevation: 10,
   },
   closeLocationCard: {
     position: 'absolute',
-    top: 12,
-    right: 12,
+    top: 24,
+    right: 24,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#f4f4f5',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   locationName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1e293b',
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#18181b',
     marginBottom: 8,
-    paddingRight: 32,
+    paddingRight: 40,
+    letterSpacing: -0.5,
   },
   locationAddress: {
-    fontSize: 14,
-    color: '#64748b',
-    marginBottom: 4,
+    fontSize: 15,
+    color: '#71717a',
+    marginBottom: 6,
   },
   locationDistance: {
-    fontSize: 14,
-    color: '#10b981',
-    fontWeight: '600',
-    marginBottom: 12,
+    fontSize: 15,
+    color: '#18181b',
+    fontWeight: '800',
+    marginBottom: 20,
   },
   wasteTypesRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
-    marginBottom: 12,
+    gap: 8,
+    marginBottom: 24,
   },
   wasteTypeBadge: {
-    backgroundColor: '#f1f5f9',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    backgroundColor: '#f4f4f5',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: 12,
+    borderCurve: 'continuous',
   },
   wasteTypeBadgeText: {
-    fontSize: 12,
-    color: '#475569',
-    fontWeight: '500',
+    fontSize: 13,
+    color: '#52525b',
+    fontWeight: '700',
   },
   directionsButton: {
-    backgroundColor: '#10b981',
+    backgroundColor: '#18181b',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 14,
-    borderRadius: 8,
+    padding: 16,
+    borderRadius: 16,
+    borderCurve: 'continuous',
     gap: 8,
   },
   directionsButtonText: {
-    color: 'white',
+    color: '#ffffff',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
 });
 
@@ -790,9 +836,9 @@ export default function HistoryScreen() {
         <View style={styles.header}>
           <View style={styles.headerContent}>
             <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-              <Text style={styles.backButtonText}>X</Text>
+              <Ionicons name="chevron-back" size={24} color="#18181b" />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Detection History</Text>
+            <Text style={styles.headerTitle}>Ledger</Text>
             <View style={styles.headerPlaceholder} />
           </View>
         </View>
@@ -846,11 +892,11 @@ export default function HistoryScreen() {
                       style={styles.deleteButton}
                       onPress={() => handleDelete(detection._id)}
                     >
-                      <Ionicons name="trash-outline" size={20} color="#ef4444" />
+                      <Ionicons name="trash" size={20} color="#f43f5e" />
                     </TouchableOpacity>
                   </View>
 
-                  <Text style={styles.timestamp}>{new Date(detection.createdAt).toLocaleString()}</Text>
+                  <Text style={styles.timestamp}>{formatDate(detection.createdAt)}</Text>
 
                   <View style={styles.detectionInfo}>
                     <View style={styles.infoBadge}>
@@ -866,7 +912,7 @@ export default function HistoryScreen() {
                   {/* Detected Types */}
                   {(detection.detectedWasteTypes?.length > 0 || detection.detections?.length > 0) && (
                     <View style={styles.detectedTypesSection}>
-                      <Text style={styles.detectedTypesLabel}>Detected Types:</Text>
+                      <Text style={styles.detectedTypesLabel}>DETECTED TYPES</Text>
                       <View style={styles.detectedTypesList}>
                         {(detection.detectedWasteTypes || detection.detections?.map(d => d.class) || [])
                           .filter((v, i, a) => a.indexOf(v) === i)
@@ -878,10 +924,10 @@ export default function HistoryScreen() {
                           ))}
                         {(detection.detectedWasteTypes || detection.detections?.map(d => d.class) || [])
                           .filter((v, i, a) => a.indexOf(v) === i).length > 3 && (
-                            <View style={[styles.detectedTypeBadge, { backgroundColor: '#f1f5f9' }]}>
-                              <Text style={[styles.detectedTypeBadgeText, { color: '#64748b' }]}>
+                            <View style={[styles.detectedTypeBadge, { backgroundColor: '#e4e4e7' }]}>
+                              <Text style={[styles.detectedTypeBadgeText, { color: '#52525b' }]}>
                                 +{(detection.detectedWasteTypes || detection.detections?.map(d => d.class) || [])
-                                  .filter((v, i, a) => a.indexOf(v) === i).length - 3} more
+                                  .filter((v, i, a) => a.indexOf(v) === i).length - 3}
                               </Text>
                             </View>
                           )}
@@ -909,7 +955,7 @@ export default function HistoryScreen() {
                         <ActivityIndicator size="small" color="white" />
                       ) : (
                         <>
-                          <Ionicons name="location" size={16} color="white" />
+                          <Ionicons name="navigate" size={16} color="white" />
                           <Text style={styles.findDisposalText}>Find Disposal</Text>
                         </>
                       )}
@@ -920,12 +966,12 @@ export default function HistoryScreen() {
             ))
           ) : (
             <View style={styles.emptyState}>
-              <Ionicons name="file-tray-outline" size={64} color="#94a3b8" style={styles.emptyIcon} />
+              <Ionicons name="folder-open" size={64} color="#e4e4e7" style={styles.emptyIcon} />
               <Text style={styles.emptyText}>
-                No detection history yet.{'\n'}Start detecting waste to build your history!
+                No environmental data logged.{'\n'}Begin scanning objects to build your ledger.
               </Text>
               <TouchableOpacity style={styles.emptyButton} onPress={() => router.back()}>
-                <Text style={styles.emptyButtonText}>Start Detecting</Text>
+                <Text style={styles.emptyButtonText}>Start Scanning</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -936,13 +982,13 @@ export default function HistoryScreen() {
       <Modal visible={showDetails} animationType="slide" onRequestClose={() => setShowDetails(false)}>
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Detection Details</Text>
+            <Text style={styles.modalTitle}>Intelligence</Text>
             <TouchableOpacity style={styles.closeButton} onPress={() => setShowDetails(false)}>
-              <Text style={styles.closeButtonText}>Close</Text>
+              <Ionicons name="close" size={24} color="#18181b" />
             </TouchableOpacity>
           </View>
 
-          <ScrollView style={styles.modalContent}>
+          <ScrollView style={styles.modalContent} contentContainerStyle={{ paddingBottom: 60 }}>
             {selectedDetection && (
               <>
                 <Image
@@ -1016,13 +1062,13 @@ export default function HistoryScreen() {
         <View style={styles.disposalModalContainer}>
           <View style={styles.disposalModalHeader}>
             <View>
-              <Text style={styles.disposalModalTitle}>Nearby Disposal Locations</Text>
+              <Text style={styles.disposalModalTitle}>Facilities</Text>
               <Text style={styles.disposalModalSubtitle}>
-                Found {disposalLocations.length} location{disposalLocations.length !== 1 ? 's' : ''}
+                {disposalLocations.length} match{disposalLocations.length !== 1 ? 'es' : ''} found
               </Text>
             </View>
-            <TouchableOpacity onPress={() => { setShowDisposalMap(false); setSelectedMapLocation(null); }}>
-              <Ionicons name="close" size={28} color="#fff" />
+            <TouchableOpacity style={styles.closeButton} onPress={() => { setShowDisposalMap(false); setSelectedMapLocation(null); }}>
+              <Ionicons name="close" size={24} color="#18181b" />
             </TouchableOpacity>
           </View>
 

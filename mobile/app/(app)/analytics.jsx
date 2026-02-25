@@ -19,148 +19,161 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CHART_WIDTH = SCREEN_WIDTH - 48;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
+  container: { flex: 1, backgroundColor: '#f4f4f5' },
   header: {
-    backgroundColor: '#10b981',
     paddingTop: 32,
-    paddingBottom: 24,
+    paddingBottom: 16,
     paddingHorizontal: 24,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
+    backgroundColor: '#f4f4f5',
   },
-  title: { fontSize: 30, fontWeight: 'bold', color: 'white', textAlign: 'center' },
-  subtitle: { fontSize: 16, color: '#d1fae5', textAlign: 'center', marginTop: 8 },
+  title: { fontSize: 34, fontWeight: '900', color: '#18181b', letterSpacing: -0.5 },
+  subtitle: { fontSize: 16, color: '#71717a', marginTop: 4, fontWeight: '500' },
   content: { padding: 24 },
 
   // Section Styles
-  section: { marginBottom: 32 },
+  section: { marginBottom: 40 },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
-  sectionIcon: { fontSize: 28, marginRight: 12 },
-  sectionTitle: { fontSize: 22, fontWeight: 'bold', color: '#1e293b', flex: 1 },
+  sectionIcon: { fontSize: 24, marginRight: 12 },
+  sectionTitle: { fontSize: 22, fontWeight: '800', color: '#18181b', flex: 1, letterSpacing: -0.5 },
 
   // Stats Grid
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   statCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    borderCurve: 'continuous',
+    padding: 20,
     flex: 1,
     minWidth: '47%',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 2,
   },
-  statValue: { fontSize: 28, fontWeight: 'bold', color: '#10b981', marginBottom: 4 },
-  statLabel: { fontSize: 13, color: '#64748b', fontWeight: '600' },
-  statSubtext: { fontSize: 11, color: '#94a3b8', marginTop: 4 },
+  statValue: { fontSize: 32, fontWeight: '900', color: '#18181b', marginBottom: 4, letterSpacing: -0.5 },
+  statLabel: { fontSize: 13, color: '#a1a1aa', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 },
+  statSubtext: { fontSize: 12, color: '#10b981', marginTop: 6, fontWeight: '600' },
 
   // Impact Card
   impactCard: {
-    backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 20,
+    backgroundColor: '#ffffff',
+    borderRadius: 32,
+    borderCurve: 'continuous',
+    padding: 24,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 2,
     marginBottom: 16,
   },
   impactRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    borderBottomColor: '#f4f4f5',
   },
-  impactIcon: { fontSize: 32, marginRight: 16, width: 40 },
+  impactIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    borderCurve: 'continuous',
+    backgroundColor: '#f4f4f5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  impactIcon: { fontSize: 24 },
   impactContent: { flex: 1 },
-  impactValue: { fontSize: 20, fontWeight: 'bold', color: '#10b981' },
-  impactLabel: { fontSize: 13, color: '#64748b', marginTop: 2 },
+  impactValue: { fontSize: 22, fontWeight: '800', color: '#18181b', letterSpacing: -0.5 },
+  impactLabel: { fontSize: 14, color: '#71717a', marginTop: 2, fontWeight: '500' },
 
   // Chart Container
   chartCard: {
-    backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 20,
+    backgroundColor: '#ffffff',
+    borderRadius: 32,
+    borderCurve: 'continuous',
+    padding: 24,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 2,
     marginBottom: 16,
   },
-  chartTitle: { fontSize: 18, fontWeight: 'bold', color: '#1e293b', marginBottom: 16 },
+  chartTitle: { fontSize: 18, fontWeight: '800', color: '#18181b', marginBottom: 20, letterSpacing: -0.5 },
 
   // Waste Type List
   wasteTypeItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    borderBottomColor: '#f4f4f5',
   },
   wasteTypeRank: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#10b981',
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    borderCurve: 'continuous',
+    backgroundColor: '#f4f4f5',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: 16,
   },
-  wasteTypeRankText: { color: 'white', fontSize: 14, fontWeight: 'bold' },
-  wasteTypeName: { flex: 1, fontSize: 15, fontWeight: '600', color: '#1e293b' },
-  wasteTypeCount: { fontSize: 15, fontWeight: 'bold', color: '#10b981', marginRight: 8 },
-  wasteTypePercentage: { fontSize: 13, color: '#64748b' },
+  wasteTypeRankText: { color: '#18181b', fontSize: 15, fontWeight: '800' },
+  wasteTypeName: { flex: 1, fontSize: 16, fontWeight: '700', color: '#18181b' },
+  wasteTypeCount: { fontSize: 16, fontWeight: '800', color: '#18181b', marginRight: 8 },
+  wasteTypePercentage: { fontSize: 14, color: '#a1a1aa', fontWeight: '600' },
 
   // Progress Bar
   progressBar: {
-    height: 8,
-    backgroundColor: '#e2e8f0',
-    borderRadius: 4,
-    marginTop: 8,
+    height: 12,
+    backgroundColor: '#f4f4f5',
+    borderRadius: 6,
+    marginTop: 12,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
     backgroundColor: '#10b981',
-    borderRadius: 4,
+    borderRadius: 6,
   },
 
   // Composition Chart
   compositionItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   compositionColor: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
     marginRight: 12,
   },
-  compositionLabel: { flex: 1, fontSize: 14, fontWeight: '600', color: '#1e293b' },
-  compositionValue: { fontSize: 16, fontWeight: 'bold', color: '#10b981' },
+  compositionLabel: { flex: 1, fontSize: 15, fontWeight: '700', color: '#18181b' },
+  compositionValue: { fontSize: 18, fontWeight: '800', color: '#18181b' },
 
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: 100,
+    backgroundColor: '#f4f4f5',
   },
   emptyState: {
     alignItems: 'center',
-    paddingVertical: 40,
+    paddingVertical: 60,
   },
-  emptyIcon: { fontSize: 64, marginBottom: 16, opacity: 0.5 },
-  emptyText: { fontSize: 16, color: '#64748b', textAlign: 'center' },
+  emptyIcon: { fontSize: 64, marginBottom: 24, opacity: 0.3 },
+  emptyText: { fontSize: 16, color: '#a1a1aa', textAlign: 'center', fontWeight: '500', lineHeight: 24 },
 });
 
 export default function AnalyticsScreen() {
@@ -386,14 +399,18 @@ export default function AnalyticsScreen() {
             </View>
             <View style={styles.impactCard}>
               <View style={styles.impactRow}>
-                <Ionicons name="leaf-outline" size={48} color="#10b981" />
+                <View style={styles.impactIconContainer}>
+                  <Text style={styles.impactIcon}>🌱</Text>
+                </View>
                 <View style={styles.impactContent}>
                   <Text style={styles.impactValue}>{analytics.impactStats.co2Saved} kg</Text>
                   <Text style={styles.impactLabel}>CO₂ Emissions Avoided</Text>
                 </View>
               </View>
               <View style={styles.impactRow}>
-                <Text style={styles.impactIcon}>🗑️</Text>
+                <View style={styles.impactIconContainer}>
+                  <Text style={styles.impactIcon}>🗑️</Text>
+                </View>
                 <View style={styles.impactContent}>
                   <Text style={styles.impactValue}>
                     {analytics.impactStats.landfillDiverted} kg
@@ -402,14 +419,18 @@ export default function AnalyticsScreen() {
                 </View>
               </View>
               <View style={styles.impactRow}>
-                <Text style={styles.impactIcon}>💧</Text>
+                <View style={styles.impactIconContainer}>
+                  <Text style={styles.impactIcon}>💧</Text>
+                </View>
                 <View style={styles.impactContent}>
                   <Text style={styles.impactValue}>{analytics.impactStats.waterSaved} L</Text>
                   <Text style={styles.impactLabel}>Water Conserved</Text>
                 </View>
               </View>
               <View style={[styles.impactRow, { borderBottomWidth: 0 }]}>
-                <Text style={styles.impactIcon}>🌳</Text>
+                <View style={styles.impactIconContainer}>
+                  <Text style={styles.impactIcon}>🌳</Text>
+                </View>
                 <View style={styles.impactContent}>
                   <Text style={styles.impactValue}>
                     {analytics.impactStats.treesEquivalent}
@@ -493,12 +514,16 @@ export default function AnalyticsScreen() {
                   <View
                     style={[
                       styles.wasteTypeRank,
-                      item.rank === 1 && { backgroundColor: '#fbbf24' },
-                      item.rank === 2 && { backgroundColor: '#94a3b8' },
-                      item.rank === 3 && { backgroundColor: '#f97316' },
+                      item.rank === 1 && { backgroundColor: '#fef3c7' },
+                      item.rank === 2 && { backgroundColor: '#f1f5f9' },
+                      item.rank === 3 && { backgroundColor: '#ffedd5' },
                     ]}
                   >
-                    <Text style={styles.wasteTypeRankText}>{item.rank}</Text>
+                    <Text style={[styles.wasteTypeRankText,
+                    item.rank === 1 && { color: '#d97706' },
+                    item.rank === 2 && { color: '#475569' },
+                    item.rank === 3 && { color: '#ea580c' },
+                    ]}>{item.rank}</Text>
                   </View>
                   <Text style={styles.wasteTypeName}>{item.name}</Text>
                   <Text style={styles.wasteTypeCount}>{item.count}</Text>

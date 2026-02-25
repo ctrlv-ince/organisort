@@ -18,42 +18,47 @@ import { Ionicons } from '@expo/vector-icons';
 import SkeletonLoader from '@/src/components/SkeletonLoader';
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
-  header: { backgroundColor: '#10b981', paddingTop: 32, paddingBottom: 24, paddingHorizontal: 24, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 },
+  container: { flex: 1, backgroundColor: '#f4f4f5' },
+  header: {
+    paddingTop: 32,
+    paddingBottom: 20,
+    paddingHorizontal: 24,
+    backgroundColor: '#f4f4f5',
+  },
   headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
-  title: { fontSize: 30, fontWeight: 'bold', color: 'white' },
-  logoutBtn: { backgroundColor: '#ef4444', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8 },
-  logoutText: { color: 'white', fontWeight: 'bold' },
-  welcomeCard: { backgroundColor: 'rgba(255, 255, 255, 0.2)', borderRadius: 12, padding: 12 },
-  welcomeText: { color: 'white', fontSize: 18, fontWeight: '600' },
-  welcomeSubtext: { color: '#d1fae5', fontSize: 14, marginTop: 4 },
-  content: { paddingHorizontal: 24, paddingVertical: 24 },
-  card: { backgroundColor: 'white', borderRadius: 12, padding: 24, marginBottom: 24, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 3, elevation: 3 },
+  title: { fontSize: 30, fontWeight: '900', color: '#18181b', letterSpacing: -0.5 },
+  logoutBtn: { backgroundColor: '#fef2f2', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, borderCurve: 'continuous' },
+  logoutText: { color: '#ef4444', fontWeight: '800', fontSize: 13 },
+  welcomeCard: { backgroundColor: '#ffffff', borderRadius: 24, padding: 24, borderCurve: 'continuous', shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.04, shadowRadius: 16, elevation: 2 },
+  welcomeText: { color: '#18181b', fontSize: 20, fontWeight: '800', letterSpacing: -0.5 },
+  welcomeSubtext: { color: '#71717a', fontSize: 14, marginTop: 4, fontWeight: '500' },
+  content: { paddingHorizontal: 24, paddingVertical: 8 },
+  card: { backgroundColor: '#ffffff', borderRadius: 24, borderCurve: 'continuous', padding: 24, marginBottom: 24, shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.04, shadowRadius: 16, elevation: 2 },
   cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
   cardIcon: { fontSize: 24, marginRight: 12 },
-  cardTitle: { fontSize: 18, fontWeight: 'bold', color: '#1e293b' },
-  cardRow: { borderBottomWidth: 1, borderBottomColor: '#e2e8f0', paddingBottom: 12, marginBottom: 12 },
-  cardLabel: { fontSize: 12, color: '#64748b', marginBottom: 4 },
-  cardValue: { fontSize: 16, fontWeight: '600', color: '#1e293b' },
-  statusBadge: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20, flexDirection: 'row', alignItems: 'center' },
-  statusText: { fontSize: 14, fontWeight: 'bold' },
-  footerText: { textAlign: 'center', color: '#64748b', fontSize: 14, marginTop: 32, marginBottom: 16 },
+  cardTitle: { fontSize: 18, fontWeight: '800', color: '#18181b', letterSpacing: -0.5 },
+  cardRow: { borderBottomWidth: 1, borderBottomColor: '#f4f4f5', paddingBottom: 12, marginBottom: 12 },
+  cardLabel: { fontSize: 13, color: '#a1a1aa', marginBottom: 4, fontWeight: '600' },
+  cardValue: { fontSize: 16, fontWeight: '700', color: '#18181b' },
+  statusBadge: { paddingHorizontal: 16, paddingVertical: 6, borderRadius: 20, borderCurve: 'continuous', flexDirection: 'row', alignItems: 'center' },
+  statusText: { fontSize: 13, fontWeight: '700' },
+  footerText: { textAlign: 'center', color: '#a1a1aa', fontSize: 14, marginTop: 16, marginBottom: 24, fontWeight: '600' },
   footerSubtext: { textAlign: 'center', color: '#94a3b8', fontSize: 12 },
-  adminCard: { backgroundColor: 'white', borderRadius: 12, padding: 24, marginBottom: 24, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 3, elevation: 3 },
-  adminCardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
-  adminCardIcon: { fontSize: 24, marginRight: 12, color: '#10b981' },
-  adminCardTitle: { fontSize: 18, fontWeight: 'bold', color: '#1e293b' },
-  userCard: { backgroundColor: 'white', borderRadius: 12, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 3, elevation: 3 },
-  userCardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
-  userCardIcon: { fontSize: 18, marginRight: 12 },
-  userCardTitle: { fontSize: 14, fontWeight: '600', color: '#1e293b' },
-  userCardRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
-  userCardLabel: { fontSize: 11, color: '#64748b' },
-  userCardValue: { fontSize: 12, fontWeight: '500', color: '#1e293b' },
-  actionButton: { backgroundColor: '#10b981', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, alignItems: 'center' },
-  actionButtonText: { color: 'white', fontWeight: 'bold', fontSize: 12 },
-  errorCard: { backgroundColor: '#fef2f2', borderRadius: 12, padding: 16, marginBottom: 12, borderColor: '#fecaca', borderWidth: 1 },
-  errorText: { color: '#991b1b', fontSize: 12 },
+  adminCard: { backgroundColor: '#ffffff', borderRadius: 32, borderCurve: 'continuous', padding: 24, marginBottom: 24, shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.04, shadowRadius: 16, elevation: 2 },
+  adminCardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
+  adminCardIcon: { fontSize: 28, marginRight: 12, color: '#18181b' },
+  adminCardTitle: { fontSize: 22, fontWeight: '900', color: '#18181b', letterSpacing: -0.5 },
+  userCard: { backgroundColor: '#fafafa', borderRadius: 20, borderCurve: 'continuous', padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#f4f4f5' },
+  userCardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
+  userCardIcon: { fontSize: 20, marginRight: 12, color: '#18181b' },
+  userCardTitle: { fontSize: 16, fontWeight: '700', color: '#18181b' },
+  userCardRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
+  userCardLabel: { fontSize: 12, color: '#a1a1aa', fontWeight: '600' },
+  userCardValue: { fontSize: 13, fontWeight: '600', color: '#18181b' },
+  actionButton: { backgroundColor: '#18181b', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 12, borderCurve: 'continuous', alignItems: 'center', flex: 1 },
+  actionButtonText: { color: '#ffffff', fontWeight: '700', fontSize: 14 },
+  errorCard: { backgroundColor: '#fef2f2', borderRadius: 24, borderCurve: 'continuous', padding: 24, marginBottom: 12, borderColor: '#fecaca', borderWidth: 1 },
+  errorText: { color: '#991b1b', fontSize: 14, fontWeight: '500', textAlign: 'center', marginBottom: 16 },
 });
 
 export default function AdminDashboard() {
@@ -202,7 +207,7 @@ export default function AdminDashboard() {
           <View style={styles.content}>
             <View style={styles.adminCard}>
               <View style={styles.adminCardHeader}>
-                <Ionicons name="people-outline" size={24} color="#10b981" style={{ marginRight: 12 }} />
+                <Ionicons name="people" size={28} color="#18181b" style={{ marginRight: 12 }} />
                 <Text style={styles.adminCardTitle}>User Management</Text>
               </View>
               <Text style={[styles.cardLabel, { marginBottom: 16 }]}>
@@ -212,7 +217,7 @@ export default function AdminDashboard() {
               {users?.map((user, index) => (
                 <View key={user._id} style={styles.userCard}>
                   <View style={styles.userCardHeader}>
-                    <Ionicons name="person-outline" size={18} color="#10b981" style={{ marginRight: 12 }} />
+                    <Ionicons name="person" size={20} color="#18181b" style={{ marginRight: 12 }} />
                     <Text style={styles.userCardTitle}>{user.displayName || 'User'}</Text>
                   </View>
                   <View style={styles.userCardRow}>
@@ -243,7 +248,7 @@ export default function AdminDashboard() {
                     <TouchableOpacity
                       style={[
                         styles.actionButton,
-                        user.isActive ? { backgroundColor: '#f59e0b' } : { backgroundColor: '#10b981' },
+                        user.isActive ? { backgroundColor: '#18181b' } : { backgroundColor: '#10b981' },
                       ]}
                       onPress={() => toggleUserStatus(user._id, user.isActive)}
                     >

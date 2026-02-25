@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Import user pages
 import UserHome from './UserHome';
@@ -133,7 +134,7 @@ const UserDashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-amber-50 overflow-hidden">
+      <div className="flex h-screen bg-slate-50 overflow-hidden">
         {/* Sidebar skeleton */}
         <aside className="hidden lg:block w-64 bg-gradient-to-b from-green-700 to-green-900 text-white shadow-2xl">
           <div className="p-6 border-b border-green-600">
@@ -175,7 +176,7 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-amber-50 overflow-hidden">
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
       {/* Sidebar */}
       <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-green-700 to-green-900 text-white shadow-2xl transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         {/* Sidebar Header */}
@@ -282,14 +283,25 @@ const UserDashboard = () => {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto">
-          {activeTab === 'home' && <UserHome userData={userData} />}
-          {activeTab === 'scan' && <ScanWaste />}
-          {activeTab === 'detections' && <MyDetections />}
-          {activeTab === 'achievements' && <Achievements userData={userData} />}
-          {activeTab === 'leaderboard' && <Leaderboard userData={userData} />}
-          {activeTab === 'profile' && <UserProfile userData={userData} setUserData={setUserData} />}
-          {activeTab === 'settings' && <UserSettings userData={userData} />}
+        <main className="flex-1 overflow-y-auto relative">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              className="min-h-full"
+            >
+              {activeTab === 'home' && <UserHome userData={userData} setActiveTab={setActiveTab} />}
+              {activeTab === 'scan' && <ScanWaste />}
+              {activeTab === 'detections' && <MyDetections />}
+              {activeTab === 'achievements' && <Achievements userData={userData} />}
+              {activeTab === 'leaderboard' && <Leaderboard userData={userData} />}
+              {activeTab === 'profile' && <UserProfile userData={userData} setUserData={setUserData} />}
+              {activeTab === 'settings' && <UserSettings userData={userData} />}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
 

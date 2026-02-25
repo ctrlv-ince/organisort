@@ -1,4 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import PageHeaderCard from '../../components/PageHeaderCard';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+};
 
 /**
  * Waste Categories Page - Admin Dashboard
@@ -131,41 +143,48 @@ const WasteCategoriesPage = () => {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        {/* Header skeleton */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="skeleton-shimmer h-14 w-14 rounded-lg mr-4" />
-              <div className="space-y-2">
-                <div className="skeleton-shimmer h-8 w-56" />
-                <div className="skeleton-shimmer h-4 w-72" />
-              </div>
-            </div>
-            <div className="skeleton-shimmer h-10 w-10 rounded-full" />
-          </div>
-        </div>
+      <div className="space-y-8">
+        <div className="skeleton-shimmer h-32 w-full rounded-[2rem]" />
+
         {/* Stats skeleton */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white rounded-lg shadow-md p-5 space-y-2">
-              <div className="skeleton-shimmer h-4 w-24" />
-              <div className="skeleton-shimmer h-8 w-12" />
+            <div key={i} className="bg-white rounded-[2rem] shadow-sm p-8 space-y-4">
+              <div className="flex justify-between">
+                <div className="skeleton-shimmer h-12 w-12 rounded-xl" />
+                <div className="skeleton-shimmer h-8 w-20 rounded-full" />
+              </div>
+              <div className="skeleton-shimmer h-6 w-32" />
+              <div className="space-y-2 pt-2">
+                <div className="skeleton-shimmer h-4 w-full" />
+                <div className="skeleton-shimmer h-4 w-3/4" />
+              </div>
             </div>
           ))}
         </div>
+
+        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6">
+          <div className="flex gap-4">
+            <div className="skeleton-shimmer h-12 flex-1 rounded-xl" />
+            <div className="skeleton-shimmer h-12 w-48 rounded-xl" />
+          </div>
+        </div>
+
         {/* Category cards skeleton */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <div key={i} className="bg-white rounded-lg shadow-md p-6 space-y-3">
-              <div className="flex items-center space-x-3">
-                <div className="skeleton-shimmer h-10 w-10 rounded-lg" />
-                <div className="skeleton-shimmer h-6 w-32" />
-              </div>
-              <div className="skeleton-shimmer h-4 w-full" />
-              <div className="flex gap-2">
-                <div className="skeleton-shimmer h-6 w-16 rounded-full" />
-                <div className="skeleton-shimmer h-6 w-20 rounded-full" />
+            <div key={i} className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden space-y-4">
+              <div className="skeleton-shimmer h-2 w-full" />
+              <div className="p-6 space-y-4">
+                <div className="flex justify-between">
+                  <div className="skeleton-shimmer h-6 w-32" />
+                  <div className="skeleton-shimmer h-6 w-16 rounded-full" />
+                </div>
+                <div className="skeleton-shimmer h-12 w-full" />
+                <div className="space-y-2 pt-2">
+                  <div className="skeleton-shimmer h-8 w-full rounded-xl" />
+                  <div className="skeleton-shimmer h-8 w-full rounded-xl" />
+                </div>
               </div>
             </div>
           ))}
@@ -175,217 +194,227 @@ const WasteCategoriesPage = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <div className="bg-green-100 p-3 rounded-lg mr-4">
-              <span className="text-4xl">♻️</span>
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800">Waste Categories</h1>
-              <p className="text-gray-600 mt-1">
-                Managing {totalTypeCount} types of organic waste across {Object.keys(categories).length} categories
-              </p>
-            </div>
-          </div>
+    <motion.div
+      className="space-y-8"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.div variants={itemVariants}>
+        <PageHeaderCard
+          title="Waste Categories"
+          subtitle={`Managing ${totalTypeCount} types of organic waste across ${Object.keys(categories).length} super-categories.`}
+          variant="success"
+          icon={(
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+            </svg>
+          )}
+        />
+      </motion.div>
 
-          <div className="text-right">
-            <p className="text-sm text-gray-600">Total Categories</p>
-            <p className="text-3xl font-bold text-green-600">{Object.keys(categories).length}</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {categoryStats.map((cat, idx) => {
           const colorClasses = {
-            red: 'from-red-500 to-red-600',
-            green: 'from-green-500 to-green-600',
-            amber: 'from-amber-500 to-amber-600',
-            yellow: 'from-yellow-500 to-yellow-600',
-            purple: 'from-purple-500 to-purple-600',
-            gray: 'from-gray-500 to-gray-600',
+            red: 'from-rose-500 to-red-600 shadow-red-500/20',
+            green: 'from-emerald-500 to-green-600 shadow-green-500/20',
+            amber: 'from-amber-400 to-orange-500 shadow-amber-500/20',
+            yellow: 'from-yellow-400 to-yellow-500 shadow-yellow-500/20',
+            purple: 'from-purple-500 to-indigo-600 shadow-purple-500/20',
+            gray: 'from-slate-500 to-slate-600 shadow-slate-500/20',
           };
 
           return (
-            <div
+            <motion.div
+              layoutId={`category-card-${cat.name}`}
               key={idx}
-              className={`bg-gradient-to-br ${colorClasses[cat.color]} text-white rounded-lg shadow-lg p-6 cursor-pointer transform hover:scale-105 transition-all`}
+              className={`bg-gradient-to-br ${colorClasses[cat.color]} text-white rounded-[2rem] shadow-xl p-8 cursor-pointer relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300`}
               onClick={() => setSelectedCategory(selectedCategory === cat.name ? 'all' : cat.name)}
             >
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-5xl">{cat.icon}</span>
-                <div className={`px-3 py-1 bg-white bg-opacity-20 rounded-full text-xs font-bold ${selectedCategory === cat.name ? 'ring-2 ring-white' : ''}`}>
-                  {cat.totalTypes} types
-                </div>
+              <div className="absolute -right-6 -bottom-6 opacity-10 text-[8rem] transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 pointer-events-none">
+                {cat.icon}
               </div>
 
-              <h3 className="text-2xl font-bold mb-2">{cat.name}</h3>
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-3xl shadow-sm border border-white/20">
+                    {cat.icon}
+                  </div>
+                  <div className={`px-4 py-1.5 bg-white/20 backdrop-blur-sm rounded-xl text-xs font-bold uppercase tracking-widest border border-white/20 ${selectedCategory === cat.name ? 'ring-2 ring-white shadow-[0_0_15px_rgba(255,255,255,0.4)]' : ''}`}>
+                    {cat.totalTypes} Types
+                  </div>
+                </div>
 
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center justify-between">
-                  <span className="opacity-90">Detected:</span>
-                  <span className="font-bold">{cat.detectedTypes} / {cat.totalTypes}</span>
+                <h3 className="text-3xl font-extrabold mb-4 tracking-tight drop-shadow-sm">{cat.name}</h3>
+
+                <div className="space-y-3 text-sm font-medium bg-black/10 p-4 rounded-2xl border border-white/10 backdrop-blur-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80">Detected Entities</span>
+                    <span className="font-bold text-white bg-white/20 px-2 py-0.5 rounded-lg">{cat.detectedTypes} / {cat.totalTypes}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80">Coverage Volume</span>
+                    <span className="font-bold">{cat.coverage}%</span>
+                  </div>
+                  <div className="flex items-center justify-between pt-2 border-t border-white/10">
+                    <span className="text-white/90 font-bold">Total Discovered:</span>
+                    <span className="font-extrabold text-base">{cat.totalDetections}</span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="opacity-90">Coverage:</span>
-                  <span className="font-bold">{cat.coverage}%</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="opacity-90">Total Items:</span>
-                  <span className="font-bold">{cat.totalDetections}</span>
+
+                <div className="mt-5 w-full bg-black/20 rounded-full h-2 overflow-hidden shadow-inner">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${cat.coverage}%` }}
+                    transition={{ duration: 1, ease: 'easeOut' }}
+                    className="bg-white h-2 rounded-full"
+                  />
                 </div>
               </div>
-
-              <div className="mt-4 w-full bg-white bg-opacity-20 rounded-full h-2">
-                <div
-                  className="bg-white h-2 rounded-full transition-all"
-                  style={{ width: `${cat.coverage}%` }}
-                ></div>
-              </div>
-            </div>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search waste types..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-              <svg
-                className="absolute left-3 top-3 w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-          </div>
-
-          <div className="w-full sm:w-48">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
-            >
-              <option value="name">Sort by Name</option>
-              <option value="count">Sort by Count</option>
-              <option value="category">Sort by Category</option>
-            </select>
-          </div>
-
-          <div className="w-full sm:w-48">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
-            >
-              <option value="all">All Categories</option>
-              {Object.keys(categories).sort().map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-          </div>
+      <motion.div variants={itemVariants} className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 flex flex-col sm:flex-row gap-4">
+        <div className="flex-1 relative">
+          <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search isolated waste classes..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-2xl bg-slate-50 focus:bg-white focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all font-medium text-gray-900"
+          />
         </div>
 
-        <div className="mt-4 text-sm text-gray-600">
-          Showing {wasteTypes.length} of {totalTypeCount} waste types
-          {selectedCategory !== 'all' && ` in ${selectedCategory}`}
-        </div>
-      </div>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="px-5 py-4 border border-gray-200 rounded-2xl bg-slate-50 focus:bg-white focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all font-bold text-gray-700 w-full sm:w-56"
+        >
+          <option value="name">Sort by Class ID</option>
+          <option value="count">Sort by Frequency</option>
+          <option value="category">Sort by Super-Category</option>
+        </select>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {wasteTypes.map((type, idx) => (
-          <div
-            key={idx}
-            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all"
-          >
-            <div className="h-2" style={{ backgroundColor: type.color }}></div>
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="px-5 py-4 border border-gray-200 rounded-2xl bg-slate-50 focus:bg-white focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all font-bold text-gray-700 w-full sm:w-56"
+        >
+          <option value="all">All Ecosystems</option>
+          {Object.keys(categories).sort().map((cat) => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
+      </motion.div>
 
-            <div className="p-5">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold text-gray-800 mb-1">{type.name}</h3>
-                  <span className="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-700">
-                    {type.category}
-                  </span>
-                </div>
+      <motion.div variants={itemVariants} className="px-2">
+        <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">
+          Displaying {wasteTypes.length} of {totalTypeCount} isolated sub-classes
+          {selectedCategory !== 'all' && <span className="text-green-500"> • {selectedCategory} filter active</span>}
+        </p>
+      </motion.div>
 
-                {type.detectionCount > 0 && (
-                  <div className="ml-3 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-bold">
-                    {type.detectionCount}
+      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <AnimatePresence>
+          {wasteTypes.map((type, idx) => (
+            <motion.div
+              layout
+              key={type.name}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-gray-200 transition-all duration-300 group flex flex-col"
+            >
+              <div className="h-2 w-full" style={{ backgroundColor: categoryDisplayMap[type.category]?.color === 'gray' ? '#94a3b8' : type.color || '#10b981' }}></div>
+
+              <div className="p-6 flex flex-col flex-1">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1 pr-2">
+                    <h3 className="text-xl font-extrabold text-gray-900 mb-2 capitalize tracking-tight leading-tight">{type.name.replace(/-/g, ' ')}</h3>
+                    <span className="inline-block px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest rounded-lg bg-slate-100 text-slate-600 border border-slate-200">
+                      {type.category}
+                    </span>
                   </div>
-                )}
+
+                  {type.detectionCount > 0 && (
+                    <div className="bg-green-50 text-green-700 px-3 py-1.5 rounded-xl text-sm font-black border border-green-100 shadow-sm shrink-0">
+                      {type.detectionCount}
+                    </div>
+                  )}
+                </div>
+
+                <p className="text-sm text-gray-500 font-medium mb-6 leading-relaxed flex-1">{type.description}</p>
+
+                <div className="space-y-3 text-sm mt-auto bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Organic Context</span>
+                    <span className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-widest ${type.compostable
+                      ? 'bg-green-100/50 text-green-700 border border-green-200/50'
+                      : 'bg-red-100/50 text-red-700 border border-red-200/50'
+                      }`}>
+                      {type.compostable ? 'Compostable' : 'Residual'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Decomposition</span>
+                    <span className="text-slate-800 font-extrabold bg-white px-2 py-0.5 rounded border border-slate-200">{type.avgDecompositionDays || 'N/A'} days</span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">DB Occurrences</span>
+                    <span className={`font-extrabold ${type.detectionCount > 0 ? 'text-green-600' : 'text-slate-400'}`}>
+                      {type.detectionCount > 0 ? type.detectionCount : '0 discovered'}
+                    </span>
+                  </div>
+                </div>
               </div>
-
-              <p className="text-sm text-gray-600 mb-4">{type.description}</p>
-
-              <div className="space-y-2 text-xs">
-                <div className="flex items-center justify-between py-2 border-t border-gray-100">
-                  <span className="text-gray-600 font-medium">Compostable:</span>
-                  <span className={`px-2 py-1 rounded-full font-bold ${type.compostable
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
-                    }`}>
-                    {type.compostable ? 'Yes' : 'No'}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between py-2 border-t border-gray-100">
-                  <span className="text-gray-600 font-medium">Decomposition:</span>
-                  <span className="text-gray-800 font-semibold">{type.avgDecompositionDays} days</span>
-                </div>
-
-                <div className="flex items-center justify-between py-2 border-t border-gray-100">
-                  <span className="text-gray-600 font-medium">Detections:</span>
-                  <span className="text-gray-800 font-semibold">
-                    {type.detectionCount > 0 ? type.detectionCount : 'Not yet detected'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
 
       {wasteTypes.length === 0 && (
-        <div className="bg-white rounded-lg shadow-md p-12 text-center">
-          <div className="text-6xl mb-4">🔍</div>
-          <p className="text-gray-600 text-lg">No waste types found</p>
-          <p className="text-gray-500 mt-2">Try adjusting your search or filter criteria</p>
-        </div>
+        <motion.div variants={itemVariants} className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-16 text-center">
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-slate-50 border border-slate-100 rounded-[2rem] mb-6 shadow-sm">
+            <svg className="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <p className="text-gray-900 text-2xl font-bold tracking-tight mb-2">No subclasses found</p>
+          <p className="text-gray-500 font-medium">Clear your search filters or adjust parameters to view taxonomy data.</p>
+        </motion.div>
       )}
 
-      <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-6">
-        <div className="flex items-start">
-          <div className="bg-blue-600 p-3 rounded-full mr-4 flex-shrink-0">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <motion.div variants={itemVariants} className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-[2rem] p-8 shadow-sm">
+        <div className="flex flex-col md:flex-row gap-6 items-start">
+          <div className="bg-blue-600 p-4 rounded-2xl shadow-lg shadow-blue-500/30 flex-shrink-0">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div>
-            <h3 className="text-lg font-bold text-blue-900 mb-2">About Waste Categories</h3>
-            <div className="text-sm text-blue-800 space-y-2">
-              <p><strong>Compostable items</strong> can be added to compost bins and will naturally decompose.</p>
-              <p><strong>Decomposition time</strong> indicates how long it takes for the item to break down in a compost environment.</p>
-              <p><strong>Non-compostable items</strong> (like large bones and shells) should be disposed of separately or require industrial composting.</p>
-              <p className="mt-3 pt-3 border-t border-blue-200">
-                <strong>Tip:</strong> Items like citrus peels take longer to decompose but are still compostable. Break them into smaller pieces to speed up the process!
-              </p>
+            <h3 className="text-xl font-extrabold text-blue-900 mb-3 tracking-tight">System Knowledge Base</h3>
+            <div className="text-blue-800 space-y-2.5 font-medium leading-relaxed">
+              <p><strong>Compostable items</strong> represent the core taxonomy that the AI identifies for natural decomposition pathways.</p>
+              <p><strong>Decomposition metrics</strong> act as standard benchmarks utilized by the sustainability scoring engine.</p>
+              <p>Non-compostable nodes represent items that must be segregated away from the primary biological waste streams.</p>
+              <div className="mt-4 pt-4 border-t border-blue-200/60 inline-flex">
+                <p className="text-xs bg-white/60 px-4 py-2 rounded-xl text-blue-900 font-bold border border-blue-200">
+                  ⚡ Auto-syncs directly with the ML backend class maps.
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
