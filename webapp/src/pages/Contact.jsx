@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
 import '../Landing.css';
 
 const contactChannels = [
@@ -29,6 +30,16 @@ const contactChannels = [
 
 const Contact = () => {
   const navigate = useNavigate();
+  const { user, loading, logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+  };
 
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
