@@ -210,6 +210,7 @@ const LandingPage = () => {
               </a>
             ))}
             <button onClick={() => navigate('/about')} className="nav-link">About</button>
+            <button onClick={() => navigate('/contact')} className="nav-link">Contact</button>
           </nav>
           <div className="header-right">
             {!loading && (
