@@ -49,6 +49,7 @@ const userSchema = new mongoose.Schema(
       emailUpdates: { type: Boolean, default: false },
       showTutorial: { type: Boolean, default: true },
       autoSaveDetections: { type: Boolean, default: true },
+      dashboardTheme: { type: String, default: 'default' },
     },
     role: {
       type: String,

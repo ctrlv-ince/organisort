@@ -99,7 +99,7 @@ const Achievements = ({ userData }) => {
         {/* Stats skeleton */}
         <div className="grid md:grid-cols-3 gap-6">
           {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white rounded-[2rem] shadow-sm p-8 space-y-4 border border-gray-100">
+            <div key={i} className="rounded-[2rem] shadow-sm p-8 space-y-4" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
               <div className="skeleton-shimmer h-14 w-14 rounded-2xl" />
               <div className="skeleton-shimmer h-8 w-16" />
               <div className="skeleton-shimmer h-4 w-24" />
@@ -132,73 +132,82 @@ const Achievements = ({ userData }) => {
       </motion.div>
 
       {/* Progress Overview */}
-      <motion.div variants={itemVariants} className="bg-white rounded-[2rem] shadow-sm hover:shadow-lg transition-all border border-gray-100 p-8">
+      <motion.div variants={itemVariants} className="rounded-[2rem] shadow-sm hover:shadow-lg transition-all p-8" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Overall Progress</h2>
-          <span className="text-3xl font-extrabold text-amber-500">{unlockedCount}/{achievements.length}</span>
+          <h2 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>Overall Progress</h2>
+          <span className="text-3xl font-extrabold" style={{ color: 'var(--theme-accent, #15803d)' }}>{unlockedCount}/{achievements.length}</span>
         </div>
-        <div className="w-full bg-slate-100 rounded-full h-3 mb-2 overflow-hidden">
-          <div className="bg-amber-400 h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${progress}%` }}></div>
+        <div className="w-full rounded-full h-3 mb-2 overflow-hidden" style={{ background: 'var(--theme-input-bg, #f1f5f9)' }}>
+          <div className="h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${progress}%`, background: 'var(--theme-accent, #15803d)' }}></div>
         </div>
-        <p className="text-sm text-gray-500 font-medium">{progress.toFixed(0)}% Complete</p>
+        <p className="text-sm font-medium" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>{progress.toFixed(0)}% Complete</p>
       </motion.div>
 
       {/* Stats */}
       <motion.div variants={itemVariants} className="grid md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-lg transition-all border border-gray-100 p-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-green-50 rounded-2xl mb-4 border border-green-100">
-            <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="rounded-[2rem] shadow-sm hover:shadow-lg transition-all p-8" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)' }}>
+            <svg className="w-7 h-7" fill="none" stroke="var(--theme-accent, #15803d)" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
             </svg>
           </div>
-          <p className="text-4xl font-extrabold text-gray-900 mb-1">{totalScans}</p>
-          <p className="text-gray-500 font-semibold uppercase tracking-wider text-xs">Total Scans</p>
+          <p className="text-4xl font-extrabold mb-1" style={{ color: 'var(--theme-text, #111827)' }}>{totalScans}</p>
+          <p className="font-semibold uppercase tracking-wider text-xs" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>Total Scans</p>
         </div>
-        <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-lg transition-all border border-gray-100 p-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-50 rounded-2xl mb-4 border border-blue-100">
-            <svg className="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="rounded-[2rem] shadow-sm hover:shadow-lg transition-all p-8" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)' }}>
+            <svg className="w-7 h-7" fill="none" stroke="var(--theme-accent, #15803d)" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
           </div>
-          <p className="text-4xl font-extrabold text-gray-900 mb-1">{totalItems}</p>
-          <p className="text-gray-500 font-semibold uppercase tracking-wider text-xs">Items Detected</p>
+          <p className="text-4xl font-extrabold mb-1" style={{ color: 'var(--theme-text, #111827)' }}>{totalItems}</p>
+          <p className="font-semibold uppercase tracking-wider text-xs" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>Items Detected</p>
         </div>
-        <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-lg transition-all border border-gray-100 p-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-amber-50 rounded-2xl mb-4 border border-amber-100">
-            <svg className="w-7 h-7 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="rounded-[2rem] shadow-sm hover:shadow-lg transition-all p-8" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)' }}>
+            <svg className="w-7 h-7" fill="none" stroke="var(--theme-accent, #15803d)" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
             </svg>
           </div>
-          <p className="text-4xl font-extrabold text-gray-900 mb-1">{unlockedCount}</p>
-          <p className="text-gray-500 font-semibold uppercase tracking-wider text-xs">Badges Earned</p>
+          <p className="text-4xl font-extrabold mb-1" style={{ color: 'var(--theme-text, #111827)' }}>{unlockedCount}</p>
+          <p className="font-semibold uppercase tracking-wider text-xs" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>Badges Earned</p>
         </div>
       </motion.div>
 
       {/* Achievements Grid */}
       <motion.div variants={itemVariants}>
-        <h2 className="text-2xl font-bold text-gray-900 mb-6 tracking-tight">All Achievements</h2>
+        <h2 className="text-2xl font-bold mb-6 tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>All Achievements</h2>
         <div className="grid md:grid-cols-2 gap-6">
           {achievements.map((achievement) => (
-            <div key={achievement.id} className={`rounded-[2rem] shadow-sm p-6 hover:shadow-lg transition-all duration-300 ${achievement.unlocked ? 'bg-gradient-to-br from-white to-amber-50/30 border border-amber-200 ring-1 ring-amber-100/50' : 'bg-white border border-gray-100 opacity-60'}`}>
+            <div key={achievement.id} className={`rounded-[2rem] shadow-sm p-6 hover:shadow-lg transition-all duration-300 ${achievement.unlocked ? 'ring-1' : 'opacity-60'}`}
+              style={{
+                background: 'var(--theme-card, #ffffff)',
+                border: achievement.unlocked ? '1px solid var(--theme-accent-surface-border, #bbf7d0)' : '1px solid var(--theme-card-border, #f0f0f0)',
+              }}
+            >
               <div className="flex items-start space-x-5">
-                <div className={`flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center border shadow-sm ${achievement.unlocked ? 'bg-amber-100 text-amber-500 border-amber-200' : 'bg-slate-50 text-slate-300 border-slate-100'}`}>
+                <div className={`flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center border shadow-sm`}
+                  style={achievement.unlocked ? { background: 'var(--theme-accent-surface, #f0fdf4)', color: 'var(--theme-accent, #15803d)', borderColor: 'var(--theme-accent-surface-border, #bbf7d0)' } : { background: 'var(--theme-input-bg, #f8fafc)', color: 'var(--theme-text-muted, #cbd5e1)', borderColor: 'var(--theme-border, #f0f0f0)' }}
+                >
                   {achievementIcons[achievement.icon] || achievementIcons.star}
                 </div>
                 <div className="flex-1 pt-1">
                   <div className="flex items-center justify-between mb-1">
-                    <h3 className="text-xl font-bold text-gray-900">{achievement.name}</h3>
+                    <h3 className="text-xl font-bold" style={{ color: 'var(--theme-text, #111827)' }}>{achievement.name}</h3>
                     {achievement.unlocked && (
-                      <svg className="w-6 h-6 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-6 h-6" fill="var(--theme-accent, #15803d)" viewBox="0 0 24 24">
                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                       </svg>
                     )}
                   </div>
-                  <p className="text-sm text-gray-500 mb-3 font-medium">{achievement.description}</p>
+                  <p className="text-sm mb-3 font-medium" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>{achievement.description}</p>
                   <div className="flex items-center justify-between">
-                    <span className={`text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider ${achievement.unlocked ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
+                    <span className={`text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider ${achievement.unlocked ? 'bg-green-100 text-green-700' : ''}`}
+                      style={!achievement.unlocked ? { background: 'var(--theme-input-bg, #f1f5f9)', color: 'var(--theme-text-muted, #94a3b8)' } : undefined}
+                    >
                       {achievement.unlocked ? 'Unlocked' : 'Locked'}
                     </span>
-                    <span className="text-xs text-slate-400 font-bold tracking-wide uppercase">{achievement.requirement}</span>
+                    <span className="text-xs font-bold tracking-wide uppercase" style={{ color: 'var(--theme-text-muted, #94a3b8)' }}>{achievement.requirement}</span>
                   </div>
                 </div>
               </div>

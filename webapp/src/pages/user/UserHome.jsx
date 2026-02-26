@@ -66,6 +66,13 @@ const UserHome = ({ userData, setActiveTab }) => {
     fetchDetections();
   }, []);
 
+  // Stat card icons with their accent overrides (these stay colored for visual distinction)
+  const statCards = [
+    { value: stats.total, label: 'Total Scans', icon: 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z' },
+    { value: stats.thisMonth, label: 'This Month', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
+    { value: stats.thisWeek, label: 'This Week', icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' },
+  ];
+
   return (
     <motion.div
       className="p-6 md:p-10 space-y-8 max-w-7xl mx-auto"
@@ -89,52 +96,40 @@ const UserHome = ({ userData, setActiveTab }) => {
 
       {/* Stats Cards */}
       <motion.div variants={itemVariants} className="grid md:grid-cols-3 gap-6">
-        <div className="bg-white shadow-sm hover:shadow-xl rounded-[2rem] p-8 border border-gray-100 flex flex-col relative overflow-hidden group transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <div className="relative z-10">
-            <div className="w-14 h-14 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-green-100">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-              </svg>
+        {statCards.map((stat, idx) => (
+          <div
+            key={idx}
+            className="shadow-sm hover:shadow-xl rounded-[2.5rem] p-8 flex flex-col relative overflow-hidden group transition-all duration-300"
+            style={{
+              background: 'var(--theme-card, #ffffff)',
+              border: '1px solid var(--theme-card-border, #f0f0f0)',
+            }}
+          >
+            <div className="relative z-10">
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-sm"
+                style={{
+                  background: 'var(--theme-accent-surface, #f0fdf4)',
+                  border: '1px solid var(--theme-accent-surface-border, #bbf7d0)',
+                }}
+              >
+                <svg className="w-8 h-8" fill="none" stroke="var(--theme-accent, #15803d)" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={stat.icon} />
+                </svg>
+              </div>
+              <div className="text-6xl font-black mb-2 tracking-tighter" style={{ color: 'var(--theme-text, #111827)' }}>{stat.value}</div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>{stat.label}</p>
             </div>
-            <div className="text-5xl font-extrabold text-gray-900 mb-2">{stats.total}</div>
-            <p className="text-gray-500 font-semibold tracking-wide">TOTAL SCANS</p>
           </div>
-        </div>
-
-        <div className="bg-white shadow-sm hover:shadow-xl rounded-[2rem] p-8 border border-gray-100 flex flex-col relative overflow-hidden group transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <div className="relative z-10">
-            <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-blue-100">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <div className="text-5xl font-extrabold text-gray-900 mb-2">{stats.thisMonth}</div>
-            <p className="text-gray-500 font-semibold tracking-wide">THIS MONTH</p>
-          </div>
-        </div>
-
-        <div className="bg-white shadow-sm hover:shadow-xl rounded-[2rem] p-8 border border-gray-100 flex flex-col relative overflow-hidden group transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <div className="relative z-10">
-            <div className="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-purple-100">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-              </svg>
-            </div>
-            <div className="text-5xl font-extrabold text-gray-900 mb-2">{stats.thisWeek}</div>
-            <p className="text-gray-500 font-semibold tracking-wide">THIS WEEK</p>
-          </div>
-        </div>
+        ))}
       </motion.div>
 
       {/* Quick Actions */}
       <motion.div variants={itemVariants}>
         <InfoCard>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-            <div className="bg-green-50 p-2.5 rounded-xl mr-4 border border-green-100">
-              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <h2 className="text-2xl font-bold mb-6 flex items-center" style={{ color: 'var(--theme-text, #111827)' }}>
+            <div className="p-2.5 rounded-xl mr-4" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)' }}>
+              <svg className="w-6 h-6" fill="none" stroke="var(--theme-accent, #15803d)" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
@@ -161,9 +156,9 @@ const UserHome = ({ userData, setActiveTab }) => {
       {/* Recent Activity */}
       <motion.div variants={itemVariants}>
         <InfoCard>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-            <div className="bg-blue-50 p-2.5 rounded-xl mr-4 border border-blue-100">
-              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <h2 className="text-2xl font-bold mb-6 flex items-center" style={{ color: 'var(--theme-text, #111827)' }}>
+            <div className="p-2.5 rounded-xl mr-4" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)' }}>
+              <svg className="w-6 h-6" fill="none" stroke="var(--theme-accent, #15803d)" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
@@ -173,7 +168,7 @@ const UserHome = ({ userData, setActiveTab }) => {
           {loading ? (
             <div className="space-y-4">
               {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className="flex items-center justify-between p-5 bg-gray-50/50 rounded-2xl border border-gray-100">
+                <div key={i} className="flex items-center justify-between p-5 rounded-2xl" style={{ background: 'var(--theme-input-bg, #f9fafb)', border: '1px solid var(--theme-border, #f0f0f0)' }}>
                   <div className="flex items-center space-x-4">
                     <div className="skeleton-shimmer h-12 w-12 rounded-xl" />
                     <div className="space-y-2">
@@ -187,23 +182,42 @@ const UserHome = ({ userData, setActiveTab }) => {
           ) : detections.length > 0 ? (
             <div className="space-y-3">
               {detections.slice(0, 5).map((detection, idx) => (
-                <div key={idx} className="flex items-center justify-between p-5 bg-gray-50/50 rounded-2xl border border-gray-100 hover:border-green-200 hover:bg-green-50/30 transition-all cursor-default">
+                <div
+                  key={idx}
+                  className="flex items-center justify-between p-5 rounded-2xl transition-all cursor-default"
+                  style={{
+                    background: 'var(--theme-input-bg, #f9fafb)',
+                    border: '1px solid var(--theme-border, #f0f0f0)',
+                  }}
+                >
                   <div className="flex items-center space-x-4">
-                    <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-200">
-                      <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div
+                      className="p-3 rounded-xl shadow-sm"
+                      style={{
+                        background: 'var(--theme-card, #ffffff)',
+                        border: '1px solid var(--theme-border, #f0f0f0)',
+                      }}
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="var(--theme-text-secondary, #6b7280)" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                       </svg>
                     </div>
                     <div>
-                      <p className="font-bold text-gray-900 text-lg tracking-tight">
+                      <p className="font-bold text-lg tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>
                         {detection.detections?.length || 0} items detected
                       </p>
-                      <p className="text-sm text-gray-500 font-medium">
+                      <p className="text-sm font-medium" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>
                         {new Date(detection.createdAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
                       </p>
                     </div>
                   </div>
-                  <div className="bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-sm font-bold tracking-wide">
+                  <div
+                    className="px-4 py-1.5 rounded-full text-sm font-bold tracking-wide"
+                    style={{
+                      background: 'var(--theme-accent-surface, #f0fdf4)',
+                      color: 'var(--theme-accent, #15803d)',
+                    }}
+                  >
                     {detection.summary?.average_confidence
                       ? `${(detection.summary.average_confidence * 100).toFixed(1)}%`
                       : 'Done'}
@@ -212,14 +226,26 @@ const UserHome = ({ userData, setActiveTab }) => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-16 bg-gray-50/50 rounded-3xl border border-gray-100 border-dashed">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-white shadow-sm border border-gray-100 rounded-2xl mb-4">
-                <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div
+              className="text-center py-16 rounded-3xl border-dashed"
+              style={{
+                background: 'var(--theme-input-bg, #f9fafb)',
+                border: '2px dashed var(--theme-border, #f0f0f0)',
+              }}
+            >
+              <div
+                className="inline-flex items-center justify-center w-20 h-20 shadow-sm rounded-2xl mb-4"
+                style={{
+                  background: 'var(--theme-card, #ffffff)',
+                  border: '1px solid var(--theme-border, #f0f0f0)',
+                }}
+              >
+                <svg className="w-10 h-10" fill="none" stroke="var(--theme-text-muted, #9ca3af)" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                 </svg>
               </div>
-              <p className="text-gray-900 text-xl font-bold mb-1">No Activity Yet</p>
-              <p className="text-gray-500 font-medium">Start scanning waste to see your timeline build.</p>
+              <p className="text-xl font-bold mb-1" style={{ color: 'var(--theme-text, #111827)' }}>No Activity Yet</p>
+              <p className="font-medium" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>Start scanning waste to see your timeline build.</p>
             </div>
           )}
         </InfoCard>

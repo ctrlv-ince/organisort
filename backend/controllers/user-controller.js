@@ -140,7 +140,7 @@ const updateUserProfile = async (req, res, next) => {
 const updateUserPreferences = async (req, res, next) => {
   try {
     const { isFirebase, ...userData } = req.user;
-    const { pushNotifications, emailUpdates, showTutorial, autoSaveDetections } = req.body;
+    const { pushNotifications, emailUpdates, showTutorial, autoSaveDetections, dashboardTheme } = req.body;
 
     const userId = isFirebase ? userData.uid : userData._id;
 
@@ -150,6 +150,7 @@ const updateUserPreferences = async (req, res, next) => {
     if (emailUpdates !== undefined) updateData['preferences.emailUpdates'] = Boolean(emailUpdates);
     if (showTutorial !== undefined) updateData['preferences.showTutorial'] = Boolean(showTutorial);
     if (autoSaveDetections !== undefined) updateData['preferences.autoSaveDetections'] = Boolean(autoSaveDetections);
+    if (dashboardTheme !== undefined) updateData['preferences.dashboardTheme'] = String(dashboardTheme);
 
     const user = await User.findByIdAndUpdate(
       userId,

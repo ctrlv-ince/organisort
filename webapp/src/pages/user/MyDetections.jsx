@@ -276,7 +276,7 @@ const MyDetections = () => {
     return (
       <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-8">
         <div className="skeleton-shimmer h-32 rounded-[2rem]" />
-        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6">
+        <div className="rounded-[2rem] shadow-sm p-6" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="skeleton-shimmer h-12 rounded-xl flex-1" />
             <div className="skeleton-shimmer h-12 rounded-xl w-40" />
@@ -284,7 +284,7 @@ const MyDetections = () => {
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <div key={i} className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
+            <div key={i} className="rounded-[2rem] shadow-sm overflow-hidden" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
               <div className="skeleton-shimmer h-48 w-full rounded-none" />
               <div className="p-8 space-y-4">
                 <div className="skeleton-shimmer h-12 w-12 rounded-2xl" />
@@ -320,10 +320,10 @@ const MyDetections = () => {
         />
       </motion.div>
 
-      <motion.div variants={itemVariants} className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6">
+      <motion.div variants={itemVariants} className="rounded-[2rem] shadow-sm p-6" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
-            <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5" fill="none" stroke="var(--theme-text-muted, #9ca3af)" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input
@@ -331,20 +331,22 @@ const MyDetections = () => {
               placeholder="Search by waste type..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-2xl bg-slate-50 focus:bg-white focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-gray-900"
+              className="w-full pl-12 pr-5 py-4 rounded-2xl transition-all font-medium"
+              style={{ background: 'var(--theme-input-bg, #f9fafb)', border: '1px solid var(--theme-border, #f0f0f0)', color: 'var(--theme-text, #111827)' }}
             />
           </div>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-5 py-4 border border-gray-200 rounded-2xl bg-slate-50 focus:bg-white focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-bold text-gray-700 min-w-[200px]"
+            className="px-5 py-4 rounded-2xl transition-all font-bold min-w-[200px]"
+            style={{ background: 'var(--theme-input-bg, #f9fafb)', border: '1px solid var(--theme-border, #f0f0f0)', color: 'var(--theme-text, #111827)' }}
           >
             <option value="recent">Most Recent First</option>
             <option value="oldest">Oldest First</option>
             <option value="items">Items Discovered (High to Low)</option>
           </select>
         </div>
-        <p className="text-sm font-bold text-gray-400 mt-4 uppercase tracking-widest ml-2">
+        <p className="text-sm font-bold mt-4 uppercase tracking-widest ml-2" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>
           Displaying {sortedDetections.length} Activity {sortedDetections.length !== 1 ? 'Logs' : 'Log'}
         </p>
       </motion.div>
@@ -360,9 +362,10 @@ const MyDetections = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.2 }}
-                className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all group flex flex-col"
+                className="rounded-[2rem] shadow-sm overflow-hidden hover:shadow-xl transition-all group flex flex-col"
+                style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}
               >
-                <div className="relative overflow-hidden w-full h-56 bg-slate-100">
+                <div className="relative overflow-hidden w-full h-56" style={{ background: 'var(--theme-input-bg, #f1f5f9)' }}>
                   {getDetectionImageUrl(detection) ? (
                     <img
                       src={getDetectionImageUrl(detection)}
@@ -395,16 +398,16 @@ const MyDetections = () => {
 
                 <div className="p-6 flex flex-col flex-1">
                   <div className="flex items-center space-x-4 mb-5">
-                    <div className="bg-blue-50 border border-blue-100 p-3.5 rounded-2xl flex-shrink-0">
-                      <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="p-3.5 rounded-2xl flex-shrink-0" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)' }}>
+                      <svg className="w-6 h-6" fill="none" stroke="var(--theme-accent, #15803d)" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                       </svg>
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-gray-500 tracking-widest uppercase mb-1">
+                      <p className="text-sm font-bold tracking-widest uppercase mb-1" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>
                         {new Date(detection.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                       </p>
-                      <p className="font-extrabold text-gray-900 text-xl tracking-tight">
+                      <p className="font-extrabold text-xl tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>
                         {detection.detections?.length || 0} Items Found
                       </p>
                     </div>
@@ -414,12 +417,12 @@ const MyDetections = () => {
                     <div className="mb-6 flex-1">
                       <div className="flex flex-wrap gap-2">
                         {detection.detectedWasteTypes.slice(0, 3).map((type, i) => (
-                          <span key={i} className="px-3 py-1.5 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold rounded-lg capitalize tracking-wide">
+                          <span key={i} className="px-3 py-1.5 text-xs font-bold rounded-lg capitalize tracking-wide" style={{ background: 'var(--theme-input-bg, #f1f5f9)', border: '1px solid var(--theme-border, #f0f0f0)', color: 'var(--theme-text-secondary, #475569)' }}>
                             {type.replace(/-/g, ' ')}
                           </span>
                         ))}
                         {detection.detectedWasteTypes.length > 3 && (
-                          <span className="px-3 py-1.5 bg-gray-50 border border-gray-100 text-gray-500 text-xs font-bold rounded-lg">
+                          <span className="px-3 py-1.5 text-xs font-bold rounded-lg" style={{ background: 'var(--theme-input-bg, #f1f5f9)', border: '1px solid var(--theme-border, #f0f0f0)', color: 'var(--theme-text-muted, #9ca3af)' }}>
                             +{detection.detectedWasteTypes.length - 3} more
                           </span>
                         )}
@@ -430,14 +433,16 @@ const MyDetections = () => {
                   <div className="grid grid-cols-2 gap-3 mt-auto">
                     <button
                       onClick={() => openDetails(detection)}
-                      className="w-full bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-200 text-sm font-bold uppercase tracking-widest py-3.5 rounded-xl transition-all active:scale-95"
+                      className="w-full text-sm font-bold uppercase tracking-widest py-3.5 rounded-xl transition-all active:scale-95"
+                      style={{ background: 'var(--theme-input-bg, #f1f5f9)', border: '1px solid var(--theme-border, #e2e8f0)', color: 'var(--theme-text, #0f172a)' }}
                     >
                       Details
                     </button>
                     <button
                       onClick={() => handleFindDisposal(detection)}
                       disabled={loadingLocations || (!detection.detections?.length && !detection.summary?.total_detections)}
-                      className={`w-full bg-green-600 hover:bg-green-700 text-white text-sm font-bold uppercase tracking-widest py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 ${(!detection.detections?.length && !detection.summary?.total_detections) ? 'opacity-50 cursor-not-allowed shadow-none' : 'disabled:opacity-50'}`}
+                      className={`w-full text-white text-sm font-bold uppercase tracking-widest py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 ${(!detection.detections?.length && !detection.summary?.total_detections) ? 'opacity-50 cursor-not-allowed shadow-none' : 'disabled:opacity-50'}`}
+                      style={{ background: 'var(--theme-accent, #15803d)' }}
                     >
                       {loadingLocations && selectedDetection?._id === detection._id ? (
                         <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/40 border-t-white"></div>
@@ -458,14 +463,14 @@ const MyDetections = () => {
           </AnimatePresence>
         </motion.div>
       ) : (
-        <motion.div variants={itemVariants} className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-16 text-center">
-          <div className="inline-flex items-center justify-center w-24 h-24 bg-slate-50 border border-slate-100 rounded-[2rem] mb-6 shadow-sm">
-            <svg className="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <motion.div variants={itemVariants} className="rounded-[2rem] shadow-sm p-16 text-center" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-[2rem] mb-6 shadow-sm" style={{ background: 'var(--theme-input-bg, #f8fafc)', border: '1px solid var(--theme-border, #f0f0f0)' }}>
+            <svg className="w-10 h-10" fill="none" stroke="var(--theme-text-muted, #cbd5e1)" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
             </svg>
           </div>
-          <p className="text-gray-900 text-2xl font-bold tracking-tight mb-2">No detections found</p>
-          <p className="text-gray-500 font-medium">
+          <p className="text-2xl font-bold tracking-tight mb-2" style={{ color: 'var(--theme-text, #111827)' }}>No detections found</p>
+          <p className="font-medium" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>
             {searchTerm ? 'Try a different search term or clear the filter.' : 'Launch the mobile app and start scanning waste to see your history here.'}
           </p>
         </motion.div>
@@ -485,22 +490,24 @@ const MyDetections = () => {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-white rounded-[2rem] shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
+              className="rounded-[2rem] shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
+              style={{ background: 'var(--theme-card, #ffffff)' }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="bg-white border-b border-gray-100 px-8 py-5 flex items-center justify-between z-10">
-                <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Detection Report</h2>
+              <div className="px-8 py-5 flex items-center justify-between z-10" style={{ background: 'var(--theme-card, #ffffff)', borderBottom: '1px solid var(--theme-border, #f0f0f0)' }}>
+                <h2 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>Detection Report</h2>
                 <button
                   onClick={closeDetails}
-                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-all active:scale-95"
+                  className="w-10 h-10 flex items-center justify-center rounded-xl transition-all active:scale-95"
+                  style={{ background: 'var(--theme-input-bg, #f1f5f9)', color: 'var(--theme-text-muted, #9ca3af)' }}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
               </div>
 
-              <div className="p-8 overflow-y-auto space-y-8">
+              <div className="p-8 overflow-y-auto space-y-8" style={{ background: 'var(--theme-bg, #ffffff)' }}>
                 {getDetectionImageUrl(selectedDetection) && (
-                  <div className="w-full bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 shadow-inner max-h-[400px]">
+                  <div className="w-full rounded-2xl overflow-hidden shadow-inner max-h-[400px]" style={{ background: 'var(--theme-input-bg, #f1f5f9)', border: '1px solid var(--theme-border, #f0f0f0)' }}>
                     <img
                       src={getDetectionImageUrl(selectedDetection)}
                       alt="Detection detail"
@@ -514,60 +521,60 @@ const MyDetections = () => {
                 )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6">
-                    <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-1">Items Found</p>
-                    <p className="text-4xl font-extrabold text-blue-900">{selectedDetection.summary?.total_detections || selectedDetection.detections?.length || 0}</p>
+                  <div className="rounded-2xl p-6" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)' }}>
+                    <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--theme-accent, #15803d)' }}>Items Found</p>
+                    <p className="text-4xl font-extrabold" style={{ color: 'var(--theme-text, #111827)' }}>{selectedDetection.summary?.total_detections || selectedDetection.detections?.length || 0}</p>
                   </div>
-                  <div className="bg-green-50 border border-green-100 rounded-2xl p-6">
-                    <p className="text-xs font-bold uppercase tracking-widest text-green-500 mb-1">Avg Confidence</p>
-                    <p className="text-4xl font-extrabold text-green-900">
+                  <div className="rounded-2xl p-6" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)' }}>
+                    <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--theme-accent, #15803d)' }}>Avg Confidence</p>
+                    <p className="text-4xl font-extrabold" style={{ color: 'var(--theme-text, #111827)' }}>
                       {selectedDetection.summary?.average_confidence
                         ? `${(selectedDetection.summary.average_confidence * 100).toFixed(1)}%`
                         : 'N/A'}
                     </p>
                   </div>
-                  <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6">
-                    <p className="text-xs font-bold uppercase tracking-widest text-amber-500 mb-1">Scanned Date</p>
-                    <p className="text-xl font-bold text-amber-900 mt-2 tracking-tight">{new Date(selectedDetection.createdAt).toLocaleDateString()}</p>
-                    <p className="text-xs font-bold text-amber-700/60 mt-0.5">{new Date(selectedDetection.createdAt).toLocaleTimeString()}</p>
+                  <div className="rounded-2xl p-6" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)' }}>
+                    <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--theme-accent, #15803d)' }}>Scanned Date</p>
+                    <p className="text-xl font-bold mt-2 tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>{new Date(selectedDetection.createdAt).toLocaleDateString()}</p>
+                    <p className="text-xs font-bold mt-0.5" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>{new Date(selectedDetection.createdAt).toLocaleTimeString()}</p>
                   </div>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-8">
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-4 tracking-tight">Classification Details</h3>
+                    <h3 className="text-xl font-bold mb-4 tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>Classification Details</h3>
                     {selectedDetection.detections?.length ? (
                       <div className="space-y-3">
                         {selectedDetection.detections.map((item, index) => (
-                          <div key={index} className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between group hover:border-slate-300 transition-colors">
-                            <p className="font-bold text-gray-900 capitalize tracking-wide">{item.class ? item.class.replace(/-/g, ' ') : item.name || 'Unknown item'}</p>
-                            <span className="font-bold bg-white px-3 py-1 rounded-lg border border-slate-200 text-sm shadow-sm group-hover:shadow text-green-600">
+                          <div key={index} className="rounded-xl p-4 flex items-center justify-between group transition-colors" style={{ background: 'var(--theme-input-bg, #f9fafb)', border: '1px solid var(--theme-border, #f0f0f0)' }}>
+                            <p className="font-bold capitalize tracking-wide" style={{ color: 'var(--theme-text, #111827)' }}>{item.class ? item.class.replace(/-/g, ' ') : item.name || 'Unknown item'}</p>
+                            <span className="font-bold px-3 py-1 rounded-lg text-sm shadow-sm" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-border, #f0f0f0)', color: 'var(--theme-accent, #15803d)' }}>
                               {item.confidence ? `${(item.confidence * 100).toFixed(1)}%` : 'N/A'}
                             </span>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <div className="bg-slate-50 border border-slate-200 p-6 rounded-2xl text-center">
-                        <p className="text-sm font-semibold text-gray-500">No specific items isolated in this image.</p>
+                      <div className="p-6 rounded-2xl text-center" style={{ background: 'var(--theme-input-bg, #f9fafb)', border: '1px solid var(--theme-border, #f0f0f0)' }}>
+                        <p className="text-sm font-semibold" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>No specific items isolated in this image.</p>
                       </div>
                     )}
                   </div>
 
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-4 tracking-tight">Recycling Path</h3>
+                      <h3 className="text-xl font-bold mb-4 tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>Recycling Path</h3>
                       {getWasteDisposalGuideEntries(selectedDetection).length ? (
                         <div className="space-y-4">
                           {getWasteDisposalGuideEntries(selectedDetection).map(([className, guide]) => (
-                            <div key={className} className="bg-green-50 border border-green-200 rounded-2xl p-5 relative overflow-hidden">
-                              <div className="absolute top-0 left-0 w-1.5 h-full bg-green-500 rounded-l-2xl"></div>
-                              <p className="font-bold text-green-900 capitalize text-lg tracking-tight mb-2">{className.replace(/-/g, ' ')}</p>
-                              <div className="inline-block bg-white text-green-800 font-extrabold uppercase tracking-widest text-[10px] px-3 py-1.5 rounded-lg border border-green-200 shadow-sm mb-3">
+                            <div key={className} className="rounded-2xl p-5 relative overflow-hidden" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)' }}>
+                              <div className="absolute top-0 left-0 w-1.5 h-full rounded-l-2xl" style={{ background: 'var(--theme-accent, #15803d)' }}></div>
+                              <p className="font-bold capitalize text-lg tracking-tight mb-2" style={{ color: 'var(--theme-text, #111827)' }}>{className.replace(/-/g, ' ')}</p>
+                              <div className="inline-block font-extrabold uppercase tracking-widest text-[10px] px-3 py-1.5 rounded-lg shadow-sm mb-3" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)', color: 'var(--theme-accent, #15803d)' }}>
                                 {guide.bin || 'residual'}
                               </div>
                               {Array.isArray(guide.instructions) && guide.instructions.length > 0 && (
-                                <ul className="list-disc list-inside text-sm text-green-800 space-y-1.5 font-medium ml-1">
+                                <ul className="list-disc list-inside text-sm space-y-1.5 font-medium ml-1" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>
                                   {guide.instructions.map((instruction, index) => (
                                     <li key={`${className}-instruction-${index}`}>{instruction}</li>
                                   ))}
@@ -577,7 +584,7 @@ const MyDetections = () => {
                           ))}
                         </div>
                       ) : (
-                        <p className="text-sm text-gray-500 font-medium">No waste disposal data connected.</p>
+                        <p className="text-sm font-medium" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>No waste disposal data connected.</p>
                       )}
                     </div>
                   </div>
@@ -602,7 +609,8 @@ const MyDetections = () => {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-white rounded-[2rem] shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col"
+              className="rounded-[2rem] shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col"
+              style={{ background: 'var(--theme-card, #ffffff)' }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 px-8 py-6 flex items-center justify-between shadow-sm z-10 shrink-0">
@@ -620,20 +628,20 @@ const MyDetections = () => {
                 </button>
               </div>
 
-              <div className="p-8 overflow-y-auto w-full grid md:grid-cols-2 gap-8 bg-slate-50">
+              <div className="p-8 overflow-y-auto w-full grid md:grid-cols-2 gap-8" style={{ background: 'var(--theme-bg, #f8fafc)' }}>
                 {/* Left side: map */}
                 <div className="w-full">
                   {userLocation && (
-                    <div className="rounded-[2rem] overflow-hidden border border-gray-200 shadow-md bg-white">
+                    <div className="rounded-[2rem] overflow-hidden shadow-md" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-border, #f0f0f0)' }}>
                       <iframe
                         title="Current location map"
                         src={getUserLocationMapEmbedUrl()}
                         className="w-full h-[400px] md:h-[500px]"
                         loading="lazy"
                       />
-                      <div className="bg-white px-6 py-4 border-t border-gray-100 flex items-center gap-3">
+                      <div className="px-6 py-4 flex items-center gap-3" style={{ background: 'var(--theme-card, #ffffff)', borderTop: '1px solid var(--theme-border, #f0f0f0)' }}>
                         <div className="w-3 h-3 bg-blue-500 rounded-full border-2 border-white shadow-[0_0_0_2px_rgba(59,130,246,0.3)] animate-pulse"></div>
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+                        <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>
                           Your Position
                         </p>
                       </div>
@@ -645,33 +653,33 @@ const MyDetections = () => {
                 <div className="w-full overflow-y-auto max-h-[500px] pr-2 space-y-4">
                   {disposalLocations.length > 0 ? (
                     disposalLocations.map((location, index) => (
-                      <div key={location._id} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all">
+                      <div key={location._id} className="rounded-2xl p-6 shadow-sm hover:shadow-md transition-all" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
                         <div className="flex items-start justify-between mb-4">
                           <div>
                             <div className="flex items-center gap-3 mb-1.5">
-                              <span className="flex items-center justify-center bg-emerald-100 text-emerald-800 text-sm font-extrabold w-8 h-8 rounded-lg shadow-sm">
+                              <span className="flex items-center justify-center text-sm font-extrabold w-8 h-8 rounded-lg shadow-sm" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', color: 'var(--theme-accent, #15803d)' }}>
                                 {index + 1}
                               </span>
-                              <h3 className="text-xl font-bold text-gray-900 tracking-tight">{location.name}</h3>
+                              <h3 className="text-xl font-bold tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>{location.name}</h3>
                             </div>
-                            <p className="text-sm font-medium text-gray-500 mb-2.5 ml-11">{location.address}</p>
-                            <div className="ml-11 inline-block bg-slate-100 border border-slate-200 px-3 py-1 rounded-lg">
-                              <p className="text-xs font-extrabold text-gray-600 uppercase tracking-widest">{location.distanceText} drive</p>
+                            <p className="text-sm font-medium mb-2.5 ml-11" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>{location.address}</p>
+                            <div className="ml-11 inline-block px-3 py-1 rounded-lg" style={{ background: 'var(--theme-input-bg, #f1f5f9)', border: '1px solid var(--theme-border, #f0f0f0)' }}>
+                              <p className="text-xs font-extrabold uppercase tracking-widest" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>{location.distanceText} drive</p>
                             </div>
                           </div>
                         </div>
 
                         {location.acceptedWasteTypes && (
-                          <div className="mt-5 pt-4 border-t border-gray-100">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Facility Accepts</p>
+                          <div className="mt-5 pt-4" style={{ borderTop: '1px solid var(--theme-border, #f0f0f0)' }}>
+                            <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>Facility Accepts</p>
                             <div className="flex flex-wrap gap-2">
                               {location.acceptedWasteTypes.slice(0, 4).map((type, i) => (
-                                <span key={i} className="px-3 py-1.5 bg-green-50 border border-green-100 text-green-700 text-xs font-bold rounded-lg lowercase tracking-wide">
+                                <span key={i} className="px-3 py-1.5 text-xs font-bold rounded-lg lowercase tracking-wide" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)', color: 'var(--theme-accent, #15803d)' }}>
                                   {type}
                                 </span>
                               ))}
                               {location.acceptedWasteTypes.length > 4 && (
-                                <span className="px-3 py-1.5 bg-slate-50 border border-slate-200 text-slate-500 text-xs font-bold rounded-lg">
+                                <span className="px-3 py-1.5 text-xs font-bold rounded-lg" style={{ background: 'var(--theme-input-bg, #f1f5f9)', border: '1px solid var(--theme-border, #f0f0f0)', color: 'var(--theme-text-muted, #9ca3af)' }}>
                                   +{location.acceptedWasteTypes.length - 4} items
                                 </span>
                               )}
@@ -681,7 +689,8 @@ const MyDetections = () => {
 
                         <button
                           onClick={() => handleOpenMap(location)}
-                          className="w-full mt-6 bg-slate-900 hover:bg-black text-white font-bold tracking-wide uppercase text-xs py-3.5 px-4 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
+                          className="w-full mt-6 text-white font-bold tracking-wide uppercase text-xs py-3.5 px-4 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
+                          style={{ background: 'var(--theme-accent, #15803d)' }}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -691,15 +700,15 @@ const MyDetections = () => {
                       </div>
                     ))
                   ) : (
-                    <div className="h-full flex flex-col items-center justify-center py-16 px-6 text-center border-2 border-dashed border-gray-200 rounded-3xl bg-white">
-                      <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mb-6 border border-slate-100 shadow-sm">
-                        <svg className="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="h-full flex flex-col items-center justify-center py-16 px-6 text-center rounded-3xl" style={{ background: 'var(--theme-card, #ffffff)', border: '2px dashed var(--theme-border, #e5e7eb)' }}>
+                      <div className="w-20 h-20 rounded-3xl flex items-center justify-center mb-6 shadow-sm" style={{ background: 'var(--theme-input-bg, #f8fafc)', border: '1px solid var(--theme-border, #f0f0f0)' }}>
+                        <svg className="w-10 h-10" fill="none" stroke="var(--theme-text-muted, #cbd5e1)" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                       </div>
-                      <p className="text-gray-900 font-bold text-xl tracking-tight mb-2">No facilities located nearby</p>
-                      <p className="text-gray-500 font-medium text-sm leading-relaxed max-w-sm">We couldn't lock onto any affiliated disposal drop-offs in your specific region. Please check with local sorting authorities.</p>
+                      <p className="font-bold text-xl tracking-tight mb-2" style={{ color: 'var(--theme-text, #111827)' }}>No facilities located nearby</p>
+                      <p className="font-medium text-sm leading-relaxed max-w-sm" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>We couldn't lock onto any affiliated disposal drop-offs in your specific region. Please check with local sorting authorities.</p>
                     </div>
                   )}
                 </div>

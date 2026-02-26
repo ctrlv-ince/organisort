@@ -31,4 +31,4 @@ export const semanticColorClasses = {
   },
 };
 
-export const cardBaseClass = 'rounded-[2rem] border border-gray-100 bg-white shadow-sm hover:shadow-lg transition-all duration-300';
+export const cardBaseClass = 'rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300';

@@ -88,14 +88,14 @@ const ScanWaste = () => {
         <InfoCard className="p-8">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-32 h-32 rounded-full mb-6 bg-primary/10">
-              <svg className="w-16 h-16 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-16 h-16" fill="none" stroke="var(--theme-accent, #15803d)" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--theme-text, #111827)' }}>
               Download OrganiSort Mobile
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="max-w-2xl mx-auto" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>
               Our AI-powered waste detection uses your device's camera for real-time scanning.
               Download the mobile app to start detecting organic waste on the go!
             </p>
@@ -111,16 +111,16 @@ const ScanWaste = () => {
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-800 mb-1">{feature.title}</h3>
-                  <p className="text-sm text-gray-600">{feature.description}</p>
+                  <h3 className="font-bold mb-1" style={{ color: 'var(--theme-text, #111827)' }}>{feature.title}</h3>
+                  <p className="text-sm" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>{feature.description}</p>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Download Links */}
-          <div className="border-t border-gray-200 pt-8">
-            <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
+          <div className="pt-8" style={{ borderTop: '1px solid var(--theme-border, #e5e7eb)' }}>
+            <h3 className="text-xl font-bold mb-4 text-center" style={{ color: 'var(--theme-text, #111827)' }}>
               Download Now
             </h3>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -150,7 +150,7 @@ const ScanWaste = () => {
                 </div>
               </a>
             </div>
-            <p className="text-center text-sm text-gray-500 mt-4">
+            <p className="text-center text-sm mt-4" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>
               Coming soon to iOS and Android
             </p>
           </div>
@@ -190,25 +190,25 @@ const ScanWaste = () => {
       {/* FAQ Section */}
       <motion.div variants={itemVariants}>
         <InfoCard>
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Frequently Asked Questions</h3>
+          <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--theme-text, #111827)' }}>Frequently Asked Questions</h3>
           <div className="space-y-4">
             <div>
-              <h4 className="font-semibold text-gray-800 mb-2">Why can't I scan on the website?</h4>
-              <p className="text-gray-600 text-sm">
+              <h4 className="font-semibold mb-2" style={{ color: 'var(--theme-text, #111827)' }}>Why can't I scan on the website?</h4>
+              <p className="text-sm" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>
                 Our AI waste detection requires camera access and works best on mobile devices.
                 The mobile app provides optimized performance and a better user experience for real-time scanning.
               </p>
             </div>
             <div>
-              <h4 className="font-semibold text-gray-800 mb-2">Is the mobile app free?</h4>
-              <p className="text-gray-600 text-sm">
+              <h4 className="font-semibold mb-2" style={{ color: 'var(--theme-text, #111827)' }}>Is the mobile app free?</h4>
+              <p className="text-sm" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>
                 Yes! The OrganiSort mobile app is completely free to download and use.
                 All detection features are included at no cost.
               </p>
             </div>
             <div>
-              <h4 className="font-semibold text-gray-800 mb-2">Will my scans sync to the web?</h4>
-              <p className="text-gray-600 text-sm">
+              <h4 className="font-semibold mb-2" style={{ color: 'var(--theme-text, #111827)' }}>Will my scans sync to the web?</h4>
+              <p className="text-sm" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>
                 Absolutely! All scans made on the mobile app automatically sync to your account,
                 so you can view your history and stats on both mobile and web.
               </p>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { ThemeProvider } from '../../context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Import user pages
@@ -134,40 +135,40 @@ const UserDashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex h-screen bg-slate-50 overflow-hidden">
+      <div className="flex h-screen overflow-hidden" style={{ background: 'var(--theme-bg, #ffffff)' }}>
         {/* Sidebar skeleton */}
-        <aside className="hidden lg:block w-64 bg-gradient-to-b from-green-700 to-green-900 text-white shadow-2xl">
-          <div className="p-6 border-b border-green-600">
+        <aside className="hidden lg:flex flex-col w-64" style={{ background: 'var(--theme-sidebar, #ffffff)', borderRight: '1px solid var(--theme-border, #f0f0f0)' }}>
+          <div className="p-6" style={{ borderBottom: '1px solid var(--theme-border, #f0f0f0)' }}>
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-green-600 rounded-full" />
+              <div className="w-10 h-10 rounded-xl" style={{ background: 'var(--theme-card-hover, #f3f4f6)' }} />
               <div className="space-y-2">
-                <div className="bg-green-600 h-5 w-24 rounded" />
-                <div className="bg-green-600 h-3 w-16 rounded" />
+                <div className="h-4 w-20 rounded-lg" style={{ background: 'var(--theme-card-hover, #f3f4f6)' }} />
+                <div className="h-3 w-14 rounded-lg" style={{ background: 'var(--theme-card-hover, #f3f4f6)' }} />
               </div>
             </div>
           </div>
-          <div className="p-4 space-y-3">
+          <div className="p-4 space-y-2">
             {[1, 2, 3, 4, 5, 6, 7].map(i => (
-              <div key={i} className="bg-green-600 h-10 rounded-lg" />
+              <div key={i} className="h-10 rounded-xl" style={{ background: 'var(--theme-card-hover, #f3f4f6)' }} />
             ))}
           </div>
         </aside>
         {/* Content skeleton */}
-        <div className="flex-1 p-6 space-y-6 overflow-y-auto">
-          <div className="skeleton-shimmer h-24 rounded-lg" />
+        <div className="flex-1 p-8 space-y-6 overflow-y-auto" style={{ background: 'var(--theme-bg-alt, #f9fafb)' }}>
+          <div className="skeleton-shimmer h-24 rounded-[2rem]" />
           <div className="grid md:grid-cols-3 gap-6">
             {[1, 2, 3].map(i => (
-              <div key={i} className="bg-white rounded-lg shadow-md p-6 space-y-3">
-                <div className="skeleton-shimmer h-12 w-12 rounded-full" />
-                <div className="skeleton-shimmer h-8 w-16" />
-                <div className="skeleton-shimmer h-4 w-24" />
+              <div key={i} className="rounded-[2rem] p-8 space-y-4" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+                <div className="skeleton-shimmer h-14 w-14 rounded-2xl" />
+                <div className="skeleton-shimmer h-10 w-20" />
+                <div className="skeleton-shimmer h-4 w-28" />
               </div>
             ))}
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6 space-y-4">
+          <div className="rounded-[2rem] p-8 space-y-4" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
             <div className="skeleton-shimmer h-6 w-40" />
             {[1, 2, 3].map(i => (
-              <div key={i} className="skeleton-shimmer h-16 rounded-lg" />
+              <div key={i} className="skeleton-shimmer h-16 rounded-2xl" />
             ))}
           </div>
         </div>
@@ -176,143 +177,160 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
-      {/* Sidebar */}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-green-700 to-green-900 text-white shadow-2xl transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
-        {/* Sidebar Header */}
-        <div className="p-6 border-b border-green-600">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
-                <svg className="w-7 h-7 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+    <ThemeProvider userData={userData}>
+      <div className="flex h-screen overflow-hidden" style={{ background: 'var(--theme-bg, #ffffff)' }}>
+        {/* Sidebar */}
+        <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 flex flex-col transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`} style={{ background: 'var(--theme-sidebar, #ffffff)', borderRight: '1px solid var(--theme-border, #f0f0f0)' }}>
+          {/* Sidebar Header */}
+          <div className="p-6" style={{ borderBottom: '1px solid var(--theme-border, #f0f0f0)' }}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)' }}>
+                  <svg className="w-6 h-6" fill="none" stroke="var(--theme-accent, #15803d)" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>OrganiSort</h2>
+                  <p className="text-xs font-medium" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>User Portal</p>
+                </div>
+              </div>
+              {/* Mobile close button */}
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="lg:hidden hover:opacity-80"
+                style={{ color: 'var(--theme-text-muted, #9ca3af)' }}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
-              </div>
-              <div>
-                <h2 className="text-lg font-bold">OrganiSort</h2>
-                <p className="text-xs text-green-200">User Portal</p>
-              </div>
-            </div>
-            {/* Mobile close button */}
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="lg:hidden text-white hover:text-green-200"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        {/* User Info */}
-        <div className="p-4 bg-green-800 bg-opacity-50 border-b border-green-600">
-          <div className="flex items-center space-x-3">
-            {user?.photoURL ? (
-              <img src={user.photoURL} alt="User" className="w-12 h-12 rounded-full border-2 border-green-300" />
-            ) : (
-              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center text-xl font-bold">
-                {userData?.displayName?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">
-                {userData?.displayName || user?.email?.split('@')[0] || 'User'}
-              </p>
-              <p className="text-xs text-green-200 truncate">{user?.email}</p>
+              </button>
             </div>
           </div>
-        </div>
 
-        {/* Navigation Menu */}
-        <nav className="p-4 space-y-2 flex-1 overflow-y-auto">
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => {
-                setActiveTab(item.id);
-                setSidebarOpen(false);
-              }}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${activeTab === item.id
-                ? 'bg-white text-green-800 shadow-lg font-semibold'
-                : 'text-green-100 hover:bg-green-600 hover:text-white'
-                }`}
-            >
-              <span className={activeTab === item.id ? 'text-green-700' : ''}>
-                {item.icon}
-              </span>
-              <span className="text-sm">{item.label}</span>
-            </button>
-          ))}
-        </nav>
-
-        <div className="px-4 pb-2">
-          <LandingPageButton variant="sidebar" />
-        </div>
-
-        {/* Logout Button */}
-        <div className="p-4 border-t border-green-600">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-semibold"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            <span>Logout</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Navbar */}
-        <header className="bg-white shadow-md border-b border-gray-200 lg:hidden">
-          <div className="flex items-center justify-between px-4 py-3">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="text-gray-600 hover:text-green-700"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            <h1 className="text-lg font-bold text-gray-800">OrganiSort</h1>
-            <div className="w-6"></div> {/* Spacer for alignment */}
+          {/* User Info */}
+          <div className="p-4" style={{ borderBottom: '1px solid var(--theme-border, #f0f0f0)' }}>
+            <div className="flex items-center space-x-3 p-3 rounded-xl" style={{ background: 'var(--theme-sidebar-hover, #f3f4f6)' }}>
+              {user?.photoURL ? (
+                <img src={user.photoURL} alt="User" className="w-10 h-10 rounded-xl object-cover" style={{ border: '1px solid var(--theme-border, #f0f0f0)' }} />
+              ) : (
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)', color: 'var(--theme-accent, #15803d)' }}>
+                  {userData?.displayName?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold truncate" style={{ color: 'var(--theme-text, #111827)' }}>
+                  {userData?.displayName || user?.email?.split('@')[0] || 'User'}
+                </p>
+                <p className="text-xs truncate" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>{user?.email}</p>
+              </div>
+            </div>
           </div>
-        </header>
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-y-auto relative">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
-              className="min-h-full"
+          {/* Navigation Menu */}
+          <nav className="p-3 space-y-1 flex-1 overflow-y-auto">
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActiveTab(item.id);
+                  setSidebarOpen(false);
+                }}
+                className="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl transition-all duration-200"
+                style={
+                  activeTab === item.id
+                    ? {
+                      background: 'var(--theme-sidebar-active, #f0fdf4)',
+                      color: 'var(--theme-sidebar-active-text, #15803d)',
+                      fontWeight: 600,
+                      border: '1px solid var(--theme-accent-surface-border, #bbf7d0)',
+                    }
+                    : {
+                      color: 'var(--theme-sidebar-text, #6b7280)',
+                      fontWeight: 500,
+                      border: '1px solid transparent',
+                    }
+                }
+                onMouseEnter={(e) => { if (activeTab !== item.id) e.currentTarget.style.background = 'var(--theme-sidebar-hover, #f3f4f6)'; }}
+                onMouseLeave={(e) => { if (activeTab !== item.id) e.currentTarget.style.background = 'transparent'; }}
+              >
+                <span style={{ color: activeTab === item.id ? 'var(--theme-accent, #15803d)' : 'var(--theme-text-muted, #9ca3af)' }}>
+                  {item.icon}
+                </span>
+                <span className="text-sm">{item.label}</span>
+              </button>
+            ))}
+          </nav>
+
+          <div className="px-4 pb-2">
+            <LandingPageButton variant="sidebar" />
+          </div>
+
+          {/* Logout Button */}
+          <div className="p-4" style={{ borderTop: '1px solid var(--theme-border, #f0f0f0)' }}>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-all duration-200 font-semibold text-sm"
             >
-              {activeTab === 'home' && <UserHome userData={userData} setActiveTab={setActiveTab} />}
-              {activeTab === 'scan' && <ScanWaste />}
-              {activeTab === 'detections' && <MyDetections />}
-              {activeTab === 'achievements' && <Achievements userData={userData} />}
-              {activeTab === 'leaderboard' && <Leaderboard userData={userData} />}
-              {activeTab === 'profile' && <UserProfile userData={userData} setUserData={setUserData} />}
-              {activeTab === 'settings' && <UserSettings userData={userData} />}
-            </motion.div>
-          </AnimatePresence>
-        </main>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <span>Logout</span>
+            </button>
+          </div>
+        </aside>
+
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Top Navbar (mobile) */}
+          <header className="lg:hidden" style={{ background: 'var(--theme-navbar, #ffffff)', borderBottom: '1px solid var(--theme-navbar-border, #f0f0f0)' }}>
+            <div className="flex items-center justify-between px-4 py-3">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="hover:opacity-80 transition-colors"
+                style={{ color: 'var(--theme-text-muted, #9ca3af)' }}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+              <h1 className="text-sm font-bold tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>OrganiSort</h1>
+              <div className="w-5"></div>
+            </div>
+          </header>
+
+          {/* Page Content */}
+          <main className="flex-1 overflow-y-auto relative" style={{ background: 'var(--theme-bg-alt, #f9fafb)' }}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+                className="min-h-full"
+              >
+                {activeTab === 'home' && <UserHome userData={userData} setActiveTab={setActiveTab} />}
+                {activeTab === 'scan' && <ScanWaste />}
+                {activeTab === 'detections' && <MyDetections />}
+                {activeTab === 'achievements' && <Achievements userData={userData} />}
+                {activeTab === 'leaderboard' && <Leaderboard userData={userData} />}
+                {activeTab === 'profile' && <UserProfile userData={userData} setUserData={setUserData} />}
+                {activeTab === 'settings' && <UserSettings userData={userData} />}
+              </motion.div>
+            </AnimatePresence>
+          </main>
+        </div>
+
+        {/* Overlay for mobile */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          ></div>
+        )}
       </div>
-
-      {/* Overlay for mobile */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        ></div>
-      )}
-    </div>
+    </ThemeProvider>
   );
 };
 

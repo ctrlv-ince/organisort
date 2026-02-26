@@ -11,18 +11,24 @@ export default function AppLayout() {
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: '#10b981',
-          tabBarInactiveTintColor: '#9ca3af',
+          tabBarInactiveTintColor: '#c4c4c6',
           tabBarStyle: {
             backgroundColor: 'white',
-            borderTopWidth: 1,
+            borderTopWidth: 0.5,
             borderTopColor: '#e5e7eb',
-            height: Platform.OS === 'ios' ? 88 : 60,
-            paddingBottom: Platform.OS === 'ios' ? 24 : 8,
-            paddingTop: 8,
+            height: Platform.OS === 'ios' ? 90 : 64,
+            paddingBottom: Platform.OS === 'ios' ? 28 : 10,
+            paddingTop: 10,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: -1 },
+            shadowOpacity: 0.03,
+            shadowRadius: 8,
+            elevation: 8,
           },
           tabBarLabelStyle: {
-            fontSize: 12,
-            fontWeight: '600',
+            fontSize: 11,
+            fontWeight: '700',
+            letterSpacing: 0.2,
           },
         }}
       >

@@ -18,7 +18,7 @@ const PrimaryButton = ({
   <button
     type={type}
     disabled={disabled}
-    className={`inline-flex items-center justify-center rounded-xl px-6 py-3 font-bold transition-all duration-300 ease-out focus:outline-none focus:ring-4 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${variantStyles[variant] || variantStyles.primary} ${className}`}
+    className={`inline-flex items-center justify-center rounded-2xl px-6 py-3 font-extrabold transition-all duration-300 ease-out focus:outline-none focus:ring-4 hover:scale-[1.01] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${variantStyles[variant] || variantStyles.primary} ${className}`}
     {...props}
   >
     {children}

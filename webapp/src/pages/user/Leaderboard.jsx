@@ -68,7 +68,7 @@ const Leaderboard = ({ userData }) => {
         <div className="skeleton-shimmer h-32 rounded-[2rem]" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white rounded-[2rem] shadow-sm p-8 space-y-4 border border-gray-100">
+            <div key={i} className="rounded-[2rem] shadow-sm p-8 space-y-4" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
               <div className="skeleton-shimmer h-4 w-24" />
               <div className="skeleton-shimmer h-8 w-16" />
             </div>
@@ -102,17 +102,17 @@ const Leaderboard = ({ userData }) => {
 
       {/* Stats summary */}
       <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-lg transition-all border border-gray-100 p-8">
-          <p className="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-1">Participants</p>
-          <p className="text-4xl font-extrabold text-gray-900">{users.length}</p>
+        <div className="rounded-[2rem] shadow-sm hover:shadow-lg transition-all p-8" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <p className="text-sm font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>Participants</p>
+          <p className="text-4xl font-extrabold" style={{ color: 'var(--theme-text, #111827)' }}>{users.length}</p>
         </div>
-        <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-lg transition-all border border-gray-100 p-8">
-          <p className="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-1">Total Scans</p>
-          <p className="text-4xl font-extrabold text-green-600">{totalScans}</p>
+        <div className="rounded-[2rem] shadow-sm hover:shadow-lg transition-all p-8" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <p className="text-sm font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>Total Scans</p>
+          <p className="text-4xl font-extrabold" style={{ color: 'var(--theme-accent, #15803d)' }}>{totalScans}</p>
         </div>
-        <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-lg transition-all border border-gray-100 p-8">
-          <p className="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-1">Top Score</p>
-          <p className="text-4xl font-extrabold text-blue-600">{users[0]?.detectionCount || 0}</p>
+        <div className="rounded-[2rem] shadow-sm hover:shadow-lg transition-all p-8" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <p className="text-sm font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>Top Score</p>
+          <p className="text-4xl font-extrabold" style={{ color: 'var(--theme-accent, #15803d)' }}>{users[0]?.detectionCount || 0}</p>
         </div>
       </motion.div>
 
@@ -146,70 +146,70 @@ const Leaderboard = ({ userData }) => {
       {users.length >= 3 && (
         <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
           {/* 2nd Place */}
-          <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-xl transition-all p-8 text-center border border-gray-100 relative mt-4 md:mt-12 md:order-1">
+          <div className="rounded-[2rem] shadow-sm hover:shadow-xl transition-all p-8 text-center relative mt-4 md:mt-12 md:order-1" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
             <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-6xl drop-shadow-md">🥈</div>
             <div className="mt-8">
-              <p className="font-extrabold text-gray-900 text-xl truncate">{users[1]?.displayName || users[1]?.email}</p>
-              <p className="text-3xl font-black text-slate-400 mt-2">{users[1]?.detectionCount || 0}</p>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">scans</p>
+              <p className="font-extrabold text-xl truncate" style={{ color: 'var(--theme-text, #111827)' }}>{users[1]?.displayName || users[1]?.email}</p>
+              <p className="text-3xl font-black mt-2" style={{ color: 'var(--theme-text-muted, #94a3b8)' }}>{users[1]?.detectionCount || 0}</p>
+              <p className="text-xs font-bold uppercase tracking-widest mt-1" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>scans</p>
             </div>
           </div>
           {/* 1st Place */}
-          <div className="bg-gradient-to-b from-amber-50 to-white rounded-[2rem] shadow-lg hover:shadow-xl transition-all p-8 text-center border-2 border-amber-200 relative z-10 md:order-2">
+          <div className="rounded-[2rem] shadow-lg hover:shadow-xl transition-all p-8 text-center relative z-10 md:order-2" style={{ background: 'var(--theme-card, #ffffff)', border: '2px solid var(--theme-accent, #15803d)' }}>
             <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 text-8xl drop-shadow-lg">🥇</div>
             <div className="mt-12">
-              <p className="font-extrabold text-gray-900 text-2xl truncate">{users[0]?.displayName || users[0]?.email}</p>
-              <p className="text-5xl font-black text-amber-500 mt-3">{users[0]?.detectionCount || 0}</p>
-              <p className="text-xs font-bold text-amber-600/60 uppercase tracking-widest mt-1">scans</p>
+              <p className="font-extrabold text-2xl truncate" style={{ color: 'var(--theme-text, #111827)' }}>{users[0]?.displayName || users[0]?.email}</p>
+              <p className="text-5xl font-black mt-3" style={{ color: 'var(--theme-accent, #15803d)' }}>{users[0]?.detectionCount || 0}</p>
+              <p className="text-xs font-bold uppercase tracking-widest mt-1" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>scans</p>
             </div>
           </div>
           {/* 3rd Place */}
-          <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-xl transition-all p-8 text-center border border-gray-100 relative mt-4 md:mt-16 md:order-3">
+          <div className="rounded-[2rem] shadow-sm hover:shadow-xl transition-all p-8 text-center relative mt-4 md:mt-16 md:order-3" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
             <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-6xl drop-shadow-md">🥉</div>
             <div className="mt-8">
-              <p className="font-extrabold text-gray-900 text-xl truncate">{users[2]?.displayName || users[2]?.email}</p>
-              <p className="text-3xl font-black text-orange-400 mt-2">{users[2]?.detectionCount || 0}</p>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">scans</p>
+              <p className="font-extrabold text-xl truncate" style={{ color: 'var(--theme-text, #111827)' }}>{users[2]?.displayName || users[2]?.email}</p>
+              <p className="text-3xl font-black mt-2" style={{ color: 'var(--theme-accent, #15803d)' }}>{users[2]?.detectionCount || 0}</p>
+              <p className="text-xs font-bold uppercase tracking-widest mt-1" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>scans</p>
             </div>
           </div>
         </motion.div>
       )}
 
       {/* Full Rankings */}
-      <motion.div variants={itemVariants} className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
-        <div className="bg-slate-50/50 px-8 py-6 border-b border-gray-100">
-          <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">All Rankings</h2>
+      <motion.div variants={itemVariants} className="rounded-[2rem] shadow-sm overflow-hidden" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+        <div className="px-8 py-6" style={{ background: 'var(--theme-input-bg, #f8fafc)', borderBottom: '1px solid var(--theme-border, #f0f0f0)' }}>
+          <h2 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>All Rankings</h2>
         </div>
-        <div className="divide-y divide-gray-100">
+        <div style={{ borderColor: 'var(--theme-border, #f0f0f0)' }}>
           {users.map((user, idx) => (
-            <div key={user._id} className={`px-8 py-5 transition-all cursor-default ${user._id === userData?._id ? 'bg-green-50/50 relative' : 'hover:bg-slate-50/50'}`}>
-              {user._id === userData?._id && <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-green-500 rounded-r-md"></div>}
+            <div key={user._id} className="px-8 py-5 transition-all cursor-default" style={{ borderBottom: '1px solid var(--theme-border, #f0f0f0)', background: user._id === userData?._id ? 'var(--theme-accent-surface, #f0fdf4)' : 'transparent', position: 'relative' }}>
+              {user._id === userData?._id && <div className="absolute left-0 top-0 bottom-0 w-1.5 rounded-r-md" style={{ background: 'var(--theme-accent, #15803d)' }}></div>}
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-5">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg border ${idx < 3 ? 'bg-white shadow-sm border-amber-200 text-amber-500' : 'bg-slate-100 border-slate-200 text-slate-500'}`}>
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg`} style={idx < 3 ? { background: 'var(--theme-accent-surface, #f0fdf4)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)', color: 'var(--theme-accent, #15803d)' } : { background: 'var(--theme-input-bg, #f1f5f9)', border: '1px solid var(--theme-border, #f0f0f0)', color: 'var(--theme-text-muted, #94a3b8)' }}>
                     #{idx + 1}
                   </div>
                   <div>
-                    <p className="font-bold text-gray-900 text-lg flex items-center tracking-tight">
+                    <p className="font-bold text-lg flex items-center tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>
                       {user.displayName || user.email}
                       {user._id === userData?._id && (
                         <span className="ml-3 text-[10px] font-black tracking-wider uppercase bg-green-100 text-green-700 px-2 py-0.5 rounded-full">You</span>
                       )}
                     </p>
-                    <p className="text-sm text-gray-500 font-medium">{user.email}</p>
+                    <p className="text-sm font-medium" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>{user.email}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-3xl font-black text-gray-900">{user.detectionCount || 0}</p>
-                  <p className="text-[10px] font-bold tracking-widest uppercase text-gray-400">Total Scans</p>
+                  <p className="text-3xl font-black" style={{ color: 'var(--theme-text, #111827)' }}>{user.detectionCount || 0}</p>
+                  <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>Total Scans</p>
                 </div>
               </div>
             </div>
           ))}
           {users.length === 0 && (
             <div className="px-8 py-16 text-center">
-              <p className="text-gray-900 font-bold text-xl mb-1">No rankings available yet.</p>
-              <p className="text-sm text-gray-500 font-medium">Start scanning waste to appear on the leaderboard.</p>
+              <p className="font-bold text-xl mb-1" style={{ color: 'var(--theme-text, #111827)' }}>No rankings available yet.</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>Start scanning waste to appear on the leaderboard.</p>
             </div>
           )}
         </div>

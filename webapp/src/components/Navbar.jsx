@@ -18,12 +18,12 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-md border-b border-gray-200">
+    <nav className="bg-white border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <h1 className="text-xl font-bold text-gray-800">OrganiSort</h1>
+            <h1 className="text-base font-extrabold text-gray-900 tracking-tight">OrganiSort</h1>
           </div>
 
           {/* User Section */}
@@ -36,17 +36,17 @@ const Navbar = () => {
                     <img
                       src={user.photoURL}
                       alt={user.displayName || 'User'}
-                      className="w-10 h-10 rounded-full border-2 border-gray-200 object-cover"
+                      className="w-9 h-9 rounded-xl border border-gray-200 object-cover"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center border-2 border-gray-200">
-                      <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center border border-green-100">
+                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                     </div>
                   )}
                   <div className="hidden sm:block">
-                    <p className="text-sm font-medium text-gray-800">
+                    <p className="text-sm font-semibold text-gray-900">
                       {user.displayName || user.email}
                     </p>
                     <p className="text-xs text-gray-500">{user.email}</p>
@@ -58,7 +58,7 @@ const Navbar = () => {
                 {/* Logout Button */}
                 <button
                   onClick={handleLogout}
-                  className="ml-4 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 font-medium text-sm rounded-lg transition duration-200"
+                  className="ml-2 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 font-semibold text-sm rounded-xl transition-all duration-200"
                 >
                   Logout
                 </button>

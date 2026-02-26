@@ -343,8 +343,8 @@ const LandingPage = () => {
         >
           <motion.div className="max-w-7xl mx-auto px-6 lg:px-8 mb-8 flex justify-between items-end" variants={fadeUp}>
             <div>
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 mb-2">Capabilities.</h2>
-              <p className="text-xl text-gray-500 font-medium">The core mechanics of the system.</p>
+              <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-gray-900 mb-1">Capabilities</h2>
+              <p className="text-base text-gray-400 font-medium">The core mechanics of the system.</p>
             </div>
             <div className="hidden md:flex gap-3">
               <button onClick={() => scrollContainer(featuresRef, 'left')} className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
@@ -366,12 +366,12 @@ const LandingPage = () => {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="min-w-[320px] max-w-[320px] md:min-w-[400px] md:max-w-[400px] snap-center bg-gray-50 rounded-3xl p-8 hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col justify-between group"
+                className="min-w-[320px] max-w-[320px] md:min-w-[400px] md:max-w-[400px] snap-center bg-white rounded-[2.5rem] p-8 hover:shadow-md transition-all duration-300 border border-gray-100 flex flex-col justify-between group"
               >
                 <div>
                   <div className="text-5xl mb-6 transform group-hover:scale-110 transition-transform origin-left">{feature.icon}</div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-                  <p className="text-gray-600 text-lg leading-relaxed">{feature.description}</p>
+                  <h3 className="text-xl font-extrabold text-gray-900 mb-3 tracking-tight">{feature.title}</h3>
+                  <p className="text-gray-500 text-base leading-relaxed font-medium">{feature.description}</p>
                 </div>
                 <div className="mt-8 pt-6 border-t border-gray-200">
                   <p className="text-gray-500 text-sm font-medium">{feature.details}</p>
@@ -392,8 +392,8 @@ const LandingPage = () => {
         >
           <motion.div className="max-w-7xl mx-auto px-6 lg:px-8 mb-8 flex justify-between items-end" variants={fadeUp}>
             <div>
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 mb-2">Modules.</h2>
-              <p className="text-xl text-gray-500 font-medium">Built-in platform experiences.</p>
+              <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-gray-900 mb-1">Modules</h2>
+              <p className="text-base text-gray-400 font-medium">Built-in platform experiences.</p>
             </div>
             <div className="hidden md:flex gap-3">
               <button onClick={() => scrollContainer(modulesRef, 'left')} className="p-3 rounded-full bg-white shadow-sm hover:shadow-md transition-shadow border border-gray-100">
@@ -414,7 +414,7 @@ const LandingPage = () => {
             {modules.map((mod) => (
               <div
                 key={mod.id}
-                className="min-w-[300px] max-w-[300px] snap-center bg-white rounded-[2rem] p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 group relative overflow-hidden"
+                className="min-w-[300px] max-w-[300px] snap-center bg-white rounded-[2.5rem] p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 group relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 p-6 opacity-10 text-8xl transform group-hover:scale-125 transition-transform duration-500">
                   {mod.image}
@@ -424,7 +424,7 @@ const LandingPage = () => {
                     {mod.type}
                   </span>
                   <div className="text-4xl mb-4">{mod.image}</div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">{mod.name}</h3>
+                  <h3 className="text-xl font-extrabold text-gray-900 mb-3 tracking-tight">{mod.name}</h3>
                   <p className="text-gray-600 font-medium leading-relaxed mb-6">{mod.desc}</p>
                   <p className="text-xs font-bold text-gray-400 tracking-widest uppercase">Included Base System</p>
                 </div>
@@ -444,8 +444,8 @@ const LandingPage = () => {
         >
           <motion.div className="max-w-7xl mx-auto px-6 lg:px-8 mb-8 flex justify-between items-end" variants={fadeUp}>
             <div>
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 mb-2">How It Works.</h2>
-              <p className="text-xl text-gray-500 font-medium">The complete journey.</p>
+              <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-gray-900 mb-1">How It Works</h2>
+              <p className="text-base text-gray-400 font-medium">The complete journey.</p>
             </div>
             <div className="hidden md:flex gap-3">
               <button onClick={() => scrollContainer(highlightsRef, 'left')} className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
@@ -466,7 +466,7 @@ const LandingPage = () => {
             {platformHighlights.map((hl, index) => (
               <div
                 key={index}
-                className="min-w-[85vw] md:min-w-[600px] snap-center bg-white rounded-[2.5rem] p-8 md:p-12 text-gray-900 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
+                className="min-w-[85vw] md:min-w-[600px] snap-center bg-white rounded-[2.5rem] p-8 md:p-12 text-gray-900 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 relative overflow-hidden group"
               >
                 <div className="absolute top-0 right-0 w-64 h-64 bg-green-500 opacity-10 blur-3xl rounded-full transform translate-x-1/2 -translate-y-1/2 group-hover:scale-150 transition-transform duration-700"></div>
                 <div className="relative z-10 flex flex-col h-full justify-between">
@@ -474,8 +474,8 @@ const LandingPage = () => {
                     <span className="inline-block px-4 py-1.5 mb-6 text-sm font-bold tracking-widest bg-green-100 text-green-700 rounded-full">
                       Stage 0{index + 1}
                     </span>
-                    <h3 className="text-3xl md:text-4xl font-bold mb-4">{hl.title}</h3>
-                    <p className="text-xl text-gray-600 mb-8 max-w-lg">{hl.description}</p>
+                    <h3 className="text-2xl md:text-3xl font-black tracking-tighter mb-4">{hl.title}</h3>
+                    <p className="text-lg text-gray-500 mb-8 max-w-lg font-medium">{hl.description}</p>
                   </div>
                   <div>
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-50 text-green-600 text-3xl mb-4 group-hover:bg-green-500 group-hover:text-white transition-colors duration-300">
@@ -503,8 +503,8 @@ const LandingPage = () => {
 
           <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
             <motion.div className="text-center mb-16" variants={fadeUp}>
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-gray-900">System Facts.</h2>
-              <p className="text-xl text-gray-500 font-medium max-w-2xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-black tracking-tighter mb-4 text-gray-900">System Facts</h2>
+              <p className="text-base text-gray-400 font-medium max-w-2xl mx-auto">
                 Real-world metrics representing the scale capabilities of our automated classification architecture.
               </p>
             </motion.div>
@@ -514,13 +514,13 @@ const LandingPage = () => {
                 <motion.div
                   key={index}
                   className="bg-white shadow-sm hover:shadow-xl rounded-[2rem] p-8 border border-gray-100 flex flex-col items-center text-center relative overflow-hidden group transition-all duration-300"
-                  whileHover={{ y: -5, scale: 1.02 }}
+                  whileHover={{ y: -3 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="text-5xl mb-6">{stat.icon}</div>
-                  <div className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-green-700 to-green-500 mb-3">{stat.number}</div>
-                  <div className="text-lg font-bold text-gray-900 mb-2">{stat.label}</div>
+                  <div className="text-5xl md:text-6xl font-black text-gray-900 tracking-tighter mb-3">{stat.number}</div>
+                  <div className="text-sm font-bold text-gray-900 mb-2 tracking-tight">{stat.label}</div>
                   {stat.sublabel && <div className="text-sm text-gray-500 font-medium leading-relaxed">{stat.sublabel}</div>}
                 </motion.div>
               ))}

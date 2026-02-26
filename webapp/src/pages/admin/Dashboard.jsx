@@ -10,7 +10,7 @@ import ActivityLogs from './ActivityLogs';
 import AnalyticsPage from './AnalyticsPage';
 import WasteCategoriesPage from './WasteCategoriesPage';
 import ReportsPage from './ReportsPage';
-import UserSettings from '../user/UserSettings';
+import AdminSettings from './AdminSettings';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -196,7 +196,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="flex h-screen bg-slate-50">
+    <div className="flex h-screen bg-white">
       {/* Sidebar */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
@@ -206,7 +206,7 @@ const AdminDashboard = () => {
         <Navbar />
 
         {/* Content Area */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto bg-slate-50/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
             {/* Home Tab */}
             {activeTab === 'home' && (
@@ -233,7 +233,7 @@ const AdminDashboard = () => {
                 {/* Quick Stats Cards */}
                 <motion.div variants={itemVariants} className="grid md:grid-cols-4 gap-6">
                   {/* Total Users */}
-                  <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-xl transition-all p-8 flex flex-col justify-between border border-gray-100 relative overflow-hidden group">
+                  <div className="bg-white rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all p-8 flex flex-col justify-between border border-gray-100 relative overflow-hidden group">
                     <div className="absolute -right-6 -top-6 bg-green-50 w-32 h-32 rounded-full transition-transform group-hover:scale-110"></div>
                     <div className="relative z-10 flex items-center justify-between mb-4">
                       <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center text-green-600 shadow-sm border border-green-200">
@@ -243,13 +243,13 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                     <div className="relative z-10">
-                      <p className="text-4xl font-extrabold text-gray-900 tracking-tight">{users.length}</p>
-                      <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Total Users</p>
+                      <p className="text-5xl font-black text-gray-900 tracking-tighter">{users.length}</p>
+                      <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">Total Users</p>
                     </div>
                   </div>
 
                   {/* Total Scans */}
-                  <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-xl transition-all p-8 flex flex-col justify-between border border-gray-100 relative overflow-hidden group">
+                  <div className="bg-white rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all p-8 flex flex-col justify-between border border-gray-100 relative overflow-hidden group">
                     <div className="absolute -right-6 -top-6 bg-amber-50 w-32 h-32 rounded-full transition-transform group-hover:scale-110"></div>
                     <div className="relative z-10 flex items-center justify-between mb-4">
                       <div className="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-600 shadow-sm border border-amber-200">
@@ -260,13 +260,13 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                     <div className="relative z-10">
-                      <p className="text-4xl font-extrabold text-gray-900 tracking-tight">{stats.totalDetections}</p>
-                      <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Total Scans</p>
+                      <p className="text-5xl font-black text-gray-900 tracking-tighter">{stats.totalDetections}</p>
+                      <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">Total Scans</p>
                     </div>
                   </div>
 
                   {/* Total Items Detected */}
-                  <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-xl transition-all p-8 flex flex-col justify-between border border-gray-100 relative overflow-hidden group">
+                  <div className="bg-white rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all p-8 flex flex-col justify-between border border-gray-100 relative overflow-hidden group">
                     <div className="absolute -right-6 -top-6 bg-blue-50 w-32 h-32 rounded-full transition-transform group-hover:scale-110"></div>
                     <div className="relative z-10 flex items-center justify-between mb-4">
                       <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 shadow-sm border border-blue-200">
@@ -276,13 +276,13 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                     <div className="relative z-10">
-                      <p className="text-4xl font-extrabold text-gray-900 tracking-tight">{stats.totalItems}</p>
-                      <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Items Discovered</p>
+                      <p className="text-5xl font-black text-gray-900 tracking-tighter">{stats.totalItems}</p>
+                      <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">Items Discovered</p>
                     </div>
                   </div>
 
                   {/* Average Items per Scan */}
-                  <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-xl transition-all p-8 flex flex-col justify-between border border-gray-100 relative overflow-hidden group">
+                  <div className="bg-white rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all p-8 flex flex-col justify-between border border-gray-100 relative overflow-hidden group">
                     <div className="absolute -right-6 -top-6 bg-purple-50 w-32 h-32 rounded-full transition-transform group-hover:scale-110"></div>
                     <div className="relative z-10 flex items-center justify-between mb-4">
                       <div className="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600 shadow-sm border border-purple-200">
@@ -292,8 +292,8 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                     <div className="relative z-10">
-                      <p className="text-4xl font-extrabold text-gray-900 tracking-tight">{stats.averageItemsPerScan}</p>
-                      <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Avg Items / Scan</p>
+                      <p className="text-5xl font-black text-gray-900 tracking-tighter">{stats.averageItemsPerScan}</p>
+                      <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mt-1">Avg Items / Scan</p>
                     </div>
                   </div>
                 </motion.div>
@@ -496,7 +496,7 @@ const AdminDashboard = () => {
             {activeTab === 'reports' && <ReportsPage />}
 
             {/* Settings Tab */}
-            {activeTab === 'settings' && <UserSettings userData={userData} />}
+            {activeTab === 'settings' && <AdminSettings userData={userData} />}
 
             {/* Placeholder for other tabs */}
             {!['home', 'users', 'detections', 'waste-types', 'logs', 'analytics', 'reports', 'settings'].includes(activeTab) && (

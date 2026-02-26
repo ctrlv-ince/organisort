@@ -168,8 +168,8 @@ const UserProfile = ({ userData, setUserData }) => {
               )}
             </div>
             <div className="text-center md:text-left">
-              <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">{userData?.displayName || 'User'}</h2>
-              <p className="text-gray-500 font-medium">{userData?.email}</p>
+              <h2 className="text-3xl font-extrabold tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>{userData?.displayName || 'User'}</h2>
+              <p className="font-medium" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>{userData?.email}</p>
               <span className={`inline-block mt-3 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${userData?.role === 'admin' ? semanticColorClasses.danger.badge : semanticColorClasses.success.badge}`}>
                 {userData?.role || 'user'}
               </span>
@@ -179,29 +179,31 @@ const UserProfile = ({ userData, setUserData }) => {
           {/* Edit Form */}
           <div className="space-y-6">
             <div>
-              <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Display Name</label>
+              <label className="block text-xs font-bold mb-2 uppercase tracking-widest" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>Display Name</label>
               <input
                 type="text"
                 value={editing ? displayName : (userData?.displayName || '')}
                 onChange={(e) => setDisplayName(e.target.value)}
                 disabled={!editing}
-                className="w-full px-5 py-4 border border-gray-200 rounded-2xl bg-slate-50 focus:bg-white focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all font-medium text-gray-900 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full px-5 py-4 rounded-2xl transition-all font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+                style={{ background: 'var(--theme-input-bg, #f9fafb)', border: '1px solid var(--theme-border, #e5e7eb)', color: 'var(--theme-text, #111827)' }}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-widest">Account Email</label>
+              <label className="block text-xs font-bold mb-2 uppercase tracking-widest" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>Account Email</label>
               <input
                 type="email"
                 value={userData?.email || ''}
                 disabled
-                className="w-full px-5 py-4 border border-gray-200 rounded-2xl bg-slate-50 font-medium text-gray-600 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full px-5 py-4 rounded-2xl font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+                style={{ background: 'var(--theme-input-bg, #f9fafb)', border: '1px solid var(--theme-border, #e5e7eb)', color: 'var(--theme-text-secondary, #6b7280)' }}
               />
-              <p className="text-xs text-gray-400 font-semibold mt-2 ml-1">Email addresses cannot be modified for security.</p>
+              <p className="text-xs font-semibold mt-2 ml-1" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>Email addresses cannot be modified for security.</p>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-6 mt-4 border-t border-gray-100">
+            <div className="flex flex-col sm:flex-row gap-4 pt-6 mt-4" style={{ borderTop: '1px solid var(--theme-border, #f0f0f0)' }}>
               {editing ? (
                 <>
                   <PrimaryButton onClick={handleSave} disabled={saving} className="w-full sm:w-auto">
@@ -233,22 +235,22 @@ const UserProfile = ({ userData, setUserData }) => {
       {/* Account Stats */}
       <motion.div variants={itemVariants}>
         <InfoCard>
-          <h2 className="text-xl font-bold text-gray-900 mb-6 tracking-tight">Account Information</h2>
+          <h2 className="text-xl font-bold mb-6 tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>Account Information</h2>
           <div className="space-y-2">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-gray-100">
-              <span className="text-gray-500 font-bold uppercase tracking-wider text-xs mb-1 sm:mb-0">Member Since</span>
-              <span className="text-gray-900 font-bold text-base">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4" style={{ borderBottom: '1px solid var(--theme-border, #f0f0f0)' }}>
+              <span className="font-bold uppercase tracking-wider text-xs mb-1 sm:mb-0" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>Member Since</span>
+              <span className="font-bold text-base" style={{ color: 'var(--theme-text, #111827)' }}>
                 {userData?.createdAt ? new Date(userData.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}
               </span>
             </div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-gray-100">
-              <span className="text-gray-500 font-bold uppercase tracking-wider text-xs mb-1 sm:mb-0">Last Login Activity</span>
-              <span className="text-gray-900 font-semibold text-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4" style={{ borderBottom: '1px solid var(--theme-border, #f0f0f0)' }}>
+              <span className="font-bold uppercase tracking-wider text-xs mb-1 sm:mb-0" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>Last Login Activity</span>
+              <span className="font-semibold text-sm" style={{ color: 'var(--theme-text, #111827)' }}>
                 {userData?.lastLogin ? new Date(userData.lastLogin).toLocaleString() : 'N/A'}
               </span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4">
-              <span className="text-gray-500 font-bold uppercase tracking-wider text-xs mb-1 sm:mb-0">Network Status</span>
+              <span className="font-bold uppercase tracking-wider text-xs mb-1 sm:mb-0" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>Network Status</span>
               <span className="text-green-600 font-bold flex items-center bg-green-50 px-3 py-1 rounded-full text-sm">
                 <span className="w-2 h-2 bg-green-500 rounded-full mr-2 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse"></span>
                 Active Connection
