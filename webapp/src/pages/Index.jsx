@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import '../Landing.css';
 
 /**
@@ -19,6 +19,15 @@ const LandingPage = () => {
   const featuresRef = useRef(null);
   const modulesRef = useRef(null);
   const highlightsRef = useRef(null);
+  const heroRef = useRef(null);
+
+  // Hero parallax — tracks scroll position from top of page
+  const { scrollY } = useScroll();
+  const heroIconTopY = useTransform(scrollY, [0, 600], [0, -120]);
+  const heroIconBottomY = useTransform(scrollY, [0, 600], [0, -80]);
+  const heroTextY = useTransform(scrollY, [0, 500], [0, 40]);
+  const heroImageY = useTransform(scrollY, [0, 500], [0, -30]);
+  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
 
   const scrollContainer = (ref, direction) => {
     if (ref.current) {
@@ -254,10 +263,10 @@ const LandingPage = () => {
 
       <main>
         {/* Hero Section */}
-        <section className="hero" id="home">
+        <section className="hero" id="home" ref={heroRef}>
           <div className="hero-bg-icons">
-            <motion.div animate={{ rotate: 360 }} transition={{ duration: 150, repeat: Infinity, ease: "linear" }} className="hero-icon-top">♻️</motion.div>
-            <motion.div animate={{ rotate: -360 }} transition={{ duration: 200, repeat: Infinity, ease: "linear" }} className="hero-icon-bottom">🌍</motion.div>
+            <motion.div style={{ y: heroIconTopY }} animate={{ rotate: 360 }} transition={{ duration: 150, repeat: Infinity, ease: "linear" }} className="hero-icon-top">♻️</motion.div>
+            <motion.div style={{ y: heroIconBottomY }} animate={{ rotate: -360 }} transition={{ duration: 200, repeat: Infinity, ease: "linear" }} className="hero-icon-bottom">🌍</motion.div>
           </div>
           <motion.div
             className="container-pro"
@@ -266,7 +275,7 @@ const LandingPage = () => {
             animate="show"
           >
             <div className="hero-content">
-              <motion.div className="hero-left" variants={fadeUp}>
+              <motion.div className="hero-left" variants={fadeUp} style={{ y: heroTextY, opacity: heroOpacity }}>
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={currentSlide}
@@ -310,7 +319,7 @@ const LandingPage = () => {
                   ))}
                 </div>
               </motion.div>
-              <motion.div className="hero-right" variants={fadeUp}>
+              <motion.div className="hero-right" variants={fadeUp} style={{ y: heroImageY }}>
                 <div className="hero-image-card">
                   <div className="hero-fruit-display">
                     <div className="recycle-animation-container">
@@ -514,8 +523,11 @@ const LandingPage = () => {
                 <motion.div
                   key={index}
                   className="bg-white shadow-sm hover:shadow-xl rounded-[2rem] p-8 border border-gray-100 flex flex-col items-center text-center relative overflow-hidden group transition-all duration-300"
-                  whileHover={{ y: -3 }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                  initial={{ opacity: 0, y: 40, scale: 0.95 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{ duration: 0.5, delay: index * 0.1, ease: 'easeOut' }}
+                  whileHover={{ y: -5, scale: 1.02 }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="text-5xl mb-6">{stat.icon}</div>

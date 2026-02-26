@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { cardBaseClass, semanticColorClasses } from './uiTheme';
 
 const InfoCard = ({
@@ -13,12 +14,16 @@ const InfoCard = ({
   const toneClasses = semanticColorClasses[tone] || semanticColorClasses.primary;
 
   return (
-    <div
+    <motion.div
       className={`${cardBaseClass} p-6 ${className}`}
       style={{
         background: 'var(--theme-card, #ffffff)',
         borderColor: 'var(--theme-card-border, #f0f0f0)',
       }}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
     >
       {(icon || title || description) && (
         <div className="mb-4 flex items-start gap-3">
@@ -34,7 +39,7 @@ const InfoCard = ({
         </div>
       )}
       {children}
-    </div>
+    </motion.div>
   );
 };
 
