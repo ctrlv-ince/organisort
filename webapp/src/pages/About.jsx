@@ -1,10 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
 import '../Landing.css';
 
 const About = () => {
   const navigate = useNavigate();
+  const { user, loading, logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+  };
 
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
@@ -54,13 +65,27 @@ const About = () => {
           </div>
           <nav className="desktop-nav">
             <button onClick={() => navigate('/')} className="nav-link">Home</button>
+            <button onClick={() => navigate('/#features')} className="nav-link">Capabilities</button>
+            <button onClick={() => navigate('/#modules')} className="nav-link">Modules</button>
+            <button onClick={() => navigate('/#how')} className="nav-link">How It Works</button>
+            <button onClick={() => navigate('/#facts')} className="nav-link">Facts</button>
             <button onClick={() => navigate('/about')} className="nav-link" style={{ color: '#16a34a', fontWeight: 700, borderBottom: '2px solid #16a34a', paddingBottom: '2px' }}>About</button>
             <button onClick={() => navigate('/contact')} className="nav-link">Contact</button>
-            <button onClick={() => navigate('/dashboard')} className="nav-link">Dashboard</button>
           </nav>
           <div className="header-right">
-            <button onClick={() => navigate('/login')} className="btn-outline">Sign In</button>
-            <button onClick={() => navigate('/register')} className="btn-primary">Get Started</button>
+            {!loading && (
+              user ? (
+                <>
+                  <button onClick={() => navigate('/dashboard')} className="btn-outline">Dashboard</button>
+                  <button onClick={handleLogout} className="btn-primary">Logout</button>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => navigate('/login')} className="btn-outline">Sign In</button>
+                  <button onClick={() => navigate('/register')} className="btn-primary">Get Started</button>
+                </>
+              )
+            )}
           </div>
         </div>
       </header>
