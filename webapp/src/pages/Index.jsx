@@ -1,9 +1,43 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import '../Landing.css';
+
+/** Animated counter that counts up when element enters viewport */
+const AnimatedCounter = ({ target, duration = 1800 }) => {
+  const [display, setDisplay] = useState('0');
+  const ref = useRef(null);
+  const hasRun = useRef(false);
+
+  // Parse numeric value and suffix from strings like '36+', '100%', '6', 'Live'
+  const isText = isNaN(parseInt(target));
+  const numericTarget = parseInt(target);
+  const suffix = isText ? '' : target.replace(/[0-9]/g, '');
+
+  useEffect(() => {
+    if (isText) { setDisplay(target); return; }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !hasRun.current) {
+        hasRun.current = true;
+        const start = performance.now();
+        const tick = (now) => {
+          const progress = Math.min((now - start) / duration, 1);
+          const ease = 1 - Math.pow(1 - progress, 3);
+          setDisplay(Math.floor(ease * numericTarget) + suffix);
+          if (progress < 1) requestAnimationFrame(tick);
+          else setDisplay(target);
+        };
+        requestAnimationFrame(tick);
+      }
+    }, { threshold: 0.5 });
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [target, numericTarget, suffix, duration, isText]);
+
+  return <span ref={ref}>{display}</span>;
+};
 
 /**
  * Landing Page — OrganiSort
@@ -14,6 +48,7 @@ const LandingPage = () => {
   const { user, logout, loading } = useAuth();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
 
   const featuresRef = useRef(null);
   const modulesRef = useRef(null);
@@ -26,6 +61,30 @@ const LandingPage = () => {
   const heroTextY = useTransform(scrollY, [0, 500], [0, 50]);
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.2]);
   const heroImageY = useTransform(scrollY, [0, 500], [0, -40]);
+
+  // Scroll spy — track which section is active
+  useEffect(() => {
+    const sectionIds = ['home', 'features', 'modules', 'how', 'facts']; /* 'testimonials' — add back when reviews are implemented */
+    const observers = sectionIds.map(id => {
+      const el = document.getElementById(id);
+      if (!el) return null;
+      const obs = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) setActiveSection(id);
+      }, { threshold: 0.3 });
+      obs.observe(el);
+      return obs;
+    });
+    return () => observers.forEach(o => o && o.disconnect());
+  }, []);
+
+  /* TODO: Uncomment when reviews are implemented
+  const testimonials = [
+    { name: 'Maria Santos', role: 'Environmental Science Student', avatar: 'MS', quote: 'OrganiSort completely changed how I think about waste. I can scan anything in seconds and instantly know exactly where it goes.', rating: 5 },
+    { name: 'James Reyes', role: 'Community Garden Coordinator', avatar: 'JR', quote: 'The composting guidance is incredibly accurate. Our community garden has diverted hundreds of kilos from landfill using this app.', rating: 5 },
+    { name: 'Ana Cruz', role: 'High School Teacher', avatar: 'AC', quote: 'I use OrganiSort in my classroom to teach sustainability. Students love competing on the leaderboard — it makes recycling actually fun.', rating: 5 },
+    { name: 'Luis Mendoza', role: 'Facility Manager', avatar: 'LM', quote: 'The analytics dashboard gives us data we never had before. We\'ve reduced contamination in our recycling bins by a significant margin.', rating: 5 },
+  ];
+  */
 
   const scrollContainer = (ref, direction) => {
     if (ref.current) {
@@ -45,10 +104,34 @@ const LandingPage = () => {
   ];
 
   const platformHighlights = [
-    { icon: '🔐', title: 'Secure & Seamless Access', description: 'Enterprise-grade security for your environmental data with encrypted sessions.', detail: 'Complete peace of mind with robust account management and authentication.' },
-    { icon: '📱', title: 'Mobile-First Scanning', description: 'Turn your smartphone into a powerful environmental intelligence tool.', detail: 'Scan items on the go with instant data synchronization to your profile.' },
-    { icon: '🧾', title: 'Comprehensive Traceability', description: 'Review your complete history — from single scans to yearly aggregates.', detail: 'Beautiful dashboards provide visibility into your decomposition footprint.' },
-    { icon: '🛠️', title: 'Community Leaderboards', description: 'Track your global rank among sustainability champions.', detail: 'Gamified progress tracking makes building a greener planet rewarding.' },
+    {
+      icon: '📸',
+      title: 'Scan Your Item',
+      description: 'Point your camera at any waste item — food scraps, packaging, or household material. OrganiSort captures it instantly.',
+      detail: 'Works in real-time from your smartphone camera. No upload needed — inference happens on-device in milliseconds.',
+      img: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80',
+    },
+    {
+      icon: '🧠',
+      title: 'AI Classifies It',
+      description: 'Our neural network identifies the material type across 36+ categories and maps it to one of 6 disposal classifications.',
+      detail: 'Deep learning models trained on thousands of real-world waste samples deliver high-confidence results every time.',
+      img: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80',
+    },
+    {
+      icon: '🗺️',
+      title: 'Get Disposal Guidance',
+      description: 'Receive instant instructions on how and where to dispose of the item — bin type, facility location, and handling notes.',
+      detail: 'Location-aware routing surfaces the nearest certified drop-off points, composting centers, and recycling hubs.',
+      img: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&q=80',
+    },
+    {
+      icon: '📊',
+      title: 'Track Your Impact',
+      description: 'Every scan is logged to your profile. Watch your sustainability score grow and see your contribution to landfill diversion.',
+      detail: 'Visualize your footprint reduction over time with beautiful dashboards and compete on community leaderboards.',
+      img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
+    },
   ];
 
   const features = [
@@ -60,7 +143,7 @@ const LandingPage = () => {
 
   const modules = [
     { id: 1, name: 'Instant Analysis', type: 'Core Engine', image: '⚡', desc: 'Sub-second real-time AI inference from your smart device', bg: 'https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?w=400&q=80' },
-    { id: 2, name: 'Impact Tracking', type: 'Sustainability', image: '🌱', desc: 'Monitor contributions to landfill diversion', bg: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400&q=80' },
+    { id: 2, name: 'Impact Tracking', type: 'Sustainability', image: '🌱', desc: 'Monitor contributions to landfill diversion', bg: 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?w=400&q=80' },
     { id: 3, name: 'Location Routing', type: 'Geography', image: '🗺️', desc: 'Interactive mapping to commercial bins and facilities', bg: 'https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?w=400&q=80' },
     { id: 4, name: 'Social Rankings', type: 'Community', image: '🏆', desc: 'Global and local sustainability competitions', bg: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&q=80' },
     { id: 5, name: 'Deep Analytics', type: 'Enterprise', image: '📊', desc: 'Comprehensive diagnostic metrics and waste flows', bg: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80' },
@@ -68,10 +151,12 @@ const LandingPage = () => {
   ];
 
   const systemFacts = [
-    { number: '36+', label: 'Identifiable Materials', sublabel: 'Trained to recognize specific fruits, vegetables, proteins, and household materials', icon: '♻️' },
-    { number: '6', label: 'Core Categories', sublabel: 'Automatically sorts scans into actionable classifications', icon: '📊' },
-    { number: 'Live', label: 'Visual Inference', sublabel: 'AI backend provides immediate environmental metrics', icon: '⚡' },
-    { number: '100%', label: 'Traceable History', sublabel: 'Full journey from scan through disposal and impact tracking', icon: '🌱' },
+    { number: '36+', label: 'Identifiable Materials', sublabel: 'Trained to recognize specific fruits, vegetables, proteins, and household materials', icon: '♻️', img: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=600&q=80' },
+    { number: '6', label: 'Core Categories', sublabel: 'Automatically sorts scans into actionable disposal classifications', icon: '📊', img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80' },
+    { number: 'Live', label: 'Visual Inference', sublabel: 'AI backend provides immediate real-time environmental metrics', icon: '⚡', img: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&q=80' },
+    { number: '100%', label: 'Traceable History', sublabel: 'Full journey from scan through disposal and impact tracking', icon: '🌱', img: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&q=80' },
+    { number: '99%', label: 'Uptime SLA', sublabel: 'Enterprise-grade infrastructure with redundant cloud architecture', icon: '🛡️', img: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&q=80' },
+    { number: '3', label: 'Disposal Facilities', sublabel: 'Mapped and verified drop-off points surfaced by location routing', icon: '🗺️', img: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?w=600&q=80' },
   ];
 
   useEffect(() => {
@@ -102,11 +187,28 @@ const LandingPage = () => {
             <span className="logo-text">OrganiSort</span>
           </div>
           <nav className="desktop-nav">
-            <a href="#home" className="nav-link">Home</a>
-            <a href="#features" className="nav-link">Capabilities</a>
-            <a href="#modules" className="nav-link">Modules</a>
-            <a href="#how" className="nav-link">How It Works</a>
-            <a href="#facts" className="nav-link">Facts</a>
+            {[
+              { href: '#home', label: 'Home', id: 'home' },
+              { href: '#features', label: 'Capabilities', id: 'features' },
+              { href: '#modules', label: 'Modules', id: 'modules' },
+              { href: '#how', label: 'How It Works', id: 'how' },
+              { href: '#facts', label: 'Facts', id: 'facts' },
+            ].map(({ href, label, id }) => (
+              <a
+                key={id}
+                href={href}
+                className="nav-link"
+                style={{
+                  color: activeSection === id ? '#16a34a' : undefined,
+                  fontWeight: activeSection === id ? '700' : undefined,
+                  borderBottom: activeSection === id ? '2px solid #16a34a' : '2px solid transparent',
+                  paddingBottom: '2px',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                {label}
+              </a>
+            ))}
             <button onClick={() => navigate('/about')} className="nav-link">About</button>
           </nav>
           <div className="header-right">
@@ -207,21 +309,45 @@ const LandingPage = () => {
               </motion.div>
               <motion.div className="hero-right" variants={fadeUp} style={{ y: heroImageY }}>
                 <div style={{ position: 'relative' }}>
-                  <div className="hero-image-card">
-                    <div className="hero-fruit-display">
-                      <div className="recycle-animation-container">
-                        <img
-                          src="https://media1.tenor.com/m/fPWXdL9FgxIAAAAC/sign-arrows.gif"
-                          alt="Recycle Animation"
-                          className="recycle-gif-placeholder"
-                          style={{ borderRadius: '50%', objectFit: 'cover' }}
-                          referrerPolicy="no-referrer"
-                        />
+                  <div className="hero-image-card" style={{ overflow: 'hidden', borderRadius: '2rem', position: 'relative', minHeight: '340px' }}>
+                    {/* Rich background photo */}
+                    <img
+                      src="https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=700&q=80"
+                      alt="Household organic waste"
+                      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.1) 100%)' }} />
+                    {/* Scan UI overlay */}
+                    <div style={{ position: 'relative', zIndex: 10, padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)', borderRadius: '999px', padding: '6px 14px', border: '1px solid rgba(255,255,255,0.25)' }}>
+                          <span style={{ color: '#fff', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>● Live Scan</span>
+                        </div>
+                        <div style={{ background: 'rgba(22,163,74,0.85)', backdropFilter: 'blur(8px)', borderRadius: '999px', padding: '6px 14px' }}>
+                          <span style={{ color: '#fff', fontSize: '11px', fontWeight: 700 }}>AI Ready</span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="hero-price-badge">
-                      <div className="hero-price-label">Organic Waste Detection</div>
-                      <div className="hero-price-value">OrganiSort</div>
+                      {/* Scan frame */}
+                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, padding: '1rem 0' }}>
+                        <div style={{ width: '120px', height: '120px', position: 'relative' }}>
+                          <div style={{ position: 'absolute', top: 0, left: 0, width: '28px', height: '28px', borderTop: '3px solid #4ade80', borderLeft: '3px solid #4ade80', borderRadius: '4px 0 0 0' }} />
+                          <div style={{ position: 'absolute', top: 0, right: 0, width: '28px', height: '28px', borderTop: '3px solid #4ade80', borderRight: '3px solid #4ade80', borderRadius: '0 4px 0 0' }} />
+                          <div style={{ position: 'absolute', bottom: 0, left: 0, width: '28px', height: '28px', borderBottom: '3px solid #4ade80', borderLeft: '3px solid #4ade80', borderRadius: '0 0 0 4px' }} />
+                          <div style={{ position: 'absolute', bottom: 0, right: 0, width: '28px', height: '28px', borderBottom: '3px solid #4ade80', borderRight: '3px solid #4ade80', borderRadius: '0 0 4px 0' }} />
+                          <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1.5px', background: 'linear-gradient(90deg, transparent, #4ade80, transparent)', transform: 'translateY(-50%)', opacity: 0.8 }} />
+                        </div>
+                      </div>
+                      {/* Result chip */}
+                      <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: '1rem', padding: '14px 16px', backdropFilter: 'blur(12px)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>🥬</div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: '13px', fontWeight: 800, color: '#111', letterSpacing: '-0.02em' }}>Organic Waste</div>
+                            <div style={{ fontSize: '11px', color: '#6b7280', fontWeight: 500 }}>Compostable · Green Bin</div>
+                          </div>
+                          <div style={{ background: '#16a34a', color: '#fff', borderRadius: '999px', padding: '3px 10px', fontSize: '11px', fontWeight: 700 }}>98%</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -246,7 +372,7 @@ const LandingPage = () => {
               <div className="hidden md:flex gap-3 items-center">
                 {/* Animated globe decoration */}
                 <img
-                  src="https://media1.tenor.com/m/UvQUTWLPhBgAAAAC/earth-spinning.gif"
+                  // src="https://media1.tenor.com/m/UvQUTWLPhBgAAAAC/earth-spinning.gif"
                   alt=""
                   className="w-12 h-12 rounded-full opacity-60 mr-3"
                   style={{ mixBlendMode: 'luminosity' }}
@@ -369,14 +495,14 @@ const LandingPage = () => {
           className="py-32 bg-white overflow-hidden"
           initial="hidden" whileInView="show" viewport={{ once: true, margin: '-100px' }} variants={stagger}
         >
-          <motion.div className="max-w-7xl mx-auto px-6 lg:px-8 mb-10" variants={fadeUp}>
+          <motion.div className="max-w-7xl mx-auto px-6 lg:px-8 mb-12" variants={fadeUp}>
             <div className="flex justify-between items-end">
               <div>
                 <p className="section-label">How It Works</p>
                 <h2 className="section-title">The complete<br />journey</h2>
                 <p className="section-subtitle mt-3">From scan to certified disposal in four stages.</p>
               </div>
-              <div className="hidden md:flex gap-3">
+              <div className="hidden md:flex gap-3 items-center">
                 <button onClick={() => scrollContainer(highlightsRef, 'left')} className="p-3 rounded-full border border-gray-200 bg-white hover:border-gray-400 transition-colors">
                   <ChevronLeft className="w-5 h-5 text-gray-500" />
                 </button>
@@ -385,37 +511,72 @@ const LandingPage = () => {
                 </button>
               </div>
             </div>
+
+            {/* Step indicator strip */}
+            <div className="hidden md:flex items-center mt-10 gap-0">
+              {platformHighlights.map((hl, i) => (
+                <React.Fragment key={i}>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-green-50 border-2 border-green-200 flex items-center justify-center text-[11px] font-black text-green-700">
+                      {i + 1}
+                    </div>
+                    <span className="text-xs font-semibold text-gray-400 tracking-wide whitespace-nowrap">{hl.title}</span>
+                  </div>
+                  {i < platformHighlights.length - 1 && (
+                    <div className="flex-1 h-px bg-gradient-to-r from-green-200 to-gray-100 mx-3" />
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
           </motion.div>
 
           <motion.div
             ref={highlightsRef}
-            className="flex overflow-x-auto gap-8 px-6 lg:px-8 pb-12 snap-x snap-mandatory scrollbar-hide"
+            className="flex overflow-x-auto gap-6 px-6 lg:px-8 pb-12 snap-x snap-mandatory scrollbar-hide"
             style={{ scrollbarWidth: 'none' }}
             variants={fadeUp}
           >
             {platformHighlights.map((hl, i) => (
               <motion.div
                 key={i}
-                className="min-w-[85vw] md:min-w-[560px] snap-center bg-white rounded-[2rem] p-8 md:p-12 border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-500 relative overflow-hidden group"
+                className="min-w-[85vw] md:min-w-[680px] snap-center bg-white rounded-[2rem] border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-500 relative overflow-hidden group flex flex-col md:flex-row"
+                style={{ minHeight: '280px' }}
                 initial={{ opacity: 0, x: 60 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: i * 0.1 }}
               >
-                <div className="absolute top-0 right-0 w-64 h-64 bg-green-400 opacity-[0.04] blur-3xl rounded-full transform translate-x-1/2 -translate-y-1/2 group-hover:scale-150 transition-transform duration-700" />
-                <div className="relative z-10 flex flex-col h-full justify-between">
-                  <div>
-                    <span className="inline-block px-3 py-1 mb-5 text-[10px] font-bold tracking-widest uppercase text-green-700 bg-green-50 rounded-full border border-green-100">
+                {/* Left: image panel */}
+                <div className="md:w-72 h-52 md:h-auto overflow-hidden relative flex-shrink-0 rounded-t-[2rem] md:rounded-t-none md:rounded-l-[2rem]">
+                  <img
+                    src={hl.img}
+                    alt={hl.title}
+                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/20 md:block hidden" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent md:hidden" />
+                  {/* Stage badge on image */}
+                  <div className="absolute top-4 left-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-sm font-black text-green-700 shadow-sm">
+                    {i + 1}
+                  </div>
+                </div>
+
+                {/* Right: text content */}
+                <div className="flex flex-col justify-between p-8 md:p-10 flex-1 relative">
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-green-400 opacity-[0.04] blur-3xl rounded-full transform translate-x-1/2 -translate-y-1/2 group-hover:scale-150 transition-transform duration-700" />
+                  <div className="relative z-10">
+                    <span className="inline-block px-3 py-1 mb-4 text-[10px] font-bold tracking-widest uppercase text-green-700 bg-green-50 rounded-full border border-green-100">
                       Stage 0{i + 1}
                     </span>
                     <h3 className="text-2xl md:text-3xl font-black tracking-tighter mb-3 text-gray-900">{hl.title}</h3>
-                    <p className="text-base text-gray-400 mb-8 max-w-lg font-medium">{hl.description}</p>
+                    <p className="text-base text-gray-400 font-medium leading-relaxed">{hl.description}</p>
                   </div>
-                  <div>
-                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-green-50 text-2xl mb-3 group-hover:bg-green-500 group-hover:text-white group-hover:shadow-lg transition-all duration-300">
+                  <div className="relative z-10 mt-6 pt-6 border-t border-gray-100 flex items-start gap-4">
+                    <div className="flex-shrink-0 inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-green-50 text-xl group-hover:bg-green-500 group-hover:shadow-lg transition-all duration-300">
                       {hl.icon}
                     </div>
-                    <p className="text-gray-400 font-medium text-sm max-w-md">{hl.detail}</p>
+                    <p className="text-gray-400 font-medium text-sm leading-relaxed pt-1">{hl.detail}</p>
                   </div>
                 </div>
               </motion.div>
@@ -434,41 +595,46 @@ const LandingPage = () => {
           <div className="absolute top-0 right-0 w-96 h-96 bg-green-400 opacity-[0.04] blur-3xl rounded-full transform translate-x-1/3 -translate-y-1/3" />
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-400 opacity-[0.03] blur-3xl rounded-full transform -translate-x-1/3 translate-y-1/3" />
 
-          {/* Floating recycling animation */}
-          <motion.img
-            src="https://media.giphy.com/media/l378z4uvJpfQHvMB2/giphy.gif"
-            alt=""
-            className="absolute bottom-8 right-8 w-20 h-20 rounded-full opacity-20 pointer-events-none hidden lg:block object-cover"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          />
-
           <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-            <motion.div className="text-center mb-16" variants={fadeUp}>
-              <p className="section-label">System Facts</p>
-              <h2 className="section-title mx-auto" style={{ maxWidth: '500px' }}>Real-world capabilities</h2>
-              <p className="section-subtitle mx-auto mt-3" style={{ maxWidth: '480px' }}>
-                Metrics representing the scale of our automated classification architecture.
-              </p>
+            <motion.div className="text-center mb-16 mx-auto" variants={fadeUp}>
+                <p className="section-label">System Facts</p>
+                <h2 className="section-title mx-auto" style={{ maxWidth: '500px' }}>Real-world capabilities</h2>
+                <p className="section-subtitle mx-auto mt-3" style={{ maxWidth: '480px' }}>
+                  Metrics representing the scale of our automated classification architecture.
+                </p>
             </motion.div>
 
-            <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" variants={fadeUp}>
+            <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" variants={fadeUp}>
               {systemFacts.map((stat, i) => (
                 <motion.div
                   key={i}
-                  className="bg-white rounded-[2rem] p-8 border border-gray-100 flex flex-col items-center text-center relative overflow-hidden group hover:shadow-lg hover:border-gray-200 transition-all duration-500"
+                  className="rounded-[2rem] relative overflow-hidden group hover:shadow-xl transition-all duration-500"
+                  style={{ minHeight: '260px' }}
                   initial={{ opacity: 0, y: 40, scale: 0.96 }}
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true, margin: '-60px' }}
-                  transition={{ duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.5, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
                   whileHover={{ y: -4 }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="relative z-10 flex flex-col items-center">
-                    <div className="text-4xl mb-5">{stat.icon}</div>
-                    <div className="text-5xl font-black text-gray-900 tracking-tighter mb-2">{stat.number}</div>
-                    <div className="text-xs font-bold text-gray-900 mb-1.5 tracking-tight uppercase">{stat.label}</div>
-                    {stat.sublabel && <div className="text-xs text-gray-400 font-medium leading-relaxed max-w-[220px]">{stat.sublabel}</div>}
+                  {/* Background image */}
+                  <img
+                    src={stat.img}
+                    alt={stat.label}
+                    className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                    loading="lazy"
+                  />
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/15 group-hover:from-black/75 transition-all duration-300" />
+                  {/* Green tint on hover */}
+                  <div className="absolute inset-0 bg-green-600/0 group-hover:bg-green-600/10 transition-all duration-500" />
+
+                  <div className="relative z-10 p-8 flex flex-col justify-end h-full">
+                    <div className="text-3xl mb-3">{stat.icon}</div>
+                    <div className="text-5xl font-black text-white tracking-tighter mb-1">
+                      <AnimatedCounter target={stat.number} />
+                    </div>
+                    <div className="text-xs font-bold text-white/90 mb-2 tracking-tight uppercase">{stat.label}</div>
+                    {stat.sublabel && <div className="text-xs text-white/55 font-medium leading-relaxed">{stat.sublabel}</div>}
                   </div>
                 </motion.div>
               ))}
@@ -476,15 +642,72 @@ const LandingPage = () => {
           </div>
         </motion.section>
 
+        {/* ========== Testimonials — TODO: uncomment when reviews are implemented ==========
+        <motion.section
+          id="testimonials"
+          className="py-32 bg-white overflow-hidden"
+          initial="hidden" whileInView="show" viewport={{ once: true, margin: '-100px' }} variants={stagger}
+        >
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <motion.div className="flex justify-between items-end mb-14" variants={fadeUp}>
+              <div>
+                <p className="section-label">Testimonials</p>
+                <h2 className="section-title">Trusted by people<br />who care</h2>
+                <p className="section-subtitle mt-3">From students to facility managers — real impact, real voices.</p>
+              </div>
+              <div className="hidden md:flex items-center gap-3 bg-green-50 border border-green-100 rounded-full px-5 py-3">
+                <div className="flex -space-x-2">
+                  {['MS','JR','AC','LM'].map((init, i) => (
+                    <div key={i} className="w-7 h-7 rounded-full bg-green-200 border-2 border-white flex items-center justify-center text-[9px] font-black text-green-800">{init}</div>
+                  ))}
+                </div>
+                <span className="text-xs font-semibold text-green-700">Join early users</span>
+              </div>
+            </motion.div>
+
+            <motion.div className="grid grid-cols-1 md:grid-cols-2 gap-6" variants={stagger}>
+              {testimonials.map((t, i) => (
+                <motion.div
+                  key={i}
+                  className="bg-white rounded-[2rem] p-8 border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-500 relative overflow-hidden group"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  whileHover={{ y: -3 }}
+                >
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-green-400 opacity-[0.04] blur-3xl rounded-full transform translate-x-1/2 -translate-y-1/2 group-hover:scale-150 transition-transform duration-700" />
+                  <div className="relative z-10">
+                    <div className="flex gap-1 mb-5">
+                      {Array.from({ length: t.rating }).map((_, s) => (
+                        <span key={s} className="text-yellow-400 text-sm">★</span>
+                      ))}
+                    </div>
+                    <p className="text-gray-700 font-medium text-base leading-relaxed mb-7 italic">"{t.quote}"</p>
+                    <div className="flex items-center gap-3 pt-5 border-t border-gray-100">
+                      <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-xs font-black text-green-700 flex-shrink-0">
+                        {t.avatar}
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold text-gray-900 tracking-tight">{t.name}</div>
+                        <div className="text-xs text-gray-400 font-medium">{t.role}</div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </motion.section>
+        ========== End Testimonials ========== */}
+
         {/* ========== CTA ========== */}
         {!user && (
           <section className="cta-section" style={{ position: 'relative', overflow: 'hidden' }}>
-            {/* Animated nature GIF background */}
             <img
-              src="https://media1.tenor.com/m/fPWXdL9FgxIAAAAC/sign-arrows.gif"
+              src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80"
               alt=""
-              className="absolute inset-0 w-full h-full object-cover opacity-[0.1] pointer-events-none"
-              referrerPolicy="no-referrer"
+              className="absolute inset-0 w-full h-full object-cover opacity-[0.12] pointer-events-none"
             />
             <motion.div
               className="container-pro"
@@ -507,55 +730,78 @@ const LandingPage = () => {
       </main>
 
       {/* ========== Footer ========== */}
-      <footer>
-        <div className="container-pro">
-          <div className="footer-grid">
+      <footer style={{ background: '#0f1a0f', color: '#fff', position: 'relative', overflow: 'hidden' }}>
+        {/* Subtle green glow blobs */}
+        <div style={{ position: 'absolute', top: 0, left: '20%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(22,163,74,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: 0, right: '10%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(74,222,128,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+        {/* Large faded wordmark */}
+        <div style={{ position: 'absolute', bottom: '-20px', left: '50%', transform: 'translateX(-50%)', fontSize: 'clamp(80px, 12vw, 160px)', fontWeight: 900, color: 'rgba(255,255,255,0.03)', letterSpacing: '-0.04em', whiteSpace: 'nowrap', pointerEvents: 'none', userSelect: 'none', lineHeight: 1 }}>
+          OrganiSort
+        </div>
+
+        <div className="container-pro" style={{ position: 'relative', zIndex: 10 }}>
+          {/* Top: brand + tagline */}
+          <div style={{ paddingTop: '4rem', paddingBottom: '3rem', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <svg className="w-5 h-5" fill="none" stroke="#4ade80" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span style={{ fontSize: '18px', fontWeight: 900, letterSpacing: '-0.04em', color: '#fff' }}>OrganiSort</span>
+            </div>
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', fontWeight: 500, maxWidth: '340px', lineHeight: 1.6 }}>
+              AI-powered organic waste detection and management. Built for a zero-waste future.
+            </p>
+          </div>
+
+          {/* Middle: nav grid */}
+          <div className="footer-grid" style={{ paddingTop: '3rem', paddingBottom: '3rem', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
             <div className="footer-col">
-              <div className="footer-logo">
-                <svg className="inline w-4 h-4 mr-1 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                OrganiSort
-              </div>
-              <p className="footer-desc">
-                Organic Waste Detection & Management System. Built with AI-powered scanning, authenticated dashboards, and admin monitoring tools.
-              </p>
+              <h3 style={{ color: 'rgba(255,255,255,0.35)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '16px' }}>Navigate</h3>
+              {[['#home','Home'],['#features','Capabilities'],['#modules','Modules'],['#how','How It Works'],['#facts','Facts']].map(([href, label]) => (
+                <a key={href} href={href} style={{ display: 'block', color: 'rgba(255,255,255,0.55)', fontSize: '14px', fontWeight: 500, marginBottom: '10px', textDecoration: 'none', transition: 'color 0.2s' }}
+                  onMouseEnter={e => e.target.style.color='#4ade80'} onMouseLeave={e => e.target.style.color='rgba(255,255,255,0.55)'}>{label}</a>
+              ))}
             </div>
             <div className="footer-col">
-              <h3 className="footer-title">Navigation</h3>
-              <a href="#home" className="footer-link">Home</a>
-              <a href="#features" className="footer-link">Capabilities</a>
-              <a href="#modules" className="footer-link">Modules</a>
-              <a href="#how" className="footer-link">How It Works</a>
-              <button onClick={() => navigate('/about')} className="footer-link">About</button>
-              <button onClick={() => navigate('/contact')} className="footer-link">Contact</button>
-            </div>
-            <div className="footer-col">
-              <h3 className="footer-title">Account</h3>
+              <h3 style={{ color: 'rgba(255,255,255,0.35)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '16px' }}>Account</h3>
               {!user ? (
                 <>
-                  <a href="/login" className="footer-link">Login</a>
-                  <a href="/register" className="footer-link">Register</a>
+                  <a href="/login" style={{ display: 'block', color: 'rgba(255,255,255,0.55)', fontSize: '14px', fontWeight: 500, marginBottom: '10px', textDecoration: 'none' }}
+                    onMouseEnter={e => e.target.style.color='#4ade80'} onMouseLeave={e => e.target.style.color='rgba(255,255,255,0.55)'}>Login</a>
+                  <a href="/register" style={{ display: 'block', color: 'rgba(255,255,255,0.55)', fontSize: '14px', fontWeight: 500, marginBottom: '10px', textDecoration: 'none' }}
+                    onMouseEnter={e => e.target.style.color='#4ade80'} onMouseLeave={e => e.target.style.color='rgba(255,255,255,0.55)'}>Register</a>
                 </>
               ) : (
-                <a href="/dashboard" className="footer-link">Dashboard</a>
+                <a href="/dashboard" style={{ display: 'block', color: 'rgba(255,255,255,0.55)', fontSize: '14px', fontWeight: 500, marginBottom: '10px', textDecoration: 'none' }}
+                  onMouseEnter={e => e.target.style.color='#4ade80'} onMouseLeave={e => e.target.style.color='rgba(255,255,255,0.55)'}>Dashboard</a>
               )}
-              <a href="/about" className="footer-link">About</a>
-              <a href="/contact" className="footer-link">Contact</a>
-              <a href="#facts" className="footer-link">System Facts</a>
+              <a href="/about" style={{ display: 'block', color: 'rgba(255,255,255,0.55)', fontSize: '14px', fontWeight: 500, marginBottom: '10px', textDecoration: 'none' }}
+                onMouseEnter={e => e.target.style.color='#4ade80'} onMouseLeave={e => e.target.style.color='rgba(255,255,255,0.55)'}>About</a>
+              <a href="/contact" style={{ display: 'block', color: 'rgba(255,255,255,0.55)', fontSize: '14px', fontWeight: 500, marginBottom: '10px', textDecoration: 'none' }}
+                onMouseEnter={e => e.target.style.color='#4ade80'} onMouseLeave={e => e.target.style.color='rgba(255,255,255,0.55)'}>Contact</a>
+            </div>
+            <div className="footer-col">
+              <h3 style={{ color: 'rgba(255,255,255,0.35)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '16px' }}>Mission</h3>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', fontWeight: 500, lineHeight: 1.7 }}>
+                Every scan is a step toward a cleaner planet. OrganiSort empowers individuals and communities to make smarter waste decisions — one item at a time.
+              </p>
+              <div style={{ marginTop: '20px', display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(22,163,74,0.15)', border: '1px solid rgba(22,163,74,0.3)', borderRadius: '999px', padding: '6px 14px' }}>
+                <span style={{ color: '#4ade80', fontSize: '11px', fontWeight: 700 }}>🌱 Zero Waste Initiative</span>
+              </div>
             </div>
           </div>
 
-          <div className="footer-bottom">
-            <div className="footer-links">
-              <a href="#home">Home</a>
-              <span>·</span>
-              <a href="#features">Capabilities</a>
-              <span>·</span>
-              <a href="#facts">Facts</a>
-            </div>
-            <div className="footer-copyright">
+          {/* Bottom bar */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1.5rem', paddingBottom: '2rem', flexWrap: 'wrap', gap: '12px' }}>
+            <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '12px', fontWeight: 500 }}>
               © {new Date().getFullYear()} OrganiSort. All rights reserved.
+            </span>
+            <div style={{ display: 'flex', gap: '20px' }}>
+              {['Home','Capabilities','Facts'].map(label => (
+                <a key={label} href={`#${label.toLowerCase()}`} style={{ color: 'rgba(255,255,255,0.25)', fontSize: '12px', textDecoration: 'none', fontWeight: 500 }}
+                  onMouseEnter={e => e.target.style.color='rgba(255,255,255,0.6)'} onMouseLeave={e => e.target.style.color='rgba(255,255,255,0.25)'}>{label}</a>
+              ))}
             </div>
           </div>
         </div>
