@@ -564,8 +564,8 @@ const ReportsPage = () => {
               style={reportType === tab.id
                 ? {
                   borderColor: 'var(--theme-accent)',
-                  background: 'var(--theme-accent-surface)',
-                  color: 'var(--theme-accent)',
+                  background: 'var(--theme-accent)',
+                  color: '#ffffff',
                   boxShadow: '0 8px 24px rgba(0,0,0,0.08)'
                 }
                 : {
@@ -575,10 +575,10 @@ const ReportsPage = () => {
                 }}
             >
               {reportType === tab.id && (
-                <motion.div layoutId="activeTabIndicator" className="absolute inset-0" style={{ background: 'var(--theme-accent-surface)' }} />
+                <motion.div layoutId="activeTabIndicator" className="absolute inset-0 z-0" style={{ background: 'var(--theme-accent)' }} />
               )}
-              <div className="p-3 rounded-full transition-colors" style={reportType === tab.id
-                ? { background: 'var(--theme-accent-surface)', color: 'var(--theme-accent)', border: '1px solid var(--theme-accent-surface-border)' }
+              <div className="relative z-10 p-3 rounded-full transition-colors" style={reportType === tab.id
+                ? { background: 'rgba(255,255,255,0.18)', color: '#ffffff', border: '1px solid rgba(255,255,255,0.32)' }
                 : { background: 'var(--theme-bg-alt)', color: 'var(--theme-text-muted)' }}>
                 {tab.icon ? (
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -588,7 +588,7 @@ const ReportsPage = () => {
                   <span className="text-2xl leading-none">{tab.emoji}</span>
                 )}
               </div>
-              <span className="font-extrabold tracking-tight text-sm uppercase">{tab.label}</span>
+              <span className="relative z-10 font-extrabold tracking-tight text-sm uppercase">{tab.label}</span>
             </button>
           ))}
         </div>
