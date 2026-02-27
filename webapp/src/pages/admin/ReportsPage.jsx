@@ -552,24 +552,34 @@ const ReportsPage = () => {
       <motion.div variants={itemVariants} className="rounded-[2rem] shadow-sm p-6 print:hidden" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { id: 'summary', label: 'Summary', color: 'blue', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
-            { id: 'trends', label: 'Trends', color: 'green', icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' },
-            { id: 'users', label: 'User Activity', color: 'purple', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
-            { id: 'waste', label: 'Waste Composition', color: 'amber', icon: null, emoji: '♻️' },
+            { id: 'summary', label: 'Summary', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
+            { id: 'trends', label: 'Trends', icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' },
+            { id: 'users', label: 'User Activity', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
+            { id: 'waste', label: 'Waste Composition', icon: null, emoji: '♻️' },
           ].map(tab => (
             <button
               key={tab.id}
               onClick={() => setReportType(tab.id)}
-              className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-3 relative overflow-hidden group ${reportType === tab.id
-                ? `border-${tab.color}-500 bg-${tab.color}-50 text-${tab.color}-700 shadow-md shadow-${tab.color}-500/10`
-                : ``
-                }`}
-              style={reportType !== tab.id ? { borderColor: 'var(--theme-border)', background: 'var(--theme-card)', color: 'var(--theme-text-secondary)' } : {}}
+              className="p-5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-3 relative overflow-hidden group"
+              style={reportType === tab.id
+                ? {
+                  borderColor: 'var(--theme-accent)',
+                  background: 'var(--theme-accent-surface)',
+                  color: 'var(--theme-accent)',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.08)'
+                }
+                : {
+                  borderColor: 'var(--theme-border)',
+                  background: 'var(--theme-card)',
+                  color: 'var(--theme-text-secondary)'
+                }}
             >
               {reportType === tab.id && (
-                <motion.div layoutId="activeTabIndicator" className={`absolute inset-0 bg-${tab.color}-500/5`} />
+                <motion.div layoutId="activeTabIndicator" className="absolute inset-0" style={{ background: 'var(--theme-accent-surface)' }} />
               )}
-              <div className={`p-3 rounded-full transition-colors ${reportType === tab.id ? `bg-${tab.color}-100 text-${tab.color}-600` : ''}`} style={reportType !== tab.id ? { background: 'var(--theme-bg-alt)', color: 'var(--theme-text-muted)' } : {}}>
+              <div className="p-3 rounded-full transition-colors" style={reportType === tab.id
+                ? { background: 'var(--theme-accent-surface)', color: 'var(--theme-accent)', border: '1px solid var(--theme-accent-surface-border)' }
+                : { background: 'var(--theme-bg-alt)', color: 'var(--theme-text-muted)' }}>
                 {tab.icon ? (
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d={tab.icon} />

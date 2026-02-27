@@ -27,6 +27,17 @@ const hexToHsl = (hex) => {
   return { h: Math.round(h * 60), s: Math.round(s * 100), l: Math.round(l * 100) };
 };
 
+const hexToRgb = (hex) => {
+  const normalized = hex.replace('#', '').trim();
+  if (![3, 6].includes(normalized.length)) return null;
+  const fullHex = normalized.length === 3 ? normalized.split('').map((c) => c + c).join('') : normalized;
+  return {
+    r: parseInt(fullHex.slice(0, 2), 16),
+    g: parseInt(fullHex.slice(2, 4), 16),
+    b: parseInt(fullHex.slice(4, 6), 16)
+  };
+};
+
 const getThemeChartColors = (count = 10) => {
   if (typeof window === 'undefined') return Array.from({ length: count }, () => '#15803d');
   const accent = getComputedStyle(document.documentElement).getPropertyValue('--theme-accent').trim() || '#15803d';
@@ -38,6 +49,19 @@ const getThemeChartColors = (count = 10) => {
     const light = Math.min(62, Math.max(38, base.l + (index % 3) * 4 - 4));
     return `hsl(${hue} ${sat}% ${light}%)`;
   });
+};
+
+const getThemeHeatmapColor = (intensity) => {
+  if (typeof window === 'undefined') return intensity === 0 ? '#f3f4f6' : `rgba(34, 197, 94, ${0.15 + intensity * 0.85})`;
+  const css = getComputedStyle(document.documentElement);
+  const accent = css.getPropertyValue('--theme-accent').trim() || '#15803d';
+  const accentRgb = hexToRgb(accent) || { r: 21, g: 128, b: 61 };
+
+  if (intensity === 0) {
+    return css.getPropertyValue('--theme-bg-alt').trim() || 'rgba(148, 163, 184, 0.14)';
+  }
+
+  return `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, ${0.18 + intensity * 0.72})`;
 };
 
 /**
@@ -524,7 +548,7 @@ const AnalyticsPage = () => {
             <div className="space-y-4">
               <div className="flex justify-center pb-2">
                 <svg viewBox="0 0 42 42" className="w-44 h-44 -rotate-90">
-                  <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#f3f4f6" strokeWidth="7"></circle>
+                  <circle cx="21" cy="21" r="15.9155" fill="none" stroke="var(--theme-border)" strokeWidth="7"></circle>
                   {donutSegments.map(seg => (
                     <circle key={seg.category} cx="21" cy="21" r="15.9155" fill="none" stroke={seg.color} strokeWidth="7" strokeDasharray={seg.dasharray} strokeDashoffset={seg.dashoffset}></circle>
                   ))}
@@ -666,7 +690,7 @@ const AnalyticsPage = () => {
                         <div
                           key={hourIdx}
                           className="flex-1 h-5 rounded-sm transition-colors group relative cursor-pointer"
-                          style={{ backgroundColor: intensity === 0 ? '#f3f4f6' : `rgba(34, 197, 94, ${0.15 + intensity * 0.85})` }}
+                          style={{ backgroundColor: getThemeHeatmapColor(intensity) }}
                           title={`${heatmap.dayNames[dayIdx]} ${hourIdx}:00 - ${val} scans`}
                         >
                           <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-[10px] rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
@@ -682,7 +706,7 @@ const AnalyticsPage = () => {
               <div className="flex items-center justify-end gap-1 mt-2">
                 <span className="text-[10px] text-gray-400">Less</span>
                 {[0, 0.25, 0.5, 0.75, 1].map((v, i) => (
-                  <div key={i} className="w-3 h-3 rounded-sm" style={{ backgroundColor: v === 0 ? '#f3f4f6' : `rgba(34, 197, 94, ${0.15 + v * 0.85})` }}></div>
+                  <div key={i} className="w-3 h-3 rounded-sm" style={{ backgroundColor: getThemeHeatmapColor(v) }}></div>
                 ))}
                 <span className="text-[10px] text-gray-400">More</span>
               </div>
