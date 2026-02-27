@@ -14,11 +14,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/src/context/AuthContext';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
 import apiClient from '@/src/utils/apiClient';
-import { sendTestNotification, scheduleDailyReminder, cancelAllReminders } from '@/src/utils/notifications';
+
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f4f4f5' },
@@ -152,7 +151,7 @@ const styles = StyleSheet.create({
 export default function MoreScreen() {
   const { user, logout } = useAuth();
   const router = useRouter();
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+
   const [emailUpdates, setEmailUpdates] = useState(false);
   const [showTutorial, setShowTutorial] = useState(true);
   const [autoSave, setAutoSave] = useState(true);
@@ -170,7 +169,7 @@ export default function MoreScreen() {
         const response = await apiClient.get('/api/users/me');
         const prefs = response.data?.data?.preferences;
         if (prefs) {
-          setNotificationsEnabled(prefs.pushNotifications ?? true);
+
           setEmailUpdates(prefs.emailUpdates ?? false);
           setShowTutorial(prefs.showTutorial ?? true);
           setAutoSave(prefs.autoSaveDetections ?? true);
@@ -305,16 +304,7 @@ export default function MoreScreen() {
     loadAchievements();
   };
 
-  const handleToggleNotifications = async (value) => {
-    Haptics.selectionAsync();
-    setNotificationsEnabled(value);
-    updatePreference('pushNotifications', value);
-    if (value) {
-      await scheduleDailyReminder(18, 0); // 6:00 PM
-    } else {
-      await cancelAllReminders();
-    }
-  };
+
 
   const handleToggleEmailUpdates = (value) => {
     Haptics.selectionAsync();
@@ -334,10 +324,7 @@ export default function MoreScreen() {
     updatePreference('autoSaveDetections', value);
   };
 
-  const handleTestNotification = async () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    await sendTestNotification();
-  };
+
 
   return (
     <>
@@ -403,21 +390,7 @@ export default function MoreScreen() {
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Settings</Text>
 
-              <View style={styles.settingItem}>
-                <View style={styles.settingLeft}>
-                  <Ionicons name="notifications-outline" size={22} color="#10b981" style={styles.menuIcon} />
-                  <View style={styles.menuContent}>
-                    <Text style={styles.menuTitle}>Daily Reminders</Text>
-                    <Text style={styles.menuSubtitle}>Remind me to log waste</Text>
-                  </View>
-                </View>
-                <Switch
-                  value={notificationsEnabled}
-                  onValueChange={handleToggleNotifications}
-                  trackColor={{ false: '#cbd5e1', true: '#a7f3d0' }}
-                  thumbColor={notificationsEnabled ? '#10b981' : '#f8fafc'}
-                />
-              </View>
+
 
               <View style={styles.settingItem}>
                 <View style={styles.settingLeft}>
@@ -467,14 +440,7 @@ export default function MoreScreen() {
                 />
               </View>
 
-              <TouchableOpacity style={styles.menuItem} onPress={handleTestNotification}>
-                <Ionicons name="paper-plane-outline" size={22} color="#10b981" style={styles.menuIcon} />
-                <View style={styles.menuContent}>
-                  <Text style={styles.menuTitle}>Test Notification</Text>
-                  <Text style={styles.menuSubtitle}>Send a dummy push alert</Text>
-                </View>
-                <Text style={styles.menuArrow}>›</Text>
-              </TouchableOpacity>
+
 
               <TouchableOpacity
                 style={styles.menuItem}

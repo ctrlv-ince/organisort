@@ -17,8 +17,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
-import * as ImagePicker from 'expo-image-picker';
-import { Image } from 'expo-image';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#10b981' },

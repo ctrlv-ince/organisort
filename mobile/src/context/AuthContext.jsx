@@ -203,7 +203,6 @@ export const AuthProvider = ({ children }) => {
     resendEmailOtp,
     registerWithEmail,
     logout,
-    updateUserSession,
     isAuthenticated: !!user,
   };
 

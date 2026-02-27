@@ -4,7 +4,6 @@ import { AuthProvider, useAuth } from '@/src/context/AuthContext';
 import * as SplashScreen from 'expo-splash-screen';
 
 import { setOnUnauthorized } from '@/src/utils/apiClient';
-import { registerForPushNotificationsAsync } from '@/src/utils/notifications';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -14,9 +13,6 @@ function RootLayoutNav() {
   const router = useRouter();
   const [hydrated, setHydrated] = useState(false);
 
-  useEffect(() => {
-    registerForPushNotificationsAsync();
-  }, []);
 
   useEffect(() => {
     setOnUnauthorized(() => logout(router));
