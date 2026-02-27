@@ -10,6 +10,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { useAuth } from '@/src/context/AuthContext';
+import { useTheme } from '@/src/context/ThemeContext';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import apiClient from '@/src/utils/apiClient';
@@ -19,9 +20,8 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
+  container: { flex: 1 },
   header: {
-    backgroundColor: '#10b981',
     paddingTop: 32,
     paddingBottom: 24,
     paddingHorizontal: 24,
@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
 
 export default function EditProfileScreen() {
   const { user, updateUserSession } = useAuth();
+  const { colors } = useTheme();
   const router = useRouter();
   const [displayName, setDisplayName] = useState(user?.displayName || '');
   const [avatarUri, setAvatarUri] = useState(null);
@@ -148,15 +149,15 @@ export default function EditProfileScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]} edges={['top']}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 32 }}>
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: colors.accent }]}>
           <Text style={styles.title}>Edit Profile</Text>
           <Text style={styles.subtitle}>Update your account details</Text>
         </View>
 
         <View style={styles.content}>
-          <View style={styles.formCard}>
+          <View style={[styles.formCard, { backgroundColor: colors.card }]}>
 
             {/* Avatar Picker */}
             <View style={{ alignItems: 'center', marginBottom: 20 }}>
@@ -170,7 +171,7 @@ export default function EditProfileScreen() {
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderWidth: 2,
-                  borderColor: avatarUri || user?.photoURL ? '#10b981' : '#e5e7eb',
+                  borderColor: avatarUri || user?.photoURL ? colors.accent : colors.cardBorder,
                   borderStyle: avatarUri || user?.photoURL ? 'solid' : 'dashed',
                   overflow: 'hidden',
                 }}
@@ -219,7 +220,7 @@ export default function EditProfileScreen() {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.button, styles.saveButton, saving && styles.saveButtonDisabled]}
+                style={[styles.button, styles.saveButton, { backgroundColor: colors.accent }, saving && styles.saveButtonDisabled]}
                 onPress={handleSave}
                 disabled={saving}
               >

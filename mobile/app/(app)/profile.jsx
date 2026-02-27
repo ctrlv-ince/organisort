@@ -12,21 +12,21 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/src/context/AuthContext';
+import { useTheme } from '@/src/context/ThemeContext';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import apiClient from '@/src/utils/apiClient';
 import SkeletonLoader, { StatSkeleton } from '@/src/components/SkeletonLoader';
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f4f4f5' },
+  container: { flex: 1 },
   header: {
     paddingTop: 32,
     paddingBottom: 20,
     paddingHorizontal: 24,
-    backgroundColor: '#f4f4f5',
   },
-  title: { fontSize: 34, fontWeight: '900', color: '#18181b', letterSpacing: -0.5 },
-  subtitle: { fontSize: 16, color: '#71717a', marginTop: 4, fontWeight: '500' },
+  title: { fontSize: 34, fontWeight: '900', letterSpacing: -0.5 },
+  subtitle: { fontSize: 16, marginTop: 4, fontWeight: '500' },
   content: { padding: 24 },
 
   // Profile Header
@@ -149,6 +149,7 @@ const styles = StyleSheet.create({
 
 export default function ProfileScreen() {
   const { user } = useAuth();
+  const { colors } = useTheme();
   const router = useRouter();
   const [userData, setUserData] = useState(null);
   const [stats, setStats] = useState({
@@ -221,14 +222,14 @@ export default function ProfileScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <View style={styles.header}>
-          <Text style={styles.title}>My Profile</Text>
-          <Text style={styles.subtitle}>View your account & statistics</Text>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]} edges={['top']}>
+        <View style={[styles.header, { backgroundColor: colors.bg }]}>
+          <Text style={[styles.title, { color: colors.text }]}>My Profile</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>View your account & statistics</Text>
         </View>
         <View style={styles.content}>
           {/* Avatar skeleton */}
-          <View style={[styles.profileHeader, { alignItems: 'center' }]}>
+          <View style={[styles.profileHeader, { alignItems: 'center', backgroundColor: colors.card }]}>
             <SkeletonLoader width={120} height={120} borderRadius={60} style={{ marginBottom: 16 }} />
             <SkeletonLoader width={160} height={20} style={{ marginBottom: 8 }} />
             <SkeletonLoader width={200} height={14} style={{ marginBottom: 16 }} />
@@ -253,22 +254,22 @@ export default function ProfileScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]} edges={['top']}>
       <ScrollView
-        style={styles.container}
+        style={[styles.container, { backgroundColor: colors.bg }]}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#10b981" />
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.accent} />
         }
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>My Profile</Text>
-          <Text style={styles.subtitle}>View your account & statistics</Text>
+        <View style={[styles.header, { backgroundColor: colors.bg }]}>
+          <Text style={[styles.title, { color: colors.text }]}>My Profile</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>View your account & statistics</Text>
         </View>
 
         <View style={styles.content}>
           {/* Profile Header */}
-          <View style={styles.profileHeader}>
+          <View style={[styles.profileHeader, { backgroundColor: colors.card }]}>
             <View style={styles.avatarContainer}>
               {user?.photoURL ? (
                 <Image source={{ uri: user.photoURL }} style={styles.avatar} />
@@ -291,20 +292,20 @@ export default function ProfileScreen() {
 
           {/* Stats Section */}
           <View style={styles.statsSection}>
-            <Text style={styles.sectionTitle}>Your Statistics</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Your Statistics</Text>
             <View style={styles.statsGrid}>
-              <View style={styles.statCard}>
+              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
                 <Ionicons name="analytics-outline" size={28} color="#18181b" style={styles.statIcon} />
                 <Text style={styles.statValue}>{stats.totalDetections}</Text>
                 <Text style={styles.statLabel}>Total Scans</Text>
               </View>
-              <View style={styles.statCard}>
-                <Ionicons name="cube-outline" size={28} color="#18181b" style={styles.statIcon} />
+              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+                <Ionicons name="cube-outline" size={28} color={colors.text} style={styles.statIcon} />
                 <Text style={styles.statValue}>{stats.totalItems}</Text>
                 <Text style={styles.statLabel}>Items Detected</Text>
               </View>
-              <View style={styles.statCard}>
-                <Ionicons name="pricetag-outline" size={28} color="#18181b" style={styles.statIcon} />
+              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+                <Ionicons name="pricetag-outline" size={28} color={colors.text} style={styles.statIcon} />
                 <Text style={styles.statValue}>{stats.uniqueTypes}</Text>
                 <Text style={styles.statLabel}>Unique Types</Text>
               </View>
@@ -313,7 +314,7 @@ export default function ProfileScreen() {
 
           {/* Account Info */}
           <View style={styles.infoSection}>
-            <Text style={styles.sectionTitle}>Account Information</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Account Information</Text>
 
             <View style={styles.infoCard}>
               <View style={styles.infoLeft}>
@@ -364,7 +365,7 @@ export default function ProfileScreen() {
 
           {/* Quick Actions */}
           <View style={styles.infoSection}>
-            <Text style={styles.sectionTitle}>Quick Actions</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Quick Actions</Text>
 
             <TouchableOpacity
               style={styles.actionButton}

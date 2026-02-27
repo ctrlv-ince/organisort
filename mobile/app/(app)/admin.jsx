@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/src/context/AuthContext';
+import { useTheme } from '@/src/context/ThemeContext';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import SkeletonLoader from '@/src/components/SkeletonLoader';
@@ -63,6 +64,7 @@ const styles = StyleSheet.create({
 
 export default function AdminDashboard() {
   const { user, logout, isAuthenticated } = useAuth();
+  const { colors } = useTheme();
   const router = useRouter();
   const [users, setUsers] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -148,10 +150,10 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <AdminProtectedScreen>
-        <SafeAreaView style={styles.container} edges={['top']}>
-          <View style={styles.header}>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]} edges={['top']}>
+          <View style={[styles.header, { backgroundColor: colors.bg }]}>
             <View style={styles.headerTop}>
-              <Text style={styles.title}>Admin Dashboard</Text>
+              <Text style={[styles.title, { color: colors.text }]}>Admin Dashboard</Text>
             </View>
             <View style={styles.welcomeCard}>
               <SkeletonLoader width={200} height={18} borderRadius={4} style={{ marginBottom: 8 }} />
@@ -184,16 +186,16 @@ export default function AdminDashboard() {
 
   return (
     <AdminProtectedScreen>
-      <SafeAreaView style={styles.container} edges={['top']}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]} edges={['top']}>
         <ScrollView
-          style={styles.container}
+          style={[styles.container, { backgroundColor: colors.bg }]}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor='#10b981' />
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.accent} />
           }
         >
-          <View style={styles.header}>
+          <View style={[styles.header, { backgroundColor: colors.bg }]}>
             <View style={styles.headerTop}>
-              <Text style={styles.title}>Admin Dashboard</Text>
+              <Text style={[styles.title, { color: colors.text }]}>Admin Dashboard</Text>
               <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
                 <Text style={styles.logoutText}>Logout</Text>
               </TouchableOpacity>

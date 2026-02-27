@@ -19,6 +19,7 @@ import MapView, { Marker, Circle } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import apiClient from '@/src/utils/apiClient';
+import { useTheme } from '@/src/context/ThemeContext';
 import { CardSkeleton } from '@/src/components/SkeletonLoader';
 
 // ---------------------------------------------------------------------------
@@ -645,6 +646,7 @@ const styles = StyleSheet.create({
 
 export default function HistoryScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const [detections, setDetections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -811,11 +813,11 @@ export default function HistoryScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <View style={styles.header}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]} edges={['top']}>
+        <View style={[styles.header, { backgroundColor: colors.bg }]}>
           <View style={styles.headerContent}>
             <View style={styles.headerPlaceholder} />
-            <Text style={styles.headerTitle}>Detection History</Text>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>Detection History</Text>
             <View style={styles.headerPlaceholder} />
           </View>
         </View>
@@ -831,14 +833,14 @@ export default function HistoryScreen() {
 
   return (
     <>
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.bg }]}>
         {/* Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: colors.bg }]}>
           <View style={styles.headerContent}>
-            <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-              <Ionicons name="chevron-back" size={24} color="#18181b" />
+            <TouchableOpacity style={[styles.backButton, { backgroundColor: colors.card }]} onPress={() => router.back()}>
+              <Ionicons name="chevron-back" size={24} color={colors.text} />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Ledger</Text>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>Ledger</Text>
             <View style={styles.headerPlaceholder} />
           </View>
         </View>
@@ -846,7 +848,7 @@ export default function HistoryScreen() {
         <ScrollView
           style={styles.content}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#10b981" />
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.accent} />
           }
         >
           {/* Stats */}

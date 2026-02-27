@@ -20,11 +20,13 @@ import * as Haptics from 'expo-haptics';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme } from '@/src/context/ThemeContext';
 import apiClient from '@/src/utils/apiClient';
 
 const { width } = Dimensions.get('window');
 
 export default function ScanScreen() {
+  const { colors } = useTheme();
   const [permission, requestPermission] = useCameraPermissions();
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [isFlashlightOn, setIsFlashlightOn] = useState(false);
@@ -221,11 +223,11 @@ export default function ScanScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]} edges={['top']}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Scan Organic Waste</Text>
-          <Text style={styles.headerSubtitle}>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Scan Organic Waste</Text>
+          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
             Detect waste and find nearby disposal locations
           </Text>
         </View>

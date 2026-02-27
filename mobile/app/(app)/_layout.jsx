@@ -3,19 +3,22 @@ import { Tabs } from 'expo-router';
 import { View, Platform, Text } from 'react-native';
 import Svg, { Path, Polyline, Circle } from 'react-native-svg';
 import ProtectedScreen from '@/src/components/ProtectedScreen';
+import { useTheme } from '@/src/context/ThemeContext';
 
 export default function AppLayout() {
+  const { colors } = useTheme();
+
   return (
     <ProtectedScreen>
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: '#10b981',
-          tabBarInactiveTintColor: '#c4c4c6',
+          tabBarActiveTintColor: colors.tabBarActive,
+          tabBarInactiveTintColor: colors.tabBarInactive,
           tabBarStyle: {
-            backgroundColor: 'white',
+            backgroundColor: colors.tabBar,
             borderTopWidth: 0.5,
-            borderTopColor: '#e5e7eb',
+            borderTopColor: colors.tabBarBorder,
             height: Platform.OS === 'ios' ? 90 : 64,
             paddingBottom: Platform.OS === 'ios' ? 28 : 10,
             paddingTop: 10,

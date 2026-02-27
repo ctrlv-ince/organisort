@@ -9,6 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { useAuth } from '@/src/context/AuthContext';
+import { useTheme } from '@/src/context/ThemeContext';
 import apiClient from '@/src/utils/apiClient';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Circle, G, Text as SvgText } from 'react-native-svg';
@@ -19,15 +20,14 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CHART_WIDTH = SCREEN_WIDTH - 48;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f4f4f5' },
+  container: { flex: 1 },
   header: {
     paddingTop: 32,
     paddingBottom: 16,
     paddingHorizontal: 24,
-    backgroundColor: '#f4f4f5',
   },
-  title: { fontSize: 34, fontWeight: '900', color: '#18181b', letterSpacing: -0.5 },
-  subtitle: { fontSize: 16, color: '#71717a', marginTop: 4, fontWeight: '500' },
+  title: { fontSize: 34, fontWeight: '900', letterSpacing: -0.5 },
+  subtitle: { fontSize: 16, marginTop: 4, fontWeight: '500' },
   content: { padding: 24 },
 
   // Section Styles
@@ -178,6 +178,7 @@ const styles = StyleSheet.create({
 
 export default function AnalyticsScreen() {
   const { user } = useAuth();
+  const { colors } = useTheme();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [analytics, setAnalytics] = useState({
@@ -307,10 +308,10 @@ export default function AnalyticsScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Analytics</Text>
-          <Text style={styles.subtitle}>Insights & Impact</Text>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]} edges={['top']}>
+        <View style={[styles.header, { backgroundColor: colors.bg }]}>
+          <Text style={[styles.title, { color: colors.text }]}>Analytics</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Insights & Impact</Text>
         </View>
         <View style={styles.content}>
           <View style={styles.statsGrid}>
@@ -327,11 +328,11 @@ export default function AnalyticsScreen() {
 
   if (analytics.totalScans === 0) {
     return (
-      <SafeAreaView style={styles.container} edges={['top']}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]} edges={['top']}>
         <ScrollView style={{ flex: 1 }}>
-          <View style={styles.header}>
-            <Text style={styles.title}>Analytics</Text>
-            <Text style={styles.subtitle}>Insights & Impact</Text>
+          <View style={[styles.header, { backgroundColor: colors.bg }]}>
+            <Text style={[styles.title, { color: colors.text }]}>Analytics</Text>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Insights & Impact</Text>
           </View>
           <View style={styles.content}>
             <View style={styles.emptyState}>
@@ -347,17 +348,17 @@ export default function AnalyticsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]} edges={['top']}>
       <ScrollView
         style={{ flex: 1 }}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#10b981" />
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.accent} />
         }
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Analytics</Text>
-          <Text style={styles.subtitle}>Your Waste Detection Insights</Text>
+        <View style={[styles.header, { backgroundColor: colors.bg }]}>
+          <Text style={[styles.title, { color: colors.text }]}>Analytics</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Your Waste Detection Insights</Text>
         </View>
 
         <View style={styles.content}>
