@@ -140,7 +140,7 @@ const UsersPage = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white rounded-[2rem] shadow-sm p-8 space-y-4">
+            <div key={i} className="rounded-[2rem] shadow-sm p-8 space-y-4" style={{ background: 'var(--theme-card, #fff)' }}>
               <div className="flex justify-between">
                 <div className="skeleton-shimmer h-8 w-24 rounded-full" />
                 <div className="skeleton-shimmer h-12 w-12 rounded-xl" />
@@ -150,14 +150,14 @@ const UsersPage = () => {
           ))}
         </div>
 
-        <div className="bg-white rounded-[2rem] shadow-sm p-6 flex gap-4">
+        <div className="rounded-[2rem] shadow-sm p-6 flex gap-4" style={{ background: 'var(--theme-card, #fff)' }}>
           <div className="skeleton-shimmer h-12 flex-1 rounded-xl" />
           <div className="skeleton-shimmer h-12 w-64 rounded-xl" />
         </div>
 
-        <div className="bg-white rounded-[2rem] shadow-sm overflow-hidden p-6 space-y-4">
+        <div className="rounded-[2rem] shadow-sm overflow-hidden p-6 space-y-4" style={{ background: 'var(--theme-card, #fff)' }}>
           {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} className="py-4 border-b border-gray-100 flex items-center justify-between">
+            <div key={i} className="py-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--theme-border, #f0f0f0)' }}>
               <div className="flex items-center space-x-4">
                 <div className="skeleton-shimmer h-12 w-12 rounded-full" />
                 <div className="space-y-2">
@@ -196,56 +196,56 @@ const UsersPage = () => {
 
       {/* Stats Cards */}
       <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-xl transition-all p-8 flex flex-col justify-between border border-gray-100 relative overflow-hidden group">
-          <div className="absolute -right-6 -top-6 bg-purple-50 w-32 h-32 rounded-full transition-transform group-hover:scale-110"></div>
+        <div className="rounded-[2rem] shadow-sm hover:shadow-xl transition-all p-8 flex flex-col justify-between relative overflow-hidden group" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <div className="absolute -right-6 -top-6 w-32 h-32 rounded-full transition-transform group-hover:scale-110" style={{ background: 'var(--theme-accent-surface)' }}></div>
           <div className="relative z-10 flex items-center justify-between mb-4">
-            <div className="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600 shadow-sm border border-purple-200">
-              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm" style={{ background: 'var(--theme-accent-surface)', border: '1px solid var(--theme-accent-surface-border)' }}>
+              <svg className="w-7 h-7" fill="none" stroke="var(--theme-accent)" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </div>
           </div>
           <div className="relative z-10">
-            <p className="text-4xl font-extrabold text-gray-900 tracking-tight">{users.length}</p>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Total Identities</p>
+            <p className="text-4xl font-extrabold tracking-tight" style={{ color: 'var(--theme-text)' }}>{users.length}</p>
+            <p className="text-xs font-bold uppercase tracking-widest mt-1" style={{ color: 'var(--theme-text-muted)' }}>Total Identities</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-xl transition-all p-8 flex flex-col justify-between border border-gray-100 relative overflow-hidden group">
-          <div className="absolute -right-6 -top-6 bg-amber-50 w-32 h-32 rounded-full transition-transform group-hover:scale-110"></div>
+        <div className="rounded-[2rem] shadow-sm hover:shadow-xl transition-all p-8 flex flex-col justify-between relative overflow-hidden group" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <div className="absolute -right-6 -top-6 w-32 h-32 rounded-full transition-transform group-hover:scale-110" style={{ background: 'var(--theme-accent-surface)' }}></div>
           <div className="relative z-10 flex items-center justify-between mb-4">
-            <div className="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-600 shadow-sm border border-amber-200">
-              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm" style={{ background: 'var(--theme-accent-surface)', border: '1px solid var(--theme-accent-surface-border)' }}>
+              <svg className="w-7 h-7" fill="none" stroke="var(--theme-accent)" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
           </div>
           <div className="relative z-10">
-            <p className="text-4xl font-extrabold text-gray-900 tracking-tight">{adminCount}</p>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Administrators</p>
+            <p className="text-4xl font-extrabold tracking-tight" style={{ color: 'var(--theme-text)' }}>{adminCount}</p>
+            <p className="text-xs font-bold uppercase tracking-widest mt-1" style={{ color: 'var(--theme-text-muted)' }}>Administrators</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-[2rem] shadow-sm hover:shadow-xl transition-all p-8 flex flex-col justify-between border border-gray-100 relative overflow-hidden group">
-          <div className="absolute -right-6 -top-6 bg-green-50 w-32 h-32 rounded-full transition-transform group-hover:scale-110"></div>
+        <div className="rounded-[2rem] shadow-sm hover:shadow-xl transition-all p-8 flex flex-col justify-between relative overflow-hidden group" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <div className="absolute -right-6 -top-6 w-32 h-32 rounded-full transition-transform group-hover:scale-110" style={{ background: 'var(--theme-accent-surface)' }}></div>
           <div className="relative z-10 flex items-center justify-between mb-4">
-            <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center text-green-600 shadow-sm border border-green-200">
-              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm" style={{ background: 'var(--theme-accent-surface)', border: '1px solid var(--theme-accent-surface-border)' }}>
+              <svg className="w-7 h-7" fill="none" stroke="var(--theme-accent)" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
           </div>
           <div className="relative z-10">
-            <p className="text-4xl font-extrabold text-gray-900 tracking-tight">{userCount}</p>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Reg. Users</p>
+            <p className="text-4xl font-extrabold tracking-tight" style={{ color: 'var(--theme-text)' }}>{userCount}</p>
+            <p className="text-xs font-bold uppercase tracking-widest mt-1" style={{ color: 'var(--theme-text-muted)' }}>Reg. Users</p>
           </div>
         </div>
       </motion.div>
 
       {/* Search and Filter Bar */}
-      <motion.div variants={itemVariants} className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 flex flex-col sm:flex-row gap-4 items-center">
+      <motion.div variants={itemVariants} className="rounded-[2rem] shadow-sm p-6 flex flex-col sm:flex-row gap-4 items-center" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
         <div className="flex-1 relative w-full">
-          <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5" fill="none" stroke="var(--theme-text-muted)" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <input
@@ -253,19 +253,21 @@ const UsersPage = () => {
             placeholder="Search by directory name or email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-2xl bg-slate-50 focus:bg-white focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all font-medium text-gray-900"
+            className="w-full pl-12 pr-5 py-4 border rounded-2xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all font-medium"
+            style={{ background: 'var(--theme-input-bg, #f8fafc)', borderColor: 'var(--theme-border, #e5e7eb)', color: 'var(--theme-text, #111827)' }}
           />
         </div>
 
-        <div className="flex items-center p-1.5 bg-slate-50 border border-slate-200 rounded-2xl w-full sm:w-auto overflow-x-auto">
+        <div className="flex items-center p-1.5 rounded-2xl w-full sm:w-auto overflow-x-auto" style={{ background: 'var(--theme-bg-alt)', border: '1px solid var(--theme-border)' }}>
           {['all', 'admin', 'user'].map(role => (
             <button
               key={role}
               onClick={() => setRoleFilter(role)}
               className={`px-5 py-2.5 rounded-xl text-sm font-bold capitalize transition-all whitespace-nowrap ${roleFilter === role
-                  ? 'bg-purple-600 text-white shadow-md shadow-purple-500/30'
-                  : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/50'
+                ? 'bg-purple-600 text-white shadow-md shadow-purple-500/30'
+                : ''
                 }`}
+              style={roleFilter !== role ? { color: 'var(--theme-text-secondary)' } : {}}
             >
               {role === 'all' ? `Global (${users.length})` : role === 'admin' ? `Admin (${adminCount})` : `User (${userCount})`}
             </button>
@@ -274,21 +276,21 @@ const UsersPage = () => {
       </motion.div>
 
       {/* Users Table */}
-      <motion.div variants={itemVariants} className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
+      <motion.div variants={itemVariants} className="rounded-[2rem] shadow-sm overflow-hidden" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
         {filteredUsers.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-100">
-              <thead className="bg-slate-50">
+            <table className="min-w-full" style={{ borderColor: 'var(--theme-border)' }}>
+              <thead style={{ background: 'var(--theme-bg-alt, #f8fafc)' }}>
                 <tr>
-                  <th className="px-8 py-5 text-left text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Identity</th>
-                  <th className="px-8 py-5 text-left text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Clearance</th>
-                  <th className="px-8 py-5 text-left text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Status</th>
-                  <th className="px-8 py-5 text-left text-[10px] font-extrabold text-gray-400 uppercase tracking-widest hidden md:table-cell">Reg. Date</th>
-                  <th className="px-8 py-5 text-left text-[10px] font-extrabold text-gray-400 uppercase tracking-widest hidden lg:table-cell">Activity</th>
-                  <th className="px-8 py-5 text-right text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Operations</th>
+                  <th className="px-8 py-5 text-left text-[10px] font-extrabold uppercase tracking-widest" style={{ color: 'var(--theme-text-muted)' }}>Identity</th>
+                  <th className="px-8 py-5 text-left text-[10px] font-extrabold uppercase tracking-widest" style={{ color: 'var(--theme-text-muted)' }}>Clearance</th>
+                  <th className="px-8 py-5 text-left text-[10px] font-extrabold uppercase tracking-widest" style={{ color: 'var(--theme-text-muted)' }}>Status</th>
+                  <th className="px-8 py-5 text-left text-[10px] font-extrabold uppercase tracking-widest hidden md:table-cell" style={{ color: 'var(--theme-text-muted)' }}>Reg. Date</th>
+                  <th className="px-8 py-5 text-left text-[10px] font-extrabold uppercase tracking-widest hidden lg:table-cell" style={{ color: 'var(--theme-text-muted)' }}>Activity</th>
+                  <th className="px-8 py-5 text-right text-[10px] font-extrabold uppercase tracking-widest" style={{ color: 'var(--theme-text-muted)' }}>Operations</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-100/50">
+              <tbody style={{ background: 'var(--theme-card, #fff)' }}>
                 <AnimatePresence>
                   {filteredUsers.map((user) => (
                     <motion.tr
@@ -297,7 +299,10 @@ const UsersPage = () => {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       key={user._id}
-                      className="hover:bg-slate-50/50 transition-colors group"
+                      className="transition-colors group"
+                      style={{ cursor: 'default' }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'var(--theme-card-hover)'}
+                      onMouseLeave={e => e.currentTarget.style.background = ''}
                     >
                       {/* User Info */}
                       <td className="px-8 py-5 whitespace-nowrap">
@@ -306,18 +311,19 @@ const UsersPage = () => {
                             {getInitials(user.displayName, user.email)}
                           </div>
                           <div className="ml-5">
-                            <div className="text-sm font-extrabold text-gray-900 tracking-tight">{user.displayName || 'No Display Name'}</div>
-                            <div className="text-xs font-semibold text-gray-500 mt-0.5">{user.email}</div>
+                            <div className="text-sm font-extrabold tracking-tight" style={{ color: 'var(--theme-text)' }}>{user.displayName || 'No Display Name'}</div>
+                            <div className="text-xs font-semibold mt-0.5" style={{ color: 'var(--theme-text-secondary)' }}>{user.email}</div>
                           </div>
                         </div>
                       </td>
 
                       {/* Role Badge */}
                       <td className="px-8 py-5 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border ${user.role === 'admin'
-                          ? 'bg-amber-50 text-amber-700 border-amber-200 shadow-sm'
-                          : 'bg-green-50 text-green-700 border-green-200'
-                          }`}>
+                        <span className="inline-flex items-center px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest"
+                          style={user.role === 'admin'
+                            ? { background: 'rgba(245,158,11,0.12)', color: '#d97706', border: '1px solid rgba(245,158,11,0.25)' }
+                            : { background: 'rgba(34,197,94,0.12)', color: '#16a34a', border: '1px solid rgba(34,197,94,0.25)' }
+                          }>
                           {user.role === 'admin' && (
                             <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -329,10 +335,11 @@ const UsersPage = () => {
 
                       {/* Status Badge */}
                       <td className="px-8 py-5 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border ${user.isActive
-                          ? 'bg-slate-50 text-gray-700 border-slate-200'
-                          : 'bg-red-50 text-red-700 border-red-200'
-                          }`}>
+                        <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest"
+                          style={user.isActive
+                            ? { background: 'var(--theme-bg-alt)', color: 'var(--theme-text-secondary)', border: '1px solid var(--theme-border)' }
+                            : { background: 'rgba(239,68,68,0.12)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.25)' }
+                          }>
                           {user.isActive ? (
                             <><div className="w-1.5 h-1.5 rounded-full bg-green-500 mr-2 animate-pulse"></div> Active</>
                           ) : (
@@ -343,14 +350,14 @@ const UsersPage = () => {
 
                       {/* Created Date */}
                       <td className="px-8 py-5 whitespace-nowrap hidden md:table-cell">
-                        <div className="text-sm font-bold text-gray-500">
+                        <div className="text-sm font-bold" style={{ color: 'var(--theme-text-secondary)' }}>
                           {user.createdAt ? getTimeSince(user.createdAt) : 'Unknown'}
                         </div>
                       </td>
 
                       {/* Last Active */}
                       <td className="px-8 py-5 whitespace-nowrap hidden lg:table-cell">
-                        <div className="text-sm font-bold text-gray-500">{getTimeSince(user.lastLogin || user.updatedAt)}</div>
+                        <div className="text-sm font-bold" style={{ color: 'var(--theme-text-secondary)' }}>{getTimeSince(user.lastLogin || user.updatedAt)}</div>
                       </td>
 
                       {/* Actions */}
@@ -359,10 +366,11 @@ const UsersPage = () => {
                           <button
                             onClick={() => handleUpdateRole(user._id, user.role === 'admin' ? 'user' : 'admin')}
                             disabled={actionLoading === user._id}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all disabled:opacity-50 active:scale-95 ${user.role === 'admin'
-                              ? 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 border border-slate-200'
-                              : 'bg-amber-100 text-amber-800 hover:bg-amber-200 border border-amber-200'
-                              }`}
+                            className="px-4 py-2 rounded-xl text-xs font-bold transition-all disabled:opacity-50 active:scale-95"
+                            style={user.role === 'admin'
+                              ? { background: 'var(--theme-bg-alt)', color: 'var(--theme-text-secondary)', border: '1px solid var(--theme-border)' }
+                              : { background: 'rgba(245,158,11,0.12)', color: '#d97706', border: '1px solid rgba(245,158,11,0.25)' }
+                            }
                             title={user.role === 'admin' ? 'Demote to User' : 'Promote to Admin'}
                           >
                             {actionLoading === user._id ? (
@@ -385,10 +393,11 @@ const UsersPage = () => {
                             onClick={() => handleDeactivateUser(user)}
                             disabled={actionLoading === user._id || !user.isActive}
                             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 ${user.isActive
-                              ? 'bg-white border-2 border-red-100 text-red-600 hover:bg-red-50 hover:border-red-200'
-                              : 'bg-slate-50 border border-slate-100 text-slate-400'
+                              ? 'border-2 border-red-500/30 text-red-500 hover:bg-red-500/10 hover:border-red-500/50'
+                              : ''
                               }`}
                             title={user.isActive ? "Deactivate User Base Access" : "User record voided"}
+                            style={!user.isActive ? { background: 'var(--theme-bg-alt)', border: '1px solid var(--theme-border)', color: 'var(--theme-text-muted)' } : { background: 'transparent' }}
                           >
                             <span className="flex items-center gap-2">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -406,14 +415,14 @@ const UsersPage = () => {
             </table>
           </div>
         ) : (
-          <div className="p-16 text-center bg-slate-50">
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-white border border-slate-200 rounded-[2rem] mb-6 shadow-sm">
-              <svg className="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="p-16 text-center" style={{ background: 'var(--theme-bg-alt, #f8fafc)' }}>
+            <div className="inline-flex items-center justify-center w-24 h-24 rounded-[2rem] mb-6 shadow-sm" style={{ background: 'var(--theme-card)', border: '1px solid var(--theme-border)' }}>
+              <svg className="w-10 h-10" fill="none" stroke="var(--theme-text-muted)" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </div>
-            <p className="text-gray-900 font-bold text-2xl tracking-tight mb-2">Directory empty</p>
-            <p className="text-gray-500 font-medium">
+            <p className="font-bold text-2xl tracking-tight mb-2" style={{ color: 'var(--theme-text)' }}>Directory empty</p>
+            <p className="font-medium" style={{ color: 'var(--theme-text-secondary)' }}>
               {search || roleFilter !== 'all' ? 'Try adjusting your search query or filters' : 'No users registered yet'}
             </p>
           </div>
@@ -421,9 +430,9 @@ const UsersPage = () => {
 
         {/* Footer with count */}
         {filteredUsers.length > 0 && (
-          <div className="bg-slate-50 px-8 py-5 border-t border-gray-100 flex items-center justify-between">
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
-              Retrieving <span className="text-gray-800">{filteredUsers.length}</span> of <span className="text-gray-800">{users.length}</span> nodes
+          <div className="px-8 py-5 flex items-center justify-between" style={{ background: 'var(--theme-bg-alt, #f8fafc)', borderTop: '1px solid var(--theme-border, #f0f0f0)' }}>
+            <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--theme-text-secondary)' }}>
+              Retrieving <span style={{ color: 'var(--theme-text)' }}>{filteredUsers.length}</span> of <span style={{ color: 'var(--theme-text)' }}>{users.length}</span> nodes
             </p>
           </div>
         )}

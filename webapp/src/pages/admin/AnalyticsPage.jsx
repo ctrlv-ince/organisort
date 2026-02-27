@@ -240,7 +240,7 @@ const AnalyticsPage = () => {
     return (
       <div className="space-y-6">
         {/* Header skeleton */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="rounded-lg shadow-md p-6" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
           <div className="space-y-2">
             <div className="skeleton-shimmer h-8 w-48" />
             <div className="skeleton-shimmer h-4 w-64" />
@@ -249,7 +249,7 @@ const AnalyticsPage = () => {
         {/* Stats skeleton */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="bg-white rounded-lg shadow-md p-5 space-y-2">
+            <div key={i} className="rounded-lg shadow-md p-5 space-y-2" style={{ background: 'var(--theme-card, #fff)' }}>
               <div className="skeleton-shimmer h-4 w-20" />
               <div className="skeleton-shimmer h-8 w-16" />
             </div>
@@ -258,7 +258,7 @@ const AnalyticsPage = () => {
         {/* Chart placeholders */}
         <div className="grid md:grid-cols-2 gap-6">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="bg-white rounded-lg shadow-md p-6 space-y-4">
+            <div key={i} className="rounded-lg shadow-md p-6 space-y-4" style={{ background: 'var(--theme-card, #fff)' }}>
               <div className="skeleton-shimmer h-6 w-40" />
               <div className="skeleton-shimmer h-48 w-full" />
             </div>
@@ -330,25 +330,26 @@ const AnalyticsPage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="rounded-lg shadow-md p-6" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <div className="bg-blue-100 p-3 rounded-lg mr-4">
-              <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="p-3 rounded-lg mr-4" style={{ background: 'var(--theme-accent-surface)', border: '1px solid var(--theme-accent-surface-border)' }}>
+              <svg className="w-8 h-8" fill="none" stroke="var(--theme-accent)" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-800">Waste Analytics</h1>
-              <p className="text-gray-600 mt-1">10 comprehensive visualizations for organic waste detection insights</p>
+              <h1 className="text-3xl font-bold" style={{ color: 'var(--theme-text)' }}>Waste Analytics</h1>
+              <p className="mt-1" style={{ color: 'var(--theme-text-secondary)' }}>10 comprehensive visualizations for organic waste detection insights</p>
             </div>
           </div>
           <div>
-            <label className="text-sm text-gray-600 mr-2">Time Range:</label>
+            <label className="text-sm mr-2" style={{ color: 'var(--theme-text-secondary)' }}>Time Range:</label>
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              style={{ background: 'var(--theme-input-bg, #fff)', borderColor: 'var(--theme-border, #d1d5db)', color: 'var(--theme-text)' }}
             >
               <option value="7">Last 7 Days</option>
               <option value="30">Last 30 Days</option>
@@ -398,8 +399,8 @@ const AnalyticsPage = () => {
       {/* ═══════════════════════════════════════════════════ */}
       {/* GRAPH 1: Detection Activity Trend (Bar Chart) */}
       {/* ═══════════════════════════════════════════════════ */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+      <div className="rounded-lg shadow-md p-6" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+        <h2 className="text-xl font-bold mb-6 flex items-center" style={{ color: 'var(--theme-text)' }}>
           <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded mr-3">1</span>
           <svg className="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -440,8 +441,8 @@ const AnalyticsPage = () => {
       {/* ═══════════════════════════════════════════════════ */}
       {/* GRAPH 2: Scans vs Items Line Chart */}
       {/* ═══════════════════════════════════════════════════ */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+      <div className="rounded-lg shadow-md p-6" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+        <h2 className="text-xl font-bold mb-6 flex items-center" style={{ color: 'var(--theme-text)' }}>
           <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded mr-3">2</span>
           <svg className="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
@@ -468,8 +469,8 @@ const AnalyticsPage = () => {
         {/* ═══════════════════════════════════════════════════ */}
         {/* GRAPH 3: Waste Category Donut Chart */}
         {/* ═══════════════════════════════════════════════════ */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+        <div className="rounded-lg shadow-md p-6" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <h2 className="text-xl font-bold mb-6 flex items-center" style={{ color: 'var(--theme-text)' }}>
             <span className="bg-purple-100 text-purple-700 text-xs font-bold px-2 py-1 rounded mr-3">3</span>
             <svg className="w-6 h-6 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
@@ -515,8 +516,8 @@ const AnalyticsPage = () => {
         {/* ═══════════════════════════════════════════════════ */}
         {/* GRAPH 4: Top 10 Waste Types Horizontal Bar */}
         {/* ═══════════════════════════════════════════════════ */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+        <div className="rounded-lg shadow-md p-6" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <h2 className="text-xl font-bold mb-6 flex items-center" style={{ color: 'var(--theme-text)' }}>
             <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded mr-3">4</span>
             <svg className="w-6 h-6 text-amber-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -557,8 +558,8 @@ const AnalyticsPage = () => {
         {/* ═══════════════════════════════════════════════════ */}
         {/* GRAPH 5: Confidence Distribution Histogram */}
         {/* ═══════════════════════════════════════════════════ */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+        <div className="rounded-lg shadow-md p-6" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <h2 className="text-xl font-bold mb-6 flex items-center" style={{ color: 'var(--theme-text)' }}>
             <span className="bg-teal-100 text-teal-700 text-xs font-bold px-2 py-1 rounded mr-3">5</span>
             <svg className="w-6 h-6 text-teal-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
@@ -593,8 +594,8 @@ const AnalyticsPage = () => {
         {/* ═══════════════════════════════════════════════════ */}
         {/* GRAPH 6: Weekly Usage Heatmap */}
         {/* ═══════════════════════════════════════════════════ */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+        <div className="rounded-lg shadow-md p-6" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <h2 className="text-xl font-bold mb-6 flex items-center" style={{ color: 'var(--theme-text)' }}>
             <span className="bg-rose-100 text-rose-700 text-xs font-bold px-2 py-1 rounded mr-3">6</span>
             <svg className="w-6 h-6 text-rose-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -652,8 +653,8 @@ const AnalyticsPage = () => {
         {/* ═══════════════════════════════════════════════════ */}
         {/* GRAPH 7: Items Per Scan Distribution */}
         {/* ═══════════════════════════════════════════════════ */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+        <div className="rounded-lg shadow-md p-6" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <h2 className="text-xl font-bold mb-6 flex items-center" style={{ color: 'var(--theme-text)' }}>
             <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-1 rounded mr-3">7</span>
             <svg className="w-6 h-6 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4" />
@@ -689,8 +690,8 @@ const AnalyticsPage = () => {
         {/* ═══════════════════════════════════════════════════ */}
         {/* GRAPH 8: Waste Type Growth Over Time (Stacked) */}
         {/* ═══════════════════════════════════════════════════ */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+        <div className="rounded-lg shadow-md p-6" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <h2 className="text-xl font-bold mb-6 flex items-center" style={{ color: 'var(--theme-text)' }}>
             <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded mr-3">8</span>
             <svg className="w-6 h-6 text-emerald-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -748,8 +749,8 @@ const AnalyticsPage = () => {
         {/* ═══════════════════════════════════════════════════ */}
         {/* GRAPH 9: Category Comparison Radar */}
         {/* ═══════════════════════════════════════════════════ */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+        <div className="rounded-lg shadow-md p-6" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <h2 className="text-xl font-bold mb-6 flex items-center" style={{ color: 'var(--theme-text)' }}>
             <span className="bg-cyan-100 text-cyan-700 text-xs font-bold px-2 py-1 rounded mr-3">9</span>
             <svg className="w-6 h-6 text-cyan-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
@@ -802,8 +803,8 @@ const AnalyticsPage = () => {
         {/* ═══════════════════════════════════════════════════ */}
         {/* GRAPH 10: Daily Scan Volume Sparkline Grid */}
         {/* ═══════════════════════════════════════════════════ */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+        <div className="rounded-lg shadow-md p-6" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <h2 className="text-xl font-bold mb-6 flex items-center" style={{ color: 'var(--theme-text)' }}>
             <span className="bg-pink-100 text-pink-700 text-xs font-bold px-2 py-1 rounded mr-3">10</span>
             <svg className="w-6 h-6 text-pink-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4" />
@@ -824,8 +825,8 @@ const AnalyticsPage = () => {
                 return (
                   <div key={idx} className="flex items-center">
                     <div className="w-28 flex-shrink-0">
-                      <p className="text-sm font-medium text-gray-700 truncate">{sp.type}</p>
-                      <p className="text-xs text-gray-400">{sp.total} total</p>
+                      <p className="text-sm font-medium truncate" style={{ color: 'var(--theme-text-secondary)' }}>{sp.type}</p>
+                      <p className="text-xs" style={{ color: 'var(--theme-text-muted)' }}>{sp.total} total</p>
                     </div>
                     <div className="flex-1 ml-3">
                       <svg viewBox={`0 0 ${spW} ${spH}`} className="w-full h-8">

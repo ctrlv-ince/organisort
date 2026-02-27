@@ -149,7 +149,7 @@ const WasteCategoriesPage = () => {
         {/* Stats skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white rounded-[2rem] shadow-sm p-8 space-y-4">
+            <div key={i} className="rounded-[2rem] shadow-sm p-8 space-y-4" style={{ background: 'var(--theme-card, #fff)' }}>
               <div className="flex justify-between">
                 <div className="skeleton-shimmer h-12 w-12 rounded-xl" />
                 <div className="skeleton-shimmer h-8 w-20 rounded-full" />
@@ -163,7 +163,7 @@ const WasteCategoriesPage = () => {
           ))}
         </div>
 
-        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6">
+        <div className="rounded-[2rem] shadow-sm border p-6" style={{ background: 'var(--theme-card, #fff)', borderColor: 'var(--theme-border, #f0f0f0)' }}>
           <div className="flex gap-4">
             <div className="skeleton-shimmer h-12 flex-1 rounded-xl" />
             <div className="skeleton-shimmer h-12 w-48 rounded-xl" />
@@ -173,7 +173,7 @@ const WasteCategoriesPage = () => {
         {/* Category cards skeleton */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <div key={i} className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden space-y-4">
+            <div key={i} className="rounded-[2rem] shadow-sm border overflow-hidden space-y-4" style={{ background: 'var(--theme-card, #fff)', borderColor: 'var(--theme-border, #f0f0f0)' }}>
               <div className="skeleton-shimmer h-2 w-full" />
               <div className="p-6 space-y-4">
                 <div className="flex justify-between">
@@ -276,9 +276,9 @@ const WasteCategoriesPage = () => {
         })}
       </motion.div>
 
-      <motion.div variants={itemVariants} className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 flex flex-col sm:flex-row gap-4">
+      <motion.div variants={itemVariants} className="rounded-[2rem] shadow-sm p-6 flex flex-col sm:flex-row gap-4" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
         <div className="flex-1 relative">
-          <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5" fill="none" stroke="var(--theme-text-muted)" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <input
@@ -286,14 +286,16 @@ const WasteCategoriesPage = () => {
             placeholder="Search isolated waste classes..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-5 py-4 border border-gray-200 rounded-2xl bg-slate-50 focus:bg-white focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all font-medium text-gray-900"
+            className="w-full pl-12 pr-5 py-4 border rounded-2xl focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all font-medium"
+            style={{ background: 'var(--theme-input-bg, #f8fafc)', borderColor: 'var(--theme-border, #e5e7eb)', color: 'var(--theme-text, #111827)' }}
           />
         </div>
 
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="px-5 py-4 border border-gray-200 rounded-2xl bg-slate-50 focus:bg-white focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all font-bold text-gray-700 w-full sm:w-56"
+          className="px-5 py-4 border rounded-2xl focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all font-bold w-full sm:w-56"
+          style={{ background: 'var(--theme-input-bg, #f8fafc)', borderColor: 'var(--theme-border, #e5e7eb)', color: 'var(--theme-text-secondary, #374151)' }}
         >
           <option value="name">Sort by Class ID</option>
           <option value="count">Sort by Frequency</option>
@@ -303,7 +305,8 @@ const WasteCategoriesPage = () => {
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="px-5 py-4 border border-gray-200 rounded-2xl bg-slate-50 focus:bg-white focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all font-bold text-gray-700 w-full sm:w-56"
+          className="px-5 py-4 border rounded-2xl focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all font-bold w-full sm:w-56"
+          style={{ background: 'var(--theme-input-bg, #f8fafc)', borderColor: 'var(--theme-border, #e5e7eb)', color: 'var(--theme-text-secondary, #374151)' }}
         >
           <option value="all">All Ecosystems</option>
           {Object.keys(categories).sort().map((cat) => (
@@ -313,9 +316,9 @@ const WasteCategoriesPage = () => {
       </motion.div>
 
       <motion.div variants={itemVariants} className="px-2">
-        <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">
+        <p className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--theme-text-muted)' }}>
           Displaying {wasteTypes.length} of {totalTypeCount} isolated sub-classes
-          {selectedCategory !== 'all' && <span className="text-green-500"> • {selectedCategory} filter active</span>}
+          {selectedCategory !== 'all' && <span style={{ color: 'var(--theme-accent)' }}> • {selectedCategory} filter active</span>}
         </p>
       </motion.div>
 
@@ -329,47 +332,49 @@ const WasteCategoriesPage = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-gray-200 transition-all duration-300 group flex flex-col"
+              className="rounded-[2rem] shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group flex flex-col"
+              style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}
             >
               <div className="h-2 w-full" style={{ backgroundColor: categoryDisplayMap[type.category]?.color === 'gray' ? '#94a3b8' : type.color || '#10b981' }}></div>
 
               <div className="p-6 flex flex-col flex-1">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1 pr-2">
-                    <h3 className="text-xl font-extrabold text-gray-900 mb-2 capitalize tracking-tight leading-tight">{type.name.replace(/-/g, ' ')}</h3>
-                    <span className="inline-block px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest rounded-lg bg-slate-100 text-slate-600 border border-slate-200">
+                    <h3 className="text-xl font-extrabold mb-2 capitalize tracking-tight leading-tight" style={{ color: 'var(--theme-text)' }}>{type.name.replace(/-/g, ' ')}</h3>
+                    <span className="inline-block px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest rounded-lg" style={{ background: 'var(--theme-bg-alt)', color: 'var(--theme-text-secondary)', border: '1px solid var(--theme-border)' }}>
                       {type.category}
                     </span>
                   </div>
 
                   {type.detectionCount > 0 && (
-                    <div className="bg-green-50 text-green-700 px-3 py-1.5 rounded-xl text-sm font-black border border-green-100 shadow-sm shrink-0">
+                    <div className="px-3 py-1.5 rounded-xl text-sm font-black shadow-sm shrink-0" style={{ background: 'var(--theme-accent-surface)', color: 'var(--theme-accent)', border: '1px solid var(--theme-accent-surface-border)' }}>
                       {type.detectionCount}
                     </div>
                   )}
                 </div>
 
-                <p className="text-sm text-gray-500 font-medium mb-6 leading-relaxed flex-1">{type.description}</p>
+                <p className="text-sm font-medium mb-6 leading-relaxed flex-1" style={{ color: 'var(--theme-text-secondary)' }}>{type.description}</p>
 
-                <div className="space-y-3 text-sm mt-auto bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                <div className="space-y-3 text-sm mt-auto p-4 rounded-2xl" style={{ background: 'var(--theme-bg-alt)', border: '1px solid var(--theme-border)' }}>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Organic Context</span>
-                    <span className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-widest ${type.compostable
-                      ? 'bg-green-100/50 text-green-700 border border-green-200/50'
-                      : 'bg-red-100/50 text-red-700 border border-red-200/50'
-                      }`}>
+                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--theme-text-muted)' }}>Organic Context</span>
+                    <span className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-widest"
+                      style={type.compostable
+                        ? { background: 'rgba(34,197,94,0.12)', color: '#16a34a', border: '1px solid rgba(34,197,94,0.25)' }
+                        : { background: 'rgba(239,68,68,0.12)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.25)' }
+                      }>
                       {type.compostable ? 'Compostable' : 'Residual'}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Decomposition</span>
-                    <span className="text-slate-800 font-extrabold bg-white px-2 py-0.5 rounded border border-slate-200">{type.avgDecompositionDays || 'N/A'} days</span>
+                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--theme-text-muted)' }}>Decomposition</span>
+                    <span className="font-extrabold px-2 py-0.5 rounded" style={{ color: 'var(--theme-text)', background: 'var(--theme-card)', border: '1px solid var(--theme-border)' }}>{type.avgDecompositionDays || 'N/A'} days</span>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">DB Occurrences</span>
-                    <span className={`font-extrabold ${type.detectionCount > 0 ? 'text-green-600' : 'text-slate-400'}`}>
+                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--theme-text-muted)' }}>DB Occurrences</span>
+                    <span className="font-extrabold" style={{ color: type.detectionCount > 0 ? 'var(--theme-accent)' : 'var(--theme-text-muted)' }}>
                       {type.detectionCount > 0 ? type.detectionCount : '0 discovered'}
                     </span>
                   </div>
@@ -381,32 +386,32 @@ const WasteCategoriesPage = () => {
       </motion.div>
 
       {wasteTypes.length === 0 && (
-        <motion.div variants={itemVariants} className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-16 text-center">
-          <div className="inline-flex items-center justify-center w-24 h-24 bg-slate-50 border border-slate-100 rounded-[2rem] mb-6 shadow-sm">
-            <svg className="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <motion.div variants={itemVariants} className="rounded-[2rem] shadow-sm p-16 text-center" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-[2rem] mb-6 shadow-sm" style={{ background: 'var(--theme-bg-alt)', border: '1px solid var(--theme-border)' }}>
+            <svg className="w-10 h-10" fill="none" stroke="var(--theme-text-muted)" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
-          <p className="text-gray-900 text-2xl font-bold tracking-tight mb-2">No subclasses found</p>
-          <p className="text-gray-500 font-medium">Clear your search filters or adjust parameters to view taxonomy data.</p>
+          <p className="text-2xl font-bold tracking-tight mb-2" style={{ color: 'var(--theme-text)' }}>No subclasses found</p>
+          <p className="font-medium" style={{ color: 'var(--theme-text-secondary)' }}>Clear your search filters or adjust parameters to view taxonomy data.</p>
         </motion.div>
       )}
 
-      <motion.div variants={itemVariants} className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-[2rem] p-8 shadow-sm">
+      <motion.div variants={itemVariants} className="rounded-[2rem] p-8 shadow-sm" style={{ background: 'var(--theme-accent-surface)', border: '1px solid var(--theme-accent-surface-border)' }}>
         <div className="flex flex-col md:flex-row gap-6 items-start">
-          <div className="bg-blue-600 p-4 rounded-2xl shadow-lg shadow-blue-500/30 flex-shrink-0">
+          <div className="p-4 rounded-2xl shadow-lg flex-shrink-0" style={{ background: 'var(--theme-accent)', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.15)' }}>
             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div>
-            <h3 className="text-xl font-extrabold text-blue-900 mb-3 tracking-tight">System Knowledge Base</h3>
-            <div className="text-blue-800 space-y-2.5 font-medium leading-relaxed">
+            <h3 className="text-xl font-extrabold mb-3 tracking-tight" style={{ color: 'var(--theme-text)' }}>System Knowledge Base</h3>
+            <div className="space-y-2.5 font-medium leading-relaxed" style={{ color: 'var(--theme-text-secondary)' }}>
               <p><strong>Compostable items</strong> represent the core taxonomy that the AI identifies for natural decomposition pathways.</p>
               <p><strong>Decomposition metrics</strong> act as standard benchmarks utilized by the sustainability scoring engine.</p>
               <p>Non-compostable nodes represent items that must be segregated away from the primary biological waste streams.</p>
-              <div className="mt-4 pt-4 border-t border-blue-200/60 inline-flex">
-                <p className="text-xs bg-white/60 px-4 py-2 rounded-xl text-blue-900 font-bold border border-blue-200">
+              <div className="mt-4 pt-4 inline-flex" style={{ borderTop: '1px solid var(--theme-border)' }}>
+                <p className="text-xs px-4 py-2 rounded-xl font-bold" style={{ background: 'var(--theme-card)', color: 'var(--theme-text)', border: '1px solid var(--theme-border)' }}>
                   ⚡ Auto-syncs directly with the ML backend class maps.
                 </p>
               </div>

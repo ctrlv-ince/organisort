@@ -18,12 +18,12 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white border-b border-gray-100">
+    <nav style={{ background: 'var(--theme-card, #ffffff)', borderBottom: '1px solid var(--theme-border, #f0f0f0)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <h1 className="text-base font-extrabold text-gray-900 tracking-tight">OrganiSort</h1>
+            <h1 className="text-base font-extrabold tracking-tight" style={{ color: 'var(--theme-text)' }}>OrganiSort</h1>
           </div>
 
           {/* User Section */}
@@ -36,20 +36,21 @@ const Navbar = () => {
                     <img
                       src={user.photoURL}
                       alt={user.displayName || 'User'}
-                      className="w-9 h-9 rounded-xl border border-gray-200 object-cover"
+                      className="w-9 h-9 rounded-xl object-cover"
+                      style={{ border: '1px solid var(--theme-border, #e5e7eb)' }}
                     />
                   ) : (
-                    <div className="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center border border-green-100">
-                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'var(--theme-accent-surface)', border: '1px solid var(--theme-accent-surface-border)' }}>
+                      <svg className="w-5 h-5" fill="none" stroke="var(--theme-accent, #15803d)" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                     </div>
                   )}
                   <div className="hidden sm:block">
-                    <p className="text-sm font-semibold text-gray-900">
+                    <p className="text-sm font-semibold" style={{ color: 'var(--theme-text)' }}>
                       {user.displayName || user.email}
                     </p>
-                    <p className="text-xs text-gray-500">{user.email}</p>
+                    <p className="text-xs" style={{ color: 'var(--theme-text-muted)' }}>{user.email}</p>
                   </div>
                 </div>
 

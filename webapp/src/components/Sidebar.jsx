@@ -92,18 +92,18 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
   ];
 
   return (
-    <aside className="w-64 h-screen flex flex-col bg-white border-r border-gray-100 text-gray-700 shadow-sm z-50 overflow-hidden">
+    <aside className="w-64 h-screen flex flex-col shadow-sm z-50 overflow-hidden" style={{ background: 'var(--theme-sidebar, #ffffff)', borderRight: '1px solid var(--theme-border, #f0f0f0)', color: 'var(--theme-text-secondary)' }}>
       {/* Sidebar Header */}
-      <div className="p-6 border-b border-gray-100">
+      <div className="p-6" style={{ borderBottom: '1px solid var(--theme-border, #f0f0f0)' }}>
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center border border-green-100">
-            <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'var(--theme-accent-surface)', border: '1px solid var(--theme-accent-surface-border)' }}>
+            <svg className="w-6 h-6" fill="none" stroke="var(--theme-accent, #15803d)" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
           </div>
           <div>
-            <h2 className="text-sm font-bold text-gray-900 tracking-tight">Admin Portal</h2>
-            <p className="text-xs text-gray-500 font-medium">OrganiSort</p>
+            <h2 className="text-sm font-bold tracking-tight" style={{ color: 'var(--theme-text)' }}>Admin Portal</h2>
+            <p className="text-xs font-medium" style={{ color: 'var(--theme-text-muted)' }}>OrganiSort</p>
           </div>
         </div>
       </div>
@@ -114,12 +114,23 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${activeTab === item.id
-              ? 'bg-green-50 text-green-700 font-semibold border border-green-100/50'
-              : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 font-medium'
-              }`}
+            className="w-full flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-200"
+            style={activeTab === item.id
+              ? {
+                background: 'var(--theme-accent-surface, #f0fdf4)',
+                color: 'var(--theme-accent, #15803d)',
+                fontWeight: 600,
+                border: '1px solid var(--theme-accent-surface-border, rgba(0,0,0,0.06))',
+              }
+              : {
+                background: 'transparent',
+                color: 'var(--theme-text-secondary, #6b7280)',
+                fontWeight: 500,
+                border: '1px solid transparent',
+              }
+            }
           >
-            <span className={`transition-colors ${activeTab === item.id ? 'text-green-600' : 'text-gray-400 group-hover:text-gray-600'}`}>
+            <span style={{ color: activeTab === item.id ? 'var(--theme-accent, #15803d)' : 'var(--theme-text-muted, #9ca3af)' }}>
               {item.icon}
             </span>
             <span className="text-sm">{item.label}</span>
@@ -128,13 +139,13 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
       </nav>
 
       {/* Sidebar Footer */}
-      <div className="mt-auto p-4 border-t border-gray-100 bg-gray-50/50">
-        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+      <div className="mt-auto p-4" style={{ borderTop: '1px solid var(--theme-border, #f0f0f0)', background: 'var(--theme-bg-alt, rgba(249,250,251,0.5))' }}>
+        <div className="rounded-lg p-4 shadow-sm" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #e5e7eb)' }}>
           <div className="flex items-center space-x-2 mb-1.5">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
-            <span className="text-xs font-bold text-gray-700 tracking-wider uppercase">System Status</span>
+            <span className="text-xs font-bold tracking-wider uppercase" style={{ color: 'var(--theme-text-secondary)' }}>System Status</span>
           </div>
-          <p className="text-xs text-gray-500 font-medium">All systems operational</p>
+          <p className="text-xs font-medium" style={{ color: 'var(--theme-text-muted)' }}>All systems operational</p>
         </div>
       </div>
     </aside>
