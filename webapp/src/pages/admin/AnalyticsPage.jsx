@@ -1,6 +1,44 @@
 import React, { useState, useEffect } from 'react';
 
-const CHART_COLORS = ['#ef4444', '#f97316', '#f59e0b', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6', '#6366f1', '#f43f5e'];
+const hexToHsl = (hex) => {
+  const normalized = hex.replace('#', '').trim();
+  if (![3, 6].includes(normalized.length)) return null;
+  const fullHex = normalized.length === 3 ? normalized.split('').map((c) => c + c).join('') : normalized;
+
+  const r = parseInt(fullHex.slice(0, 2), 16) / 255;
+  const g = parseInt(fullHex.slice(2, 4), 16) / 255;
+  const b = parseInt(fullHex.slice(4, 6), 16) / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  const d = max - min;
+
+  if (d === 0) return { h: 0, s: 0, l: Math.round(l * 100) };
+
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  let h;
+  switch (max) {
+    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+    case g: h = (b - r) / d + 2; break;
+    default: h = (r - g) / d + 4;
+  }
+
+  return { h: Math.round(h * 60), s: Math.round(s * 100), l: Math.round(l * 100) };
+};
+
+const getThemeChartColors = (count = 10) => {
+  if (typeof window === 'undefined') return Array.from({ length: count }, () => '#15803d');
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--theme-accent').trim() || '#15803d';
+  const base = hexToHsl(accent) || { h: 135, s: 70, l: 40 };
+
+  return Array.from({ length: count }, (_, index) => {
+    const hue = (base.h + index * 36) % 360;
+    const sat = Math.min(88, Math.max(56, base.s));
+    const light = Math.min(62, Math.max(38, base.l + (index % 3) * 4 - 4));
+    return `hsl(${hue} ${sat}% ${light}%)`;
+  });
+};
 
 /**
  * Analytics Page - Admin Dashboard
@@ -280,6 +318,7 @@ const AnalyticsPage = () => {
   const wasteGrowth = getWasteGrowth();
   const radarData = getCategoryRadarData();
   const sparklines = getTypeDailySparklines();
+  const chartColors = getThemeChartColors();
 
   const categoryTotal = categoryBreakdown.reduce((s, c) => s + c.count, 0);
 
@@ -302,7 +341,7 @@ const AnalyticsPage = () => {
     const offset = categoryBreakdown.slice(0, idx).reduce((s, c) => s + ((categoryTotal ? c.count / categoryTotal : 0) * 100), 0);
     return {
       ...item,
-      color: CHART_COLORS[idx % CHART_COLORS.length],
+      color: chartColors[idx % chartColors.length],
       dasharray: `${pct * 100} ${100 - pct * 100}`,
       dashoffset: -offset
     };
@@ -421,8 +460,12 @@ const AnalyticsPage = () => {
                         <div>Items: {day.items}</div>
                       </div>
                       <div
-                        className="w-full bg-gradient-to-t from-green-600 to-green-400 rounded-t transition-all hover:from-green-700 hover:to-green-500 cursor-pointer"
-                        style={{ height: `${height}%`, minHeight: height > 0 ? '6px' : '2px' }}
+                        className="w-full rounded-t transition-all cursor-pointer"
+                        style={{
+                          height: `${height}%`,
+                          minHeight: height > 0 ? '6px' : '2px',
+                          background: `linear-gradient(to top, ${chartColors[0]}, ${chartColors[3]})`
+                        }}
                       ></div>
                     </div>
                     {(trendData.length <= 31 || idx % Math.ceil(trendData.length / 15) === 0) && (
@@ -452,15 +495,15 @@ const AnalyticsPage = () => {
         <div className="overflow-x-auto">
           <svg viewBox={`0 0 ${chartW} ${chartH + 30}`} className="min-w-[600px] w-full h-56">
             {[0, 0.25, 0.5, 0.75, 1].map(r => (
-              <line key={r} x1="0" x2={chartW} y1={chartH - r * chartH} y2={chartH - r * chartH} stroke="#e5e7eb" strokeWidth="1" />
+              <line key={r} x1="0" x2={chartW} y1={chartH - r * chartH} y2={chartH - r * chartH} stroke="var(--theme-border)" strokeWidth="1" />
             ))}
-            <polyline fill="none" stroke="#16a34a" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" points={scanLine} />
-            <polyline fill="none" stroke="#2563eb" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" points={itemsLine} />
+            <polyline fill="none" stroke={chartColors[0]} strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" points={scanLine} />
+            <polyline fill="none" stroke={chartColors[1]} strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" points={itemsLine} />
           </svg>
         </div>
         <div className="flex items-center justify-center gap-6 text-sm mt-2">
-          <div className="flex items-center"><span className="w-4 h-1 bg-green-600 rounded mr-2"></span><span className="text-gray-600">Scans</span></div>
-          <div className="flex items-center"><span className="w-4 h-1 bg-blue-600 rounded mr-2"></span><span className="text-gray-600">Items Detected</span></div>
+          <div className="flex items-center"><span className="w-4 h-1 rounded mr-2" style={{ background: chartColors[0] }}></span><span style={{ color: 'var(--theme-text-secondary)' }}>Scans</span></div>
+          <div className="flex items-center"><span className="w-4 h-1 rounded mr-2" style={{ background: chartColors[1] }}></span><span style={{ color: 'var(--theme-text-secondary)' }}>Items Detected</span></div>
         </div>
       </div>
 
@@ -493,7 +536,7 @@ const AnalyticsPage = () => {
                   <div key={idx}>
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center">
-                        <div className="w-3 h-3 rounded mr-2" style={{ backgroundColor: CHART_COLORS[idx % CHART_COLORS.length] }}></div>
+                        <div className="w-3 h-3 rounded mr-2" style={{ backgroundColor: chartColors[idx % chartColors.length] }}></div>
                         <span className="text-gray-700 font-medium text-sm">{item.category}</span>
                       </div>
                       <div className="text-right">
@@ -502,7 +545,7 @@ const AnalyticsPage = () => {
                       </div>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="h-2 rounded-full" style={{ backgroundColor: CHART_COLORS[idx % CHART_COLORS.length], width: `${pct}%` }}></div>
+                      <div className="h-2 rounded-full" style={{ backgroundColor: chartColors[idx % chartColors.length], width: `${pct}%` }}></div>
                     </div>
                   </div>
                 );
@@ -580,7 +623,7 @@ const AnalyticsPage = () => {
                       style={{
                         height: `${height}%`,
                         minHeight: bucket.count > 0 ? '4px' : '2px',
-                        backgroundColor: `hsl(${160 + idx * 12}, 70%, ${45 + idx * 3}%)`
+                        backgroundColor: chartColors[idx % chartColors.length]
                       }}
                     ></div>
                   </div>
@@ -672,8 +715,12 @@ const AnalyticsPage = () => {
                         {d.count} scans
                       </div>
                       <div
-                        className="w-full bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-t cursor-pointer hover:from-indigo-700 hover:to-indigo-500 transition-all"
-                        style={{ height: `${height}%`, minHeight: d.count > 0 ? '4px' : '2px' }}
+                        className="w-full rounded-t cursor-pointer transition-all"
+                        style={{
+                          height: `${height}%`,
+                          minHeight: d.count > 0 ? '4px' : '2px',
+                          background: `linear-gradient(to top, ${chartColors[2]}, ${chartColors[5]})`
+                        }}
                       ></div>
                     </div>
                     <span className="text-xs text-gray-600 mt-2 font-medium">{d.items}</span>
@@ -715,7 +762,7 @@ const AnalyticsPage = () => {
                             className="w-full transition-all"
                             style={{
                               height: `${ht}%`,
-                              backgroundColor: CHART_COLORS[tIdx % CHART_COLORS.length],
+                              backgroundColor: chartColors[tIdx % chartColors.length],
                               minHeight: val > 0 ? '2px' : '0',
                               borderRadius: tIdx === wasteGrowth.types.length - 1 ? '4px 4px 0 0' : '0'
                             }}
@@ -732,7 +779,7 @@ const AnalyticsPage = () => {
               <div className="flex flex-wrap items-center gap-3 mt-3">
                 {wasteGrowth.types.map((t, i) => (
                   <div key={i} className="flex items-center">
-                    <div className="w-3 h-3 rounded mr-1" style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}></div>
+                    <div className="w-3 h-3 rounded mr-1" style={{ backgroundColor: chartColors[i % chartColors.length] }}></div>
                     <span className="text-xs text-gray-600">{t}</span>
                   </div>
                 ))}
@@ -762,17 +809,17 @@ const AnalyticsPage = () => {
               <svg viewBox="0 0 260 260" className="w-64 h-64">
                 {/* Grid circles */}
                 {[0.25, 0.5, 0.75, 1].map(r => (
-                  <circle key={r} cx={radarCenter} cy={radarCenter} r={r * radarSize} fill="none" stroke="#e5e7eb" strokeWidth="1" />
+                  <circle key={r} cx={radarCenter} cy={radarCenter} r={r * radarSize} fill="none" stroke="var(--theme-border)" strokeWidth="1" />
                 ))}
                 {/* Axis lines */}
                 {radarData.map((_, i) => {
                   const angle = (Math.PI * 2 * i) / radarData.length - Math.PI / 2;
                   return (
-                    <line key={i} x1={radarCenter} y1={radarCenter} x2={radarCenter + radarSize * Math.cos(angle)} y2={radarCenter + radarSize * Math.sin(angle)} stroke="#e5e7eb" strokeWidth="1" />
+                    <line key={i} x1={radarCenter} y1={radarCenter} x2={radarCenter + radarSize * Math.cos(angle)} y2={radarCenter + radarSize * Math.sin(angle)} stroke="var(--theme-border)" strokeWidth="1" />
                   );
                 })}
                 {/* Data polygon */}
-                <polygon points={radarPoints} fill="rgba(34, 197, 94, 0.2)" stroke="#16a34a" strokeWidth="2" />
+                <polygon points={radarPoints} fill="var(--theme-accent-surface)" stroke={chartColors[0]} strokeWidth="2" />
                 {/* Data points + labels */}
                 {radarData.map((d, i) => {
                   const angle = (Math.PI * 2 * i) / radarData.length - Math.PI / 2;
@@ -780,7 +827,7 @@ const AnalyticsPage = () => {
                   const labelR = radarSize + 18;
                   return (
                     <g key={i}>
-                      <circle cx={radarCenter + r * Math.cos(angle)} cy={radarCenter + r * Math.sin(angle)} r="4" fill="#16a34a" />
+                      <circle cx={radarCenter + r * Math.cos(angle)} cy={radarCenter + r * Math.sin(angle)} r="4" fill="var(--theme-accent)" />
                       <text
                         x={radarCenter + labelR * Math.cos(angle)}
                         y={radarCenter + labelR * Math.sin(angle)}
@@ -830,7 +877,7 @@ const AnalyticsPage = () => {
                     </div>
                     <div className="flex-1 ml-3">
                       <svg viewBox={`0 0 ${spW} ${spH}`} className="w-full h-8">
-                        <polyline fill="none" stroke={CHART_COLORS[idx % CHART_COLORS.length]} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points={pts} />
+                        <polyline fill="none" stroke={chartColors[idx % chartColors.length]} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points={pts} />
                       </svg>
                     </div>
                   </div>

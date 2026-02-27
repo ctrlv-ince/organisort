@@ -707,8 +707,12 @@ const ReportsPage = () => {
                               {day.date}: {day.scans} Events
                             </div>
                             <div
-                              className="w-full bg-gradient-to-t from-emerald-500 to-green-400 rounded-t-lg hover:from-emerald-600 hover:to-green-500 cursor-pointer transition-all duration-300 group-hover:-translate-y-1"
-                              style={{ height: `${height}%`, minHeight: day.scans > 0 ? '6px' : '4px' }}
+                              className="w-full rounded-t-lg cursor-pointer transition-all duration-300 group-hover:-translate-y-1"
+                              style={{
+                                height: `${height}%`,
+                                minHeight: day.scans > 0 ? '6px' : '4px',
+                                background: 'linear-gradient(to top, var(--theme-accent), var(--theme-accent-light))'
+                              }}
                             ></div>
                           </div>
                         </div>
@@ -811,7 +815,7 @@ const ReportsPage = () => {
                         </div>
                         <span className="w-40 text-sm font-bold truncate" style={{ color: 'var(--theme-text)' }}>{user.email.split('@')[0]}</span>
                         <div className="flex-1 rounded-full h-3 shadow-inner overflow-hidden" style={{ background: 'var(--theme-bg-alt)', border: '1px solid var(--theme-border)' }}>
-                          <div className="bg-gradient-to-r from-purple-500 to-indigo-500 h-full rounded-full transition-all duration-500" style={{ width: `${pct}%` }}></div>
+                          <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, background: 'linear-gradient(to right, var(--theme-accent), var(--theme-accent-light))' }}></div>
                         </div>
                         <span className="w-16 text-right text-sm font-black" style={{ color: 'var(--theme-text)' }}>{user.scans}</span>
                       </div>
@@ -924,7 +928,7 @@ const ReportsPage = () => {
                       </div>
                     </div>
                     <div className="w-full rounded-full h-4 shadow-inner overflow-hidden" style={{ background: 'var(--theme-bg-alt)', border: '1px solid var(--theme-border)' }}>
-                      <div className="bg-gradient-to-r from-amber-400 to-amber-600 h-full rounded-full transition-all duration-1000 group-hover:opacity-80" style={{ width: `${cat.percentage}%` }}></div>
+                      <div className="h-full rounded-full transition-all duration-1000 group-hover:opacity-80" style={{ width: `${cat.percentage}%`, background: 'linear-gradient(to right, var(--theme-accent-light), var(--theme-accent))' }}></div>
                     </div>
                   </div>
                 ))}
