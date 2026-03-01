@@ -1,6 +1,7 @@
+const path = require('path');
 const mongoose = require('mongoose');
 const WasteDisposalLocation = require('../models/WasteDisposalLocation');
-require('dotenv').config();
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const locations = [
   {
@@ -130,7 +131,13 @@ const locations = [
 ];
 
 async function seed() {
-  await mongoose.connect(process.env.MONGODB_URI);
+  const mongoUri = process.env.MONGODB_URI;
+
+  if (!mongoUri) {
+    throw new Error('MONGODB_URI is not defined. Add it to backend/.env before running this script.');
+  }
+
+  await mongoose.connect(mongoUri);
   await WasteDisposalLocation.insertMany(locations);
   console.log('✅ Seeded Taguig waste disposal locations');
   process.exit(0);
