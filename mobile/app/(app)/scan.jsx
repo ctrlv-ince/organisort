@@ -312,7 +312,7 @@ export default function ScanScreen() {
               )}
             </View>
 
-            {disposalLocations.length > 0 && (
+            {disposalLocations.length > 0 ? (
               <View style={styles.disposalSection}>
                 <Text style={styles.sectionTitle}>Nearby Disposal Locations</Text>
                 <Text style={styles.disposalSubtitle}>
@@ -344,6 +344,16 @@ export default function ScanScreen() {
                     </TouchableOpacity>
                   </View>
                 )}
+              </View>
+            ) : (
+              <View style={styles.emptyStateContainer}>
+                <View style={styles.emptyStateIconWrapper}>
+                  <Ionicons name="location-outline" size={32} color="#a1a1aa" />
+                </View>
+                <Text style={styles.emptyStateTitle}>No facilities located nearby</Text>
+                <Text style={styles.emptyStateText}>
+                  We couldn't lock onto any affiliated disposal drop-offs in your specific region. Please check with local sorting authorities.
+                </Text>
               </View>
             )}
 
@@ -829,5 +839,42 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderCurve: 'continuous',
     gap: 8,
+  },
+  emptyStateContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+    paddingVertical: 40,
+    paddingHorizontal: 24,
+    borderRadius: 32,
+    borderCurve: 'continuous',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 3,
+  },
+  emptyStateIconWrapper: {
+    width: 64,
+    height: 64,
+    borderRadius: 20,
+    backgroundColor: '#fafafa',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#f4f4f5',
+  },
+  emptyStateTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#18181b',
+    marginBottom: 8,
+  },
+  emptyStateText: {
+    fontSize: 14,
+    color: '#71717a',
+    textAlign: 'center',
+    lineHeight: 22,
   },
 });

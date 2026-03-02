@@ -2,6 +2,51 @@
 const WasteDisposalLocation = require('../models/WasteDisposalLocation');
 const { getPaginationParams } = require('../utils/pagination');
 
+// ---------------------------------------------------------------------------
+// Synonym map: expands specific detection class names into the broader category
+// keywords that seeded locations actually use in acceptedWasteTypes.
+// e.g. "potato" → also searches for "vegetable" and "food-waste"
+// ---------------------------------------------------------------------------
+const WASTE_TYPE_SYNONYMS = {
+  // Vegetables
+  potato: ['vegetable', 'food-waste'], tomato: ['vegetable', 'food-waste'],
+  broccoli: ['vegetable', 'food-waste'], cucumber: ['vegetable', 'food-waste'],
+  garlic: ['vegetable', 'food-waste'], onion: ['vegetable', 'food-waste'],
+  mushroom: ['vegetable', 'food-waste'], leaf: ['vegetable', 'food-waste'],
+  // Fruits
+  apple: ['fruit', 'food-waste'], 'apple-core': ['fruit', 'food-waste'],
+  'apple-peel': ['fruit', 'food-waste'], 'banana-peel': ['fruit', 'food-waste'],
+  orange: ['fruit', 'food-waste'], 'orange-peel': ['fruit', 'food-waste'],
+  papaya: ['fruit', 'food-waste'], pear: ['fruit', 'food-waste'],
+  'pear-core': ['fruit', 'food-waste'], watermelon: ['fruit', 'food-waste'],
+  pineapple: ['fruit', 'food-waste'], avocado: ['fruit', 'food-waste'],
+  calamansi: ['fruit', 'food-waste'],
+  // Proteins
+  meat: ['protein', 'food-waste'], fish: ['protein', 'food-waste'],
+  'bone-fish': ['protein', 'food-waste'], shrimp: ['protein', 'food-waste'],
+  'chicken-skin': ['protein', 'food-waste'], mussel: ['protein', 'food-waste'],
+  'shrimp-shell': ['protein', 'food-waste'], bone: ['protein', 'food-waste'],
+  // Grains
+  rice: ['grain', 'food-waste'], bread: ['grain', 'food-waste'],
+  noodle: ['grain', 'food-waste'], pasta: ['grain', 'food-waste'],
+  bun: ['grain', 'food-waste'],
+  // Eggs / Other
+  'egg-shell': ['food-waste'], 'egg-scramble': ['food-waste'],
+  eggshell: ['food-waste'], 'egg-yolk': ['food-waste'],
+  tofu: ['food-waste'], congee: ['food-waste'],
+  malunggay: ['vegetable', 'food-waste'], pancake: ['food-waste'],
+};
+
+const expandWasteTypes = (types) => {
+  const expanded = new Set(types);
+  types.forEach((t) => {
+    (WASTE_TYPE_SYNONYMS[t] || []).forEach((s) => expanded.add(s));
+  });
+  return [...expanded];
+};
+
+// ---------------------------------------------------------------------------
+
 const getNearbyLocations = async (req, res, next) => {
   try {
     const { latitude, longitude, wasteTypes, maxDistance = 20000, limit = 10 } = req.query;
@@ -25,9 +70,10 @@ const getNearbyLocations = async (req, res, next) => {
 
     let wasteTypesArray = null;
     if (wasteTypes) {
-      wasteTypesArray = Array.isArray(wasteTypes)
+      const raw = Array.isArray(wasteTypes)
         ? wasteTypes
-        : wasteTypes.split(',').map((t) => t.trim());
+        : wasteTypes.split(',').map((t) => t.trim()).filter(Boolean);
+      if (raw.length > 0) wasteTypesArray = expandWasteTypes(raw);
     }
 
     const locations = await WasteDisposalLocation.findNearby(
@@ -202,26 +248,62 @@ const getRecommendedLocations = async (req, res, next) => {
   try {
     const { latitude, longitude, wasteTypes } = req.query;
 
-    if (!latitude || !longitude || !wasteTypes) {
+    // wasteTypes is OPTIONAL — show nearby locations even without it
+    if (!latitude || !longitude) {
       return res.status(400).json({
         success: false,
-        error: 'Latitude, longitude, and wasteTypes are required',
+        error: 'Latitude and longitude are required',
       });
     }
 
     const lat = parseFloat(latitude);
     const lng = parseFloat(longitude);
 
-    const wasteTypesArray = Array.isArray(wasteTypes)
-      ? wasteTypes
-      : wasteTypes.split(',').map((t) => t.trim());
+    if (isNaN(lat) || isNaN(lng)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid latitude or longitude',
+      });
+    }
 
-    const locations = await WasteDisposalLocation.findNearby(lng, lat, wasteTypesArray, 50000, 10);
+    // Build expanded waste type list (specific class → broad category synonyms)
+    let wasteTypesArray = null;
+    if (wasteTypes) {
+      const raw = Array.isArray(wasteTypes)
+        ? wasteTypes
+        : wasteTypes.split(',').map((t) => t.trim()).filter(Boolean);
+      if (raw.length > 0) wasteTypesArray = expandWasteTypes(raw);
+    }
+
+    // First pass: try with expanded waste types
+    let locations = await WasteDisposalLocation.findNearby(lng, lat, wasteTypesArray, 50000, 10);
+    let usedFallbackNearbySearch = false;
+
+    // Fallback 1: try without waste type filter
+    if (locations.length === 0) {
+      locations = await WasteDisposalLocation.findNearby(lng, lat, null, 50000, 10);
+      usedFallbackNearbySearch = locations.length > 0;
+    }
+
+    // Fallback 2: if still no locations within 50km, return any active locations (ignoring distance limit)
+    if (locations.length === 0) {
+      locations = await WasteDisposalLocation.find({ isActive: true })
+        .limit(10);
+
+      // We need to calculate distance up front to sort them manually
+      // since $near aggregation does this automatically
+      locations.sort((a, b) => {
+        const distA = calculateDistance(lat, lng, a.location.coordinates[1], a.location.coordinates[0]);
+        const distB = calculateDistance(lat, lng, b.location.coordinates[1], b.location.coordinates[0]);
+        return distA - distB;
+      });
+      usedFallbackNearbySearch = true;
+    }
 
     if (locations.length === 0) {
       return res.json({
         success: true,
-        message: 'No disposal locations found for these waste types nearby',
+        message: 'No disposal locations found anywhere',
         data: [],
         recommendation: {
           wasteTypes: wasteTypesArray,
@@ -244,12 +326,15 @@ const getRecommendedLocations = async (req, res, next) => {
         distance: Math.round(distance * 100) / 100,
         distanceText: formatDistance(distance),
         priority: index + 1,
-        recommendation: generateRecommendation(loc, distance, wasteTypesArray),
+        recommendation: generateRecommendation(loc, distance, wasteTypesArray || []),
       };
     });
 
     res.json({
       success: true,
+      message: usedFallbackNearbySearch
+        ? 'No exact waste-type match found nearby. Showing closest active drop-off points instead.'
+        : undefined,
       data: recommendations,
       wasteTypes: wasteTypesArray,
       nearestLocation: recommendations[0],
@@ -268,14 +353,12 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(toRadians(lat1)) *
-      Math.cos(toRadians(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+    Math.cos(toRadians(lat2)) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const distance = R * c;
-
-  return distance;
+  return R * c;
 }
 
 function toRadians(degrees) {
@@ -298,7 +381,9 @@ function generateRecommendation(location, distance, wasteTypes) {
     waste_management: 'waste management facility',
   };
 
-  let message = `This ${facilityNames[location.facilityType] || 'facility'} accepts ${wasteTypes.join(', ')} waste`;
+  let message = wasteTypes.length > 0
+    ? `This ${facilityNames[location.facilityType] || 'facility'} accepts ${wasteTypes.join(', ')} waste`
+    : `This ${facilityNames[location.facilityType] || 'facility'} is a nearby drop-off point`;
 
   if (distance < 1) {
     message += ' and is very close to you (less than 1km).';
@@ -312,7 +397,7 @@ function generateRecommendation(location, distance, wasteTypes) {
     message += ' Public drop-off is available.';
   }
 
-  if (location.fees.hasFees) {
+  if (location.fees && location.fees.hasFees) {
     message += ` Note: ${location.fees.description || 'Fees may apply'}`;
   }
 

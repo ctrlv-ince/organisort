@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Waste Detection",
-    "slug": "waste-detection-app",
+    "name": "OrganiSort",
+    "slug": "organisort-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -36,7 +36,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "wastedetection",
+    "scheme": "organisort",
     "extra": {
       "eas": {
         "projectId": "c2a2fe7b-2e6a-44b9-99b6-4d254e81f31a"

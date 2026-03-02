@@ -114,7 +114,7 @@ export default function RegisterScreen() {
 
           {/* Header */}
           <Text style={styles.title}>OrganiSort</Text>
-          <Text style={styles.subtitle}>Waste Detection App</Text>
+          <Text style={styles.subtitle}>OrganiSort</Text>
 
           {/* Register Card */}
           <View style={styles.card}>

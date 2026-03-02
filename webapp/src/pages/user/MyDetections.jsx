@@ -507,11 +507,11 @@ const MyDetections = () => {
 
               <div className="p-8 overflow-y-auto space-y-8" style={{ background: 'var(--theme-bg, #ffffff)' }}>
                 {getDetectionImageUrl(selectedDetection) && (
-                  <div className="w-full rounded-2xl overflow-hidden shadow-inner max-h-[400px]" style={{ background: 'var(--theme-input-bg, #f1f5f9)', border: '1px solid var(--theme-border, #f0f0f0)' }}>
+                  <div className="w-full rounded-2xl overflow-hidden shadow-inner h-[400px]" style={{ background: 'var(--theme-input-bg, #f1f5f9)', border: '1px solid var(--theme-border, #f0f0f0)' }}>
                     <img
                       src={getDetectionImageUrl(selectedDetection)}
                       alt="Detection detail"
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-cover"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.style.display = 'none';

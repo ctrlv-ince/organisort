@@ -141,7 +141,7 @@ export default function LoginScreen() {
 
           {/* Header */}
           <Text style={styles.title}>OrganiSort</Text>
-          <Text style={styles.subtitle}>Waste Detection App</Text>
+          <Text style={styles.subtitle}>OrganiSort</Text>
 
           {/* Sign In Card */}
           <View style={styles.card}>
