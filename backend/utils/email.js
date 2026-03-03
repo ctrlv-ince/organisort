@@ -1,4 +1,4 @@
-const { spawn } = require('child_process');
+const nodemailer = require('nodemailer');
 
 const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com';
 const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
@@ -7,9 +7,11 @@ const SMTP_PASS = process.env.SMTP_PASS?.replace(/\s+/g, '');
 const SMTP_FROM_EMAIL = process.env.SMTP_FROM_EMAIL?.trim() || SMTP_USER;
 const SMTP_TIMEOUT_MS = Number(process.env.SMTP_TIMEOUT_MS || 10000);
 
+let transporter = null;
+
 /**
- * Sends an email using SMTP via the `curl` command line tool.
- * 
+ * Sends an email using nodemailer.
+ *
  * @param {Object} options
  * @param {string} options.recipientEmail
  * @param {string} options.subject
@@ -17,60 +19,42 @@ const SMTP_TIMEOUT_MS = Number(process.env.SMTP_TIMEOUT_MS || 10000);
  * @param {string} [options.textFallback]
  * @returns {Promise<void>}
  */
-const sendEmail = ({ recipientEmail, subject, html, textFallback }) => {
-    return new Promise((resolve, reject) => {
-        if (!SMTP_USER || !SMTP_PASS || !SMTP_FROM_EMAIL) {
-            return reject(new Error('SMTP_USER, SMTP_PASS, and SMTP_FROM_EMAIL are required to send emails'));
-        }
+const sendEmail = async ({ recipientEmail, subject, html, textFallback }) => {
+    if (!SMTP_USER || !SMTP_PASS || !SMTP_FROM_EMAIL) {
+        throw new Error('SMTP_USER, SMTP_PASS, and SMTP_FROM_EMAIL are required to send emails');
+    }
 
-        const smtpUrl = `smtp://${SMTP_HOST}:${SMTP_PORT}/`;
-        const args = [
-            '--silent',
-            '--show-error',
-            '--ssl',
-            '--url', smtpUrl,
-            '--user', `${SMTP_USER}:${SMTP_PASS}`,
-            '--mail-from', SMTP_FROM_EMAIL,
-            '--mail-rcpt', recipientEmail,
-            '--upload-file', '-',
-        ];
-
-        const payload = [
-            `From: OrganiSort <${SMTP_FROM_EMAIL}>`,
-            `To: ${recipientEmail}`,
-            `Subject: ${subject}`,
-            'MIME-Version: 1.0',
-            'Content-Type: text/html; charset=UTF-8',
-            '',
-            html,
-            '',
-            ...(textFallback ? [`Plain-text fallback: ${textFallback}`, ''] : []),
-        ].join('\r\n');
-
-        const child = spawn('curl', args, { timeout: SMTP_TIMEOUT_MS });
-
-        let stderr = '';
-        child.stderr.on('data', (d) => { stderr += d.toString(); });
-
-        child.on('close', (code) => {
-            if (code === 0) return resolve();
-            const err = new Error('Unable to send email via SMTP. Check SMTP credentials (for Gmail use an app password) and sender configuration.');
-            err.code = code;
-            err.statusCode = 502;
-            err.cause = { stderr };
-            reject(err);
+    if (!transporter) {
+        transporter = nodemailer.createTransport({
+            host: SMTP_HOST,
+            port: SMTP_PORT,
+            secure: SMTP_PORT === 465, // true for 465, false for other ports
+            auth: {
+                user: SMTP_USER,
+                pass: SMTP_PASS,
+            },
+            connectionTimeout: SMTP_TIMEOUT_MS,
+            greetingTimeout: SMTP_TIMEOUT_MS,
+            socketTimeout: SMTP_TIMEOUT_MS,
         });
+    }
 
-        child.on('error', (spawnErr) => {
-            const err = new Error('Unable to send email via SMTP. Check SMTP credentials (for Gmail use an app password) and sender configuration.');
-            err.statusCode = 502;
-            err.cause = { stderr, spawnErr };
-            reject(err);
+    try {
+        await transporter.sendMail({
+            from: `"OrganiSort" <${SMTP_FROM_EMAIL}>`,
+            to: recipientEmail,
+            subject: subject,
+            text: textFallback || 'Please view this email in a client that supports HTML',
+            html: html,
         });
-
-        child.stdin.write(payload);
-        child.stdin.end();
-    });
+        console.log(`[email.js] Email successfully sent to ${recipientEmail}`);
+    } catch (error) {
+        console.error('[email.js] Failed to send email via SMTP:', error);
+        const err = new Error('Unable to send email via SMTP. Check SMTP credentials (for Gmail use an app password) and sender configuration.');
+        err.statusCode = 502;
+        err.cause = error;
+        throw err;
+    }
 };
 
 module.exports = {
