@@ -49,6 +49,15 @@ const WASTE_DISPOSAL_GUIDES = {
     notes: 'Cutting the peel into smaller pieces can speed up breakdown.',
     decompositionDays: 14,
   },
+  'bitten-apple': {
+    bin: 'compost',
+    instructions: [
+      'Place the partially eaten apple directly in your compost or food-waste bin.',
+      'Cover with dry browns (paper, leaves) to reduce odour.',
+    ],
+    notes: 'Treat the same as a whole apple — chop for faster decomposition.',
+    decompositionDays: 21,
+  },
   calamansi: {
     bin: 'compost',
     instructions: [
@@ -56,6 +65,16 @@ const WASTE_DISPOSAL_GUIDES = {
       'Mix with other food scraps.',
     ],
     notes: 'Citrus peels decompose more slowly — chop them up to speed the process.',
+    decompositionDays: 21,
+  },
+  mango: {
+    bin: 'compost',
+    instructions: [
+      'Separate the flesh from the skin and seed.',
+      'Flesh and skin go directly in the compost bin.',
+      'The seed/pit takes much longer — crush or cut it before composting.',
+    ],
+    notes: 'Mango pits can take several months to decompose whole.',
     decompositionDays: 21,
   },
   orange: {
@@ -75,15 +94,6 @@ const WASTE_DISPOSAL_GUIDES = {
     ],
     notes: 'Citrus oils can slow worm activity in vermicompost — use sparingly in worm bins.',
     decompositionDays: 45,
-  },
-  papaya: {
-    bin: 'compost',
-    instructions: [
-      'Scoop out seeds and add to compost along with the flesh.',
-      'Skin can also be composted.',
-    ],
-    notes: 'Papaya breaks down quickly due to high moisture content.',
-    decompositionDays: 14,
   },
   pear: {
     bin: 'compost',
@@ -116,15 +126,6 @@ const WASTE_DISPOSAL_GUIDES = {
     notes: 'The tough outer skin takes longer — cut it up to help it break down.',
     decompositionDays: 45,
   },
-  watermelon: {
-    bin: 'compost',
-    instructions: [
-      'Place rind and flesh in the compost bin.',
-      'Cut into smaller chunks to avoid attracting pests.',
-    ],
-    notes: 'High water content — mix with dry browns to maintain compost balance.',
-    decompositionDays: 21,
-  },
 
   // ── Vegetables ───────────────────────────────────────────────────────────
   broccoli: {
@@ -133,6 +134,33 @@ const WASTE_DISPOSAL_GUIDES = {
       'Place raw or cooked broccoli scraps in the compost bin.',
       'Chop thick stems into smaller pieces.',
     ],
+    decompositionDays: 10,
+  },
+  cabbage: {
+    bin: 'compost',
+    instructions: [
+      'Tear or chop cabbage leaves into smaller pieces.',
+      'Place in the compost or food-waste bin.',
+    ],
+    notes: 'Cabbage breaks down quickly due to its high moisture content.',
+    decompositionDays: 10,
+  },
+  'cabbage-core': {
+    bin: 'compost',
+    instructions: [
+      'Chop the dense cabbage core into smaller chunks before composting.',
+      'Add to your compost or food-waste bin.',
+    ],
+    notes: 'The core is denser — cutting it up speeds decomposition significantly.',
+    decompositionDays: 14,
+  },
+  'carrot-peel': {
+    bin: 'compost',
+    instructions: [
+      'Place carrot peels directly into your compost or food-waste bin.',
+      'Mix with drier compostables.',
+    ],
+    notes: 'Carrot peels decompose quickly and are an excellent compost addition.',
     decompositionDays: 10,
   },
   cucumber: {
@@ -145,16 +173,25 @@ const WASTE_DISPOSAL_GUIDES = {
   garlic: {
     bin: 'compost',
     instructions: [
-      'Add garlic cloves, peels, and papery skins to the compost bin.',
+      'Add garlic cloves to the compost bin.',
     ],
     notes: 'Garlic has antimicrobial properties — use in moderation in worm bins.',
     decompositionDays: 21,
   },
-  leaf: {
+  'garlic-skin': {
     bin: 'compost',
     instructions: [
-      'Place leafy scraps in the compost or food-waste bin.',
-      'Wet leaves can be layered with dry material to improve aeration.',
+      'Add papery garlic skins directly to the compost bin.',
+      'They count as a dry brown material.',
+    ],
+    notes: 'Garlic skin is very light — mix with wetter greens for balance.',
+    decompositionDays: 10,
+  },
+  kangkong: {
+    bin: 'compost',
+    instructions: [
+      'Place water spinach leaves and stems directly in the compost bin.',
+      'Chop thick stems for faster breakdown.',
     ],
     decompositionDays: 7,
   },
@@ -169,10 +206,27 @@ const WASTE_DISPOSAL_GUIDES = {
   onion: {
     bin: 'compost',
     instructions: [
-      'Add onion pieces and dry papery skins to the compost bin.',
+      'Add onion pieces to the compost bin.',
     ],
     notes: 'Strong odour — bury onion scraps within the compost pile.',
     decompositionDays: 21,
+  },
+  'onion-skin': {
+    bin: 'compost',
+    instructions: [
+      'Add dry onion skins directly to the compost bin.',
+      'They act as a brown / carbon material.',
+    ],
+    notes: 'Onion skins are slow to break down — tear them up first.',
+    decompositionDays: 14,
+  },
+  pechay: {
+    bin: 'compost',
+    instructions: [
+      'Place pechay / bok choy leaves and stems directly in the compost bin.',
+    ],
+    notes: 'High moisture content — mix with dry browns.',
+    decompositionDays: 7,
   },
   potato: {
     bin: 'compost',
@@ -182,6 +236,15 @@ const WASTE_DISPOSAL_GUIDES = {
     ],
     notes: 'Ensure potato pieces do not sprout in the compost.',
     decompositionDays: 30,
+  },
+  seed: {
+    bin: 'compost',
+    instructions: [
+      'Add seeds from fruits or vegetables to the compost bin.',
+      'Crush or chop larger seeds to speed up decomposition.',
+    ],
+    notes: 'Some seeds may survive composting and sprout — hot composting can prevent this.',
+    decompositionDays: 60,
   },
   tomato: {
     bin: 'compost',
@@ -196,7 +259,7 @@ const WASTE_DISPOSAL_GUIDES = {
   bone: {
     bin: 'residual',
     instructions: [
-      'Large animal bones (chicken, pork, beef) are not suitable for standard compost.',
+      'Large animal bones (pork, beef) are not suitable for standard compost.',
       'Place in the residual/general waste bin.',
       'Check if your local facility accepts bones for specialised processing.',
     ],
@@ -211,6 +274,16 @@ const WASTE_DISPOSAL_GUIDES = {
     ],
     notes: 'Fish bones add calcium and phosphorus to compost.',
     decompositionDays: 60,
+  },
+  'chicken-bone': {
+    bin: 'residual',
+    instructions: [
+      'Chicken bones are not suitable for standard home composting.',
+      'Place in the residual/general waste bin.',
+      'Check if your local facility accepts bones for specialised processing.',
+    ],
+    notes: 'Industrial composting or bone-meal facilities may accept chicken bones.',
+    decompositionDays: 730,
   },
   'chicken-skin': {
     bin: 'compost',
@@ -240,15 +313,6 @@ const WASTE_DISPOSAL_GUIDES = {
     ],
     notes: 'Avoid adding large quantities at once.',
     decompositionDays: 21,
-  },
-  mussel: {
-    bin: 'compost',
-    instructions: [
-      'Remove mussel meat from shells.',
-      'Add meat to the compost bin.',
-      'Shells require separate handling (see mussel-shell).',
-    ],
-    decompositionDays: 10,
   },
   'mussel-shell': {
     bin: 'special handling',
@@ -369,13 +433,6 @@ const WASTE_DISPOSAL_GUIDES = {
     ],
     decompositionDays: 10,
   },
-  good: {
-    bin: 'compost',
-    instructions: [
-      'Place this organic item in your compost or food-waste bin.',
-    ],
-    decompositionDays: 21,
-  },
   malunggay: {
     bin: 'compost',
     instructions: [
@@ -402,6 +459,24 @@ const WASTE_DISPOSAL_GUIDES = {
   },
 
   // ── Non-organics ─────────────────────────────────────────────────────────
+  'paper-tissue': {
+    bin: 'compost',
+    instructions: [
+      'If unsoiled by chemicals, place used paper tissue in the compost bin.',
+      'Heavily soiled tissues (e.g. with cleaning products) go in residual waste.',
+    ],
+    notes: 'Paper tissue counts as a brown/carbon material in compost.',
+    decompositionDays: 21,
+  },
+  'plastic-waste': {
+    bin: 'residual',
+    instructions: [
+      'Place plastic waste in the residual/general waste bin.',
+      'If the plastic is marked recyclable, check your local recycling guidelines.',
+      'Do NOT add plastic to compost or organic waste bins.',
+    ],
+    notes: 'Plastic does not decompose naturally. Always separate from organic waste.',
+  },
   'plastic-bottle': {
     bin: 'recyclable',
     instructions: [

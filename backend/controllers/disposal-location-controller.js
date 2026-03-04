@@ -12,20 +12,25 @@ const WASTE_TYPE_SYNONYMS = {
   potato: ['vegetable', 'food-waste'], tomato: ['vegetable', 'food-waste'],
   broccoli: ['vegetable', 'food-waste'], cucumber: ['vegetable', 'food-waste'],
   garlic: ['vegetable', 'food-waste'], onion: ['vegetable', 'food-waste'],
-  mushroom: ['vegetable', 'food-waste'], leaf: ['vegetable', 'food-waste'],
+  mushroom: ['vegetable', 'food-waste'], cabbage: ['vegetable', 'food-waste'],
+  'cabbage-core': ['vegetable', 'food-waste'], 'carrot-peel': ['vegetable', 'food-waste'],
+  'garlic-skin': ['vegetable', 'food-waste'], kangkong: ['vegetable', 'food-waste'],
+  'onion-skin': ['vegetable', 'food-waste'], pechay: ['vegetable', 'food-waste'],
+  seed: ['vegetable', 'food-waste'],
   // Fruits
   apple: ['fruit', 'food-waste'], 'apple-core': ['fruit', 'food-waste'],
   'apple-peel': ['fruit', 'food-waste'], 'banana-peel': ['fruit', 'food-waste'],
+  'bitten-apple': ['fruit', 'food-waste'], mango: ['fruit', 'food-waste'],
   orange: ['fruit', 'food-waste'], 'orange-peel': ['fruit', 'food-waste'],
-  papaya: ['fruit', 'food-waste'], pear: ['fruit', 'food-waste'],
-  'pear-core': ['fruit', 'food-waste'], watermelon: ['fruit', 'food-waste'],
-  pineapple: ['fruit', 'food-waste'], avocado: ['fruit', 'food-waste'],
-  calamansi: ['fruit', 'food-waste'],
+  pear: ['fruit', 'food-waste'], 'pear-core': ['fruit', 'food-waste'],
+  'pear-peel': ['fruit', 'food-waste'], pineapple: ['fruit', 'food-waste'],
+  avocado: ['fruit', 'food-waste'], calamansi: ['fruit', 'food-waste'],
   // Proteins
   meat: ['protein', 'food-waste'], fish: ['protein', 'food-waste'],
   'bone-fish': ['protein', 'food-waste'], shrimp: ['protein', 'food-waste'],
-  'chicken-skin': ['protein', 'food-waste'], mussel: ['protein', 'food-waste'],
+  'chicken-skin': ['protein', 'food-waste'], 'chicken-bone': ['protein', 'food-waste'],
   'shrimp-shell': ['protein', 'food-waste'], bone: ['protein', 'food-waste'],
+  'mussel-shell': ['protein', 'food-waste'],
   // Grains
   rice: ['grain', 'food-waste'], bread: ['grain', 'food-waste'],
   noodle: ['grain', 'food-waste'], pasta: ['grain', 'food-waste'],
@@ -35,6 +40,9 @@ const WASTE_TYPE_SYNONYMS = {
   eggshell: ['food-waste'], 'egg-yolk': ['food-waste'],
   tofu: ['food-waste'], congee: ['food-waste'],
   malunggay: ['vegetable', 'food-waste'], pancake: ['food-waste'],
+  // Non-organics
+  'paper-tissue': ['paper', 'food-waste'],
+  'plastic-waste': ['plastic', 'non-recyclable'],
 };
 
 const expandWasteTypes = (types) => {

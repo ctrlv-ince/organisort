@@ -181,12 +181,13 @@ const ReportsPage = () => {
   const generateWasteReport = () => {
     const filtered = getFilteredDetections();
     const categories = {
-      'Fruits': ['apple', 'apple-core', 'apple-peel', 'avocado', 'banana-peel', 'calamansi', 'orange', 'orange-peel', 'papaya', 'pear', 'pear-core', 'pear-peel', 'pineapple', 'watermelon'],
-      'Vegetables': ['broccoli', 'cucumber', 'garlic', 'onion', 'potato', 'tomato', 'mushroom', 'leaf'],
-      'Proteins': ['bone', 'bone-fish', 'chicken-skin', 'fish', 'meat', 'shrimp', 'shrimp-shell', 'mussel', 'mussel-shell'],
+      'Fruits': ['apple', 'apple-core', 'apple-peel', 'avocado', 'banana-peel', 'bitten-apple', 'calamansi', 'mango', 'orange', 'orange-peel', 'pear', 'pear-core', 'pear-peel', 'pineapple'],
+      'Vegetables': ['broccoli', 'cabbage', 'cabbage-core', 'carrot-peel', 'cucumber', 'garlic', 'garlic-skin', 'kangkong', 'mushroom', 'onion', 'onion-skin', 'pechay', 'potato', 'seed', 'tomato'],
+      'Proteins': ['bone', 'bone-fish', 'chicken-bone', 'chicken-skin', 'fish', 'meat', 'mussel-shell', 'shrimp', 'shrimp-shell'],
       'Eggs': ['egg-scramble', 'egg-shell', 'egg-yolk'],
       'Grains': ['bread', 'bun', 'noodle', 'pasta', 'rice'],
-      'Other': ['congee', 'malunggay', 'pancake', 'tofu', 'good'],
+      'Other': ['congee', 'malunggay', 'pancake', 'tofu'],
+      'Non-Organics': ['paper-tissue', 'plastic-waste'],
     };
 
     const wasteComposition = {};

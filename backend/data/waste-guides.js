@@ -35,11 +35,25 @@ const WASTE_GUIDES = {
     avgDecompositionDays: '14-21',
     color: '#ef4444',
   },
+  'bitten-apple': {
+    category: 'Fruits',
+    description: 'Partially eaten apple',
+    compostable: true,
+    avgDecompositionDays: '14-30',
+    color: '#ef4444',
+  },
   calamansi: {
     category: 'Fruits',
     description: 'Calamansi citrus fruit',
     compostable: true,
     avgDecompositionDays: '14-21',
+    color: '#ef4444',
+  },
+  mango: {
+    category: 'Fruits',
+    description: 'Mango flesh, skin, or seed',
+    compostable: true,
+    avgDecompositionDays: '14-30',
     color: '#ef4444',
   },
   orange: {
@@ -54,13 +68,6 @@ const WASTE_GUIDES = {
     description: 'Orange peels and rinds',
     compostable: true,
     avgDecompositionDays: '30-60',
-    color: '#ef4444',
-  },
-  papaya: {
-    category: 'Fruits',
-    description: 'Papaya flesh or whole fruit',
-    compostable: true,
-    avgDecompositionDays: '14-21',
     color: '#ef4444',
   },
   pear: {
@@ -91,18 +98,32 @@ const WASTE_GUIDES = {
     avgDecompositionDays: '30-60',
     color: '#ef4444',
   },
-  watermelon: {
-    category: 'Fruits',
-    description: 'Watermelon flesh and rind',
-    compostable: true,
-    avgDecompositionDays: '14-30',
-    color: '#ef4444',
-  },
 
   // Vegetables
   broccoli: {
     category: 'Vegetables',
     description: 'Broccoli florets and stems',
+    compostable: true,
+    avgDecompositionDays: '7-14',
+    color: '#10b981',
+  },
+  cabbage: {
+    category: 'Vegetables',
+    description: 'Cabbage leaves and head',
+    compostable: true,
+    avgDecompositionDays: '7-14',
+    color: '#10b981',
+  },
+  'cabbage-core': {
+    category: 'Vegetables',
+    description: 'Inner core of cabbage',
+    compostable: true,
+    avgDecompositionDays: '14-21',
+    color: '#10b981',
+  },
+  'carrot-peel': {
+    category: 'Vegetables',
+    description: 'Peeled carrot skin',
     compostable: true,
     avgDecompositionDays: '7-14',
     color: '#10b981',
@@ -116,14 +137,21 @@ const WASTE_GUIDES = {
   },
   garlic: {
     category: 'Vegetables',
-    description: 'Garlic cloves and peels',
+    description: 'Garlic cloves',
     compostable: true,
     avgDecompositionDays: '14-30',
     color: '#10b981',
   },
-  leaf: {
+  'garlic-skin': {
     category: 'Vegetables',
-    description: 'Leafy vegetable scraps',
+    description: 'Papery garlic skin and peels',
+    compostable: true,
+    avgDecompositionDays: '7-14',
+    color: '#10b981',
+  },
+  kangkong: {
+    category: 'Vegetables',
+    description: 'Water spinach leaves and stems',
     compostable: true,
     avgDecompositionDays: '7-14',
     color: '#10b981',
@@ -142,11 +170,32 @@ const WASTE_GUIDES = {
     avgDecompositionDays: '14-30',
     color: '#10b981',
   },
+  'onion-skin': {
+    category: 'Vegetables',
+    description: 'Dry onion skin and peels',
+    compostable: true,
+    avgDecompositionDays: '7-14',
+    color: '#10b981',
+  },
+  pechay: {
+    category: 'Vegetables',
+    description: 'Bok choy / pechay leaves and stems',
+    compostable: true,
+    avgDecompositionDays: '7-14',
+    color: '#10b981',
+  },
   potato: {
     category: 'Vegetables',
     description: 'Potato pieces and peels',
     compostable: true,
     avgDecompositionDays: '21-45',
+    color: '#10b981',
+  },
+  seed: {
+    category: 'Vegetables',
+    description: 'Seeds from fruits or vegetables',
+    compostable: true,
+    avgDecompositionDays: '30-90',
     color: '#10b981',
   },
   tomato: {
@@ -172,6 +221,13 @@ const WASTE_GUIDES = {
     avgDecompositionDays: '30-90',
     color: '#f59e0b',
   },
+  'chicken-bone': {
+    category: 'Proteins',
+    description: 'Chicken bones',
+    compostable: false,
+    avgDecompositionDays: '365+',
+    color: '#f59e0b',
+  },
   'chicken-skin': {
     category: 'Proteins',
     description: 'Chicken skin and fat',
@@ -191,13 +247,6 @@ const WASTE_GUIDES = {
     description: 'Meat scraps and trimmings',
     compostable: true,
     avgDecompositionDays: '14-30',
-    color: '#f59e0b',
-  },
-  mussel: {
-    category: 'Proteins',
-    description: 'Mussel meat',
-    compostable: true,
-    avgDecompositionDays: '7-14',
     color: '#f59e0b',
   },
   'mussel-shell': {
@@ -290,13 +339,6 @@ const WASTE_GUIDES = {
     avgDecompositionDays: '7-14',
     color: '#6b7280',
   },
-  good: {
-    category: 'Other',
-    description: 'General edible organic matter',
-    compostable: true,
-    avgDecompositionDays: '7-30',
-    color: '#6b7280',
-  },
   malunggay: {
     category: 'Other',
     description: 'Moringa leaves and stems',
@@ -317,6 +359,22 @@ const WASTE_GUIDES = {
     compostable: true,
     avgDecompositionDays: '7-14',
     color: '#6b7280',
+  },
+
+  // Non-Organics
+  'paper-tissue': {
+    category: 'Non-Organics',
+    description: 'Used paper tissue or napkin',
+    compostable: true,
+    avgDecompositionDays: '14-30',
+    color: '#94a3b8',
+  },
+  'plastic-waste': {
+    category: 'Non-Organics',
+    description: 'Plastic wrappers, bags, or containers',
+    compostable: false,
+    avgDecompositionDays: '500+',
+    color: '#94a3b8',
   },
 };
 
