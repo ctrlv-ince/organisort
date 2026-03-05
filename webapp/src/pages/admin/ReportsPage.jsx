@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { motion } from 'framer-motion';
 import PageHeaderCard from '../../components/PageHeaderCard';
+import { generateReportPDF } from '../../utils/pdfReportGenerator';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -255,186 +254,15 @@ const ReportsPage = () => {
   const exportAsPDF = () => {
     setGeneratingPDF(true);
     try {
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-
-      // Header
-      doc.setFillColor(22, 163, 74); // green-600
-      doc.rect(0, 0, pageWidth, 35, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(20);
-      doc.setFont('helvetica', 'bold');
-      doc.text('OrganiSort Report', 14, 16);
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'normal');
-
-      const reportTitles = {
-        summary: 'Executive Summary Report',
-        trends: 'Activity Trends Report',
-        users: 'User Activity Report',
-        waste: 'Waste Composition Report',
-      };
-      doc.text(reportTitles[reportType] || 'Report', 14, 26);
-      doc.setTextColor(200, 230, 200);
-      doc.setFontSize(9);
-      doc.text(`Generated: ${new Date().toLocaleString()}`, pageWidth - 14, 26, { align: 'right' });
-
-      // Reset styles
-      doc.setTextColor(0, 0, 0);
-      let yPos = 45;
-
-      if (reportType === 'summary') {
-        const data = generateSummaryReport();
-
-        doc.setFontSize(10);
-        doc.setTextColor(100, 100, 100);
-        doc.text(`Period: ${data.period}  |  ${data.dateRangeLabel}`, 14, yPos);
-        yPos += 10;
-
-        // Key metrics table
-        autoTable(doc, {
-          startY: yPos,
-          head: [['Metric', 'Value']],
-          body: [
-            ['Total Scans', String(data.totalScans)],
-            ['Total Items Detected', String(data.totalItems)],
-            ['Unique Waste Types', String(data.uniqueTypes)],
-            ['Avg Items per Scan', String(data.avgItemsPerScan)],
-            ['Avg Confidence', data.avgConfidence],
-            ['Active Users', String(data.activeUsers)],
-            ['Scans per User', data.activeUsers > 0 ? (data.totalScans / data.activeUsers).toFixed(2) : '0'],
-          ],
-          theme: 'striped',
-          headStyles: { fillColor: [22, 163, 74] },
-          styles: { fontSize: 10 },
-        });
-
-      } else if (reportType === 'trends') {
-        const data = generateTrendsReport();
-
-        doc.setFontSize(10);
-        doc.setTextColor(100, 100, 100);
-        doc.text(`Period: Last ${dateRange} days  |  ${data.dateRangeLabel}`, 14, yPos);
-        yPos += 8;
-        doc.text(`Trend: ${data.trend}  |  Growth: ${data.growth}  |  Avg Daily: ${data.averageDaily}`, 14, yPos);
-        if (data.peakDay) {
-          yPos += 6;
-          doc.text(`Peak Day: ${data.peakDay.date} (${data.peakDay.scans} scans)`, 14, yPos);
-        }
-        yPos += 10;
-
-        autoTable(doc, {
-          startY: yPos,
-          head: [['Date', 'Scans', 'Items', 'Unique Types']],
-          body: data.dailyTrends.map(d => [d.date, String(d.scans), String(d.items), String(d.uniqueTypes)]),
-          theme: 'striped',
-          headStyles: { fillColor: [22, 163, 74] },
-          styles: { fontSize: 9 },
-        });
-
-      } else if (reportType === 'users') {
-        const data = generateUserReport();
-
-        doc.setFontSize(10);
-        doc.setTextColor(100, 100, 100);
-        doc.text(`Period: ${data.dateRangeLabel}`, 14, yPos);
-        yPos += 8;
-
-        // User summary metrics
-        autoTable(doc, {
-          startY: yPos,
-          head: [['Metric', 'Value']],
-          body: [
-            ['Total Users', String(data.totalUsers)],
-            ['Active Users (in period)', String(data.activeUsers)],
-            ['Inactive Users', String(data.inactiveUsers)],
-            ['Avg Scans per User', String(data.avgScansPerUser)],
-          ],
-          theme: 'striped',
-          headStyles: { fillColor: [22, 163, 74] },
-          styles: { fontSize: 10 },
-          margin: { bottom: 10 },
-        });
-
-        // Top users table
-        const userTableY = doc.lastAutoTable?.finalY + 10 || yPos + 50;
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Top Active Users', 14, userTableY);
-        doc.setFont('helvetica', 'normal');
-
-        autoTable(doc, {
-          startY: userTableY + 6,
-          head: [['#', 'Email', 'Name', 'Scans', 'Items', 'Types', 'Last Active']],
-          body: data.topUsers.map((u, i) => [
-            String(i + 1), u.email, u.displayName, String(u.scans), String(u.items), String(u.uniqueTypes), u.lastActive
-          ]),
-          theme: 'striped',
-          headStyles: { fillColor: [22, 163, 74] },
-          styles: { fontSize: 8 },
-          columnStyles: { 0: { cellWidth: 10 } },
-        });
-
-      } else if (reportType === 'waste') {
-        const data = generateWasteReport();
-
-        doc.setFontSize(10);
-        doc.setTextColor(100, 100, 100);
-        doc.text(`Period: ${data.dateRangeLabel}  |  Total Items: ${data.totalItems}  |  Unique Types: ${data.uniqueTypes}`, 14, yPos);
-        yPos += 10;
-
-        // Category breakdown
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Category Breakdown', 14, yPos);
-        doc.setFont('helvetica', 'normal');
-        yPos += 6;
-
-        autoTable(doc, {
-          startY: yPos,
-          head: [['Category', 'Count', 'Percentage']],
-          body: data.categoryBreakdown.map(c => [c.category, String(c.count), `${c.percentage}%`]),
-          theme: 'striped',
-          headStyles: { fillColor: [22, 163, 74] },
-          styles: { fontSize: 10 },
-        });
-
-        // Top waste types
-        const wasteTableY = doc.lastAutoTable?.finalY + 10 || yPos + 60;
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Top 20 Detected Waste Types', 14, wasteTableY);
-        doc.setFont('helvetica', 'normal');
-
-        autoTable(doc, {
-          startY: wasteTableY + 6,
-          head: [['#', 'Waste Type', 'Count', 'Percentage']],
-          body: data.topWaste.map((item, i) => [
-            String(i + 1),
-            item.type,
-            String(item.count),
-            data.totalItems > 0 ? `${((item.count / data.totalItems) * 100).toFixed(1)}%` : '0%'
-          ]),
-          theme: 'striped',
-          headStyles: { fillColor: [22, 163, 74] },
-          styles: { fontSize: 9 },
-          columnStyles: { 0: { cellWidth: 10 } },
-        });
-      }
-
-      // Footer
-      const pageCount = doc.internal.getNumberOfPages();
-      for (let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        doc.setFontSize(8);
-        doc.setTextColor(150, 150, 150);
-        doc.text(`OrganiSort Analytics  •  Page ${i} of ${pageCount}`, pageWidth / 2, doc.internal.pageSize.getHeight() - 8, { align: 'center' });
-      }
-
-      doc.save(`organisort_${reportType}_report_${new Date().toISOString().split('T')[0]}.pdf`);
+      generateReportPDF({
+        reportType,
+        dateRange,
+        dateRangeLabel: getDateRangeLabel(),
+        summaryData: reportType === 'summary' ? generateSummaryReport() : null,
+        trendsData: reportType === 'trends' ? generateTrendsReport() : null,
+        userData: reportType === 'users' ? generateUserReport() : null,
+        wasteData: reportType === 'waste' ? generateWasteReport() : null,
+      });
     } catch (error) {
       console.error('Error generating PDF:', error);
     } finally {
