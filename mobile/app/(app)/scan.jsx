@@ -156,6 +156,19 @@ export default function ScanScreen() {
         timeout: 30000,
       });
 
+      if (response.data.no_detections) {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        Alert.alert(
+          'No Waste Detected',
+          'We couldn\'t detect any waste items in this image.\n\n• Make sure the waste item is clearly visible\n• Use good lighting\n• Move closer to the item\n• Avoid blurry photos',
+          [
+            { text: 'Try Again', onPress: () => { setCapturedImage(null); setIsCameraActive(true); } },
+            { text: 'Pick Another', onPress: () => { setCapturedImage(null); pickImage(); } },
+          ]
+        );
+        return;
+      }
+
       if (response.data.success) {
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         setResult(response.data);

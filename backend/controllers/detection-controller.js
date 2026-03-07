@@ -146,6 +146,21 @@ const analyzeImage = asyncHandler(async (req, res) => {
       image_dimensions: imageDimensions,
     } = pythonServiceResponse;
 
+    // If no items were detected, skip saving and tell the client
+    const hasDetections = Array.isArray(detections) && detections.length > 0;
+    if (!hasDetections) {
+      console.log('[analyzeImage] No detections found — skipping save.');
+      return res.json({
+        success: true,
+        no_detections: true,
+        message: 'No waste items were detected in this image. Try using a clearer photo with better lighting, or move closer to the waste item.',
+        detections: [],
+        summary: summary || { total_detections: 0, class_counts: {} },
+        disposal_guides: [],
+        ai_tips: [],
+      });
+    }
+
     let imageResult = null;
     if (annotatedImage) {
       imageResult = await uploadImageToCloudinary({
