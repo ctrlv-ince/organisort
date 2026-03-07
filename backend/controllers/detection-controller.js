@@ -12,6 +12,7 @@ const { buildPythonServiceUrl } = require('../utils/python-service-url');
 const { getPaginationParams } = require('../utils/pagination');
 const { WASTE_GUIDES, buildDisposalGuides } = require('../data/waste-guides');
 const { uploadImageToCloudinary, deleteCloudinaryImage } = require('../utils/cloudinary');
+const { generateWasteTips } = require('../utils/gemini');
 
 const DEFAULT_WASTE_GUIDE = {
   category: 'Unknown',
@@ -153,22 +154,36 @@ const analyzeImage = asyncHandler(async (req, res) => {
       });
     }
 
+    // Generate AI tips BEFORE saving so they persist in the DB
+    let aiTips = [];
+    try {
+      const wasteClasses = [...new Set(
+        (detections || []).map(d => d?.class).filter(Boolean)
+      )];
+      aiTips = await generateWasteTips(wasteClasses);
+    } catch (tipErr) {
+      console.error('[analyzeImage] AI tips generation failed:', tipErr.message);
+    }
+
     const detection = await Detection.create({
-      user: req.user.id, // Comes from the 'protect' middleware
+      user: req.user.id,
       detections,
       annotated_image: imageResult?.secureUrl || '',
       annotated_image_public_id: imageResult?.publicId || null,
       summary,
       image_dimensions: imageDimensions,
+      ai_tips: aiTips,
     });
 
     // Return the URL-backed image to clients; keeps response shape stable.
     pythonServiceResponse.annotated_image = imageResult?.secureUrl || '';
+    pythonServiceResponse.ai_tips = aiTips;
 
     console.log('Detection saved to database:', detection._id, {
       storedInCloudinary: imageResult?.storedInCloudinary,
       cloudinaryPublicId: imageResult?.publicId,
       storageNote: imageResult?.reason,
+      aiTipsCount: aiTips.length,
     });
   } catch (error) {
     // Log the error but don't block the user

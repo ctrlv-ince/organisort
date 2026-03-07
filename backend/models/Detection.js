@@ -44,6 +44,10 @@ const DetectionSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    ai_tips: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,
@@ -51,7 +55,7 @@ const DetectionSchema = new mongoose.Schema(
 );
 
 // Add a virtual property for imageUrl (for backward compatibility)
-DetectionSchema.virtual('imageUrl').get(function() {
+DetectionSchema.virtual('imageUrl').get(function () {
   return this.annotated_image;
 });
 
@@ -60,16 +64,16 @@ DetectionSchema.set('toJSON', { virtuals: true });
 DetectionSchema.set('toObject', { virtuals: true });
 
 // Pre-save middleware to automatically set waste types and category
-DetectionSchema.pre('save', function(next) {
+DetectionSchema.pre('save', function (next) {
   if (this.detections && this.detections.length > 0) {
     // Get the detection with highest confidence
-    const topDetection = this.detections.reduce((prev, current) => 
+    const topDetection = this.detections.reduce((prev, current) =>
       (prev.confidence > current.confidence) ? prev : current
     );
-    
+
     // Set primary waste type from the class name with highest confidence
     this.primaryWasteType = topDetection.class;
-    
+
     // Collect all detected waste types
     this.detectedWasteTypes = [...new Set(this.detections.map(d => d.class))];
   }

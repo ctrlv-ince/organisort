@@ -312,6 +312,23 @@ export default function ScanScreen() {
               )}
             </View>
 
+            {result.ai_tips && result.ai_tips.length > 0 && (
+              <View style={styles.aiTipsSection}>
+                <View style={styles.aiTipsHeader}>
+                  <Ionicons name="sparkles" size={20} color="#8b5cf6" />
+                  <Text style={styles.sectionTitle}>AI Smart Tips</Text>
+                </View>
+                {result.ai_tips.map((tip, index) => (
+                  <View key={index} style={styles.aiTipItem}>
+                    <View style={styles.aiTipBullet}>
+                      <Text style={styles.aiTipBulletText}>{index + 1}</Text>
+                    </View>
+                    <Text style={styles.aiTipText}>{tip}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
             {disposalLocations.length > 0 ? (
               <View style={styles.disposalSection}>
                 <Text style={styles.sectionTitle}>Nearby Disposal Locations</Text>
@@ -876,5 +893,53 @@ const styles = StyleSheet.create({
     color: '#71717a',
     textAlign: 'center',
     lineHeight: 22,
+  },
+  aiTipsSection: {
+    backgroundColor: '#ffffff',
+    padding: 24,
+    borderRadius: 32,
+    borderCurve: 'continuous',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#ede9fe',
+  },
+  aiTipsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  aiTipItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f5f3ff',
+  },
+  aiTipBullet: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#ede9fe',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  aiTipBulletText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#7c3aed',
+  },
+  aiTipText: {
+    flex: 1,
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#3f3f46',
+    fontWeight: '500',
   },
 });

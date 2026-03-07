@@ -1,12 +1,32 @@
-import React from 'react';
-import { Tabs } from 'expo-router';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Tabs, useFocusEffect } from 'expo-router';
 import { View, Platform, Text } from 'react-native';
 import Svg, { Path, Polyline, Circle } from 'react-native-svg';
 import ProtectedScreen from '@/src/components/ProtectedScreen';
 import { useTheme } from '@/src/context/ThemeContext';
+import { Ionicons } from '@expo/vector-icons';
+import apiClient from '@/src/utils/apiClient';
 
 export default function AppLayout() {
   const { colors } = useTheme();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const fetchUnreadCount = async () => {
+    try {
+      const response = await apiClient.get('/api/notifications/unread-count');
+      if (response.data.success) {
+        setUnreadCount(response.data.count);
+      }
+    } catch (error) {
+      // Silently fail — not critical
+    }
+  };
+
+  useEffect(() => {
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 30000); // Poll every 30s
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <ProtectedScreen>
@@ -66,6 +86,38 @@ export default function AppLayout() {
                 <HistoryIcon color={color} size={size} />
               </View>
             ),
+          }}
+        />
+        <Tabs.Screen
+          name="notifications"
+          options={{
+            title: 'Alerts',
+            tabBarIcon: ({ color, size }) => (
+              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name="notifications-outline" size={size} color={color} />
+                {unreadCount > 0 && (
+                  <View style={{
+                    position: 'absolute',
+                    top: -4,
+                    right: -8,
+                    backgroundColor: '#ef4444',
+                    borderRadius: 10,
+                    minWidth: 18,
+                    height: 18,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingHorizontal: 4,
+                  }}>
+                    <Text style={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            ),
+          }}
+          listeners={{
+            focus: () => fetchUnreadCount(),
           }}
         />
         <Tabs.Screen

@@ -285,6 +285,7 @@ const updateUserRole = async (req, res, next) => {
 };
 
 const { sendEmail } = require('../utils/email');
+const { createNotification } = require('./notification-controller');
 
 const deactivateUser = async (req, res, next) => {
   try {
@@ -312,6 +313,12 @@ const deactivateUser = async (req, res, next) => {
 
     user.isActive = false;
     await user.save({ validateBeforeSave: false });
+
+    await createNotification(user._id, {
+      title: 'Account Deactivated',
+      body: `Your account has been deactivated. Reason: ${reason}`,
+      type: 'account',
+    });
 
     // Send deactivation email
     const html = `
@@ -366,6 +373,12 @@ const reactivateUser = async (req, res, next) => {
 
     user.isActive = true;
     await user.save({ validateBeforeSave: false });
+
+    await createNotification(user._id, {
+      title: 'Account Reactivated',
+      body: 'Your account has been reactivated. Welcome back!',
+      type: 'account',
+    });
 
     // Send reactivation email
     const html = `
