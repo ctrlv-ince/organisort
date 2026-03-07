@@ -351,6 +351,59 @@ const deactivateUser = async (req, res, next) => {
   }
 };
 
+const reactivateUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    if (user.isActive) {
+      return res.status(400).json({ success: false, error: 'User is already active' });
+    }
+
+    user.isActive = true;
+    await user.save({ validateBeforeSave: false });
+
+    // Send reactivation email
+    const html = `
+      <div style="font-family:Arial,sans-serif;line-height:1.4;color:#0f172a;max-width:480px;margin:0 auto;">
+        <h2 style="margin-bottom:8px;color:#15803d;">Account Reactivated</h2>
+        <p style="margin:0 0 16px;">Hello ${user.displayName || 'User'},</p>
+        <p style="margin:0 0 16px;">Great news! Your OrganiSort account has been reactivated by an administrator. You can now log in and use the app as usual.</p>
+        <div style="padding:12px 16px;background:#dcfce7;border-left:4px solid #22c55e;border-radius:4px;margin-bottom:16px;">
+          <strong>Your account is now active.</strong>
+        </div>
+        <p style="margin:16px 0 0;color:#334155;">Welcome back!</p>
+      </div>
+    `;
+
+    try {
+      await sendEmail({
+        recipientEmail: user.email,
+        subject: 'Account Reactivated - OrganiSort',
+        html,
+        textFallback: 'Your OrganiSort account has been reactivated. You can now log in and use the app as usual.',
+      });
+    } catch (emailError) {
+      console.error('[user.reactivate] email-failed', emailError);
+      return res.json({
+        success: true,
+        message: 'User reactivated successfully, but failed to send notification email.',
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'User reactivated successfully and notification sent.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getCurrentUser,
   updateUserProfile,
@@ -360,4 +413,5 @@ module.exports = {
   getAllUsersWithDetectionCount,
   updateUserRole,
   deactivateUser,
+  reactivateUser,
 };

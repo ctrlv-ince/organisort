@@ -10,6 +10,7 @@ const {
   getAllUsersWithDetectionCount,
   updateUserRole,
   deactivateUser,
+  reactivateUser,
 } = require('../controllers/user-controller');
 
 const router = express.Router();
@@ -40,6 +41,7 @@ router.get(
 
 router.put('/:id/role', unifiedAuth, admin, updateUserRole);
 router.put('/:id/deactivate', unifiedAuth, admin, deactivateUser);
+router.put('/:id/reactivate', unifiedAuth, admin, reactivateUser);
 
 /**
  * GET /api/users/me
