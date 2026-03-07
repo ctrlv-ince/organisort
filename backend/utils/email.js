@@ -21,6 +21,7 @@ const sendEmail = async ({ recipientEmail, subject, html, textFallback }) => {
     }
 
     const url = `${WEBAPP_URL}/api/send-email`;
+    console.log(`[email.js] Proxying email to: ${url}`);
 
     try {
         const { data } = await axios.post(url, {
@@ -42,8 +43,18 @@ const sendEmail = async ({ recipientEmail, subject, html, textFallback }) => {
 
         console.log(`[email.js] Email successfully sent to ${recipientEmail} (via proxy)`);
     } catch (error) {
-        console.error('[email.js] Failed to send email via proxy:', error.response?.data || error.message);
-        const err = new Error('Unable to send email. Check EMAIL_PROXY_SECRET and WEBAPP_URL configuration.');
+        const status = error.response?.status;
+        const responseData = error.response?.data;
+        console.error(`[email.js] Failed to send email via proxy:`, {
+            url,
+            status,
+            responseError: responseData?.error || error.message,
+            code: error.code,
+        });
+        const err = new Error(
+            `Unable to send email (proxy ${status || error.code || 'unknown'}). ` +
+            `${responseData?.error || error.message}`
+        );
         err.statusCode = 502;
         err.cause = error;
         throw err;
