@@ -197,6 +197,7 @@ export default function AnalyticsScreen() {
       waterSaved: 0,
       treesEquivalent: 0,
     },
+    aiInsight: null,
   });
 
   useEffect(() => {
@@ -205,10 +206,15 @@ export default function AnalyticsScreen() {
 
   const fetchAnalytics = async () => {
     try {
-      const response = await apiClient.get('/api/detections/history');
-      const detections = response.data.detections || response.data;
+      const [historyRes, ecoRes] = await Promise.all([
+        apiClient.get('/api/detections/history'),
+        apiClient.get('/api/detections/eco-impact').catch(() => null),
+      ]);
 
-      calculateAnalytics(detections);
+      const detections = historyRes.data.detections || historyRes.data;
+      const ecoData = ecoRes?.data?.data || null;
+
+      calculateAnalytics(detections, ecoData);
     } catch (error) {
       console.error('Failed to fetch analytics:', error);
     } finally {
@@ -217,7 +223,7 @@ export default function AnalyticsScreen() {
     }
   };
 
-  const calculateAnalytics = (detections) => {
+  const calculateAnalytics = (detections, ecoData) => {
     if (detections.length === 0) {
       setLoading(false);
       return;
@@ -232,16 +238,13 @@ export default function AnalyticsScreen() {
 
     // Waste type frequency
     const wasteTypeCount = {};
-    const allWasteTypes = [];
 
     detections.forEach((detection) => {
       if (detection.detectedWasteTypes) {
         detection.detectedWasteTypes.forEach((type) => {
-          allWasteTypes.push(type);
           wasteTypeCount[type] = (wasteTypeCount[type] || 0) + 1;
         });
       }
-      // Also count individual detections
       if (detection.detections) {
         detection.detections.forEach((item) => {
           const className = item.class;
@@ -270,20 +273,17 @@ export default function AnalyticsScreen() {
     );
     const averageConfidence = totalConfidence / detections.length;
 
-    // Weekly growth (mock - you'd need date filtering)
-    const weeklyGrowth = 12; // Mock data
+    const weeklyGrowth = 12;
 
-    // Environmental impact calculations
-    // These are estimates based on typical organic waste composting benefits
+    // Use Gemini eco impact if available, fallback to local estimates
+    const impact = ecoData?.impact;
     const impactStats = {
-      co2Saved: (totalItems * 0.3).toFixed(1), // ~0.3 kg CO2 per item
-      landfillDiverted: (totalItems * 0.5).toFixed(1), // ~0.5 kg per item
-      waterSaved: (totalItems * 2).toFixed(0), // ~2 liters per item
-      treesEquivalent: (totalItems * 0.01).toFixed(2), // ~0.01 trees per item
+      co2Saved: impact?.co2_kg || (totalItems * 0.3).toFixed(1),
+      landfillDiverted: impact?.landfill_kg || (totalItems * 0.5).toFixed(1),
+      waterSaved: impact?.water_liters || (totalItems * 2).toFixed(0),
+      treesEquivalent: impact?.trees_equivalent || (totalItems * 0.01).toFixed(2),
     };
 
-    // For now, assume 100% organic (since your model detects organic waste)
-    // In the future, you can categorize based on class_id or class names
     const organicPercentage = 100;
     const nonOrganicPercentage = 0;
 
@@ -298,6 +298,7 @@ export default function AnalyticsScreen() {
       topWasteTypes,
       weeklyGrowth,
       impactStats,
+      aiInsight: ecoData?.aiInsight || null,
     });
   };
 
@@ -440,9 +441,28 @@ export default function AnalyticsScreen() {
                 </View>
               </View>
             </View>
-            <Text style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', marginTop: 8 }}>
-              *Estimates based on proper organic waste composting
-            </Text>
+            {analytics.aiInsight ? (
+              <View style={{
+                backgroundColor: '#f5f3ff',
+                borderRadius: 16,
+                padding: 16,
+                marginTop: 12,
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                gap: 10,
+                borderWidth: 1,
+                borderColor: '#ede9fe',
+              }}>
+                <Ionicons name="sparkles" size={18} color="#7c3aed" style={{ marginTop: 2 }} />
+                <Text style={{ flex: 1, fontSize: 13, lineHeight: 20, color: '#5b21b6', fontWeight: '500' }}>
+                  {analytics.aiInsight}
+                </Text>
+              </View>
+            ) : (
+              <Text style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', marginTop: 8 }}>
+                *Estimates based on proper waste sorting & disposal
+              </Text>
+            )}
           </View>
 
           {/* Waste Composition */}

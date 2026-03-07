@@ -12,10 +12,11 @@ const {
   getWasteGuides,
 } = require('../controllers/detection-controller');
 const { unifiedAuth } = require('../middleware/auth-middleware');
+const { getEcoImpact } = require('../controllers/eco-impact-controller');
 
 // Configure multer for in-memory file storage
 const storage = multer.memoryStorage();
-const upload = multer({ 
+const upload = multer({
   storage: storage,
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
@@ -75,6 +76,13 @@ router.get('/waste-guides', unifiedAuth, getWasteGuides);
  * @access  Private
  */
 router.get('/leaderboard', unifiedAuth, getDetectionLeaderboard);
+
+/**
+ * @route   GET /api/detections/eco-impact
+ * @desc    Get AI-calculated environmental impact from detection history
+ * @access  Private
+ */
+router.get('/eco-impact', unifiedAuth, getEcoImpact);
 
 /**
  * @route   GET /api/detections/:id
