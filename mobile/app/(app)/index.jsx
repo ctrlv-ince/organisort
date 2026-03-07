@@ -209,10 +209,23 @@ export default function HomeScreen() {
   const [detectionHistory, setDetectionHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [scheduleSetup, setScheduleSetup] = useState(true); // assume done until checked
 
   useEffect(() => {
     fetchDashboardData();
+    checkScheduleSetup();
   }, []);
+
+  const checkScheduleSetup = async () => {
+    try {
+      const response = await apiClient.get('/api/users/me/collection-schedule');
+      if (response.data.success) {
+        setScheduleSetup(response.data.data?.setupCompleted || false);
+      }
+    } catch (error) {
+      // Silently fail
+    }
+  };
 
   const fetchDashboardData = async () => {
     try {
@@ -252,6 +265,7 @@ export default function HomeScreen() {
   const handleRefresh = () => {
     setRefreshing(true);
     fetchDashboardData();
+    checkScheduleSetup();
   };
 
   if (loading) {
@@ -301,6 +315,45 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.content}>
+          {/* Schedule Setup Prompt */}
+          {!scheduleSetup && (
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#ecfdf5',
+                borderRadius: 24,
+                padding: 20,
+                marginBottom: 20,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 14,
+                borderWidth: 1,
+                borderColor: '#bbf7d0',
+              }}
+              onPress={() => router.push('/collection-schedule')}
+              activeOpacity={0.7}
+            >
+              <View style={{
+                width: 48,
+                height: 48,
+                borderRadius: 16,
+                backgroundColor: '#dcfce7',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <Ionicons name="calendar" size={24} color="#16a34a" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 15, fontWeight: '800', color: '#15803d', marginBottom: 2 }}>
+                  Set up collection schedule
+                </Text>
+                <Text style={{ fontSize: 13, color: '#16a34a', fontWeight: '500' }}>
+                  Get reminders when trash trucks pass by your area
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#16a34a" />
+            </TouchableOpacity>
+          )}
+
           {/* Stats Cards */}
           <View style={styles.statsContainer}>
             <View style={[styles.statCard, { backgroundColor: colors.card }]}>

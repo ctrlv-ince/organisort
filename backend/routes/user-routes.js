@@ -11,6 +11,8 @@ const {
   updateUserRole,
   deactivateUser,
   reactivateUser,
+  getCollectionSchedule,
+  updateCollectionSchedule,
 } = require('../controllers/user-controller');
 
 const router = express.Router();
@@ -68,6 +70,8 @@ router.put('/profile', unifiedAuth, upload.single('avatar'), updateUserProfile);
  * Body: { pushNotifications?, emailUpdates?, showTutorial?, autoSaveDetections? }
  */
 router.put('/me/preferences', unifiedAuth, updateUserPreferences);
+router.get('/me/collection-schedule', unifiedAuth, getCollectionSchedule);
+router.put('/me/collection-schedule', unifiedAuth, updateCollectionSchedule);
 
 /**
  * GET /api/users/stats

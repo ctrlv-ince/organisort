@@ -417,6 +417,55 @@ const reactivateUser = async (req, res, next) => {
   }
 };
 
+const getCollectionSchedule = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id).select('collectionSchedule');
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+    res.json({ success: true, data: user.collectionSchedule || {} });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateCollectionSchedule = async (req, res, next) => {
+  try {
+    const { enabled, schedules, reminderMinutesBefore } = req.body;
+
+    // Validate schedules
+    if (schedules && Array.isArray(schedules)) {
+      for (const s of schedules) {
+        if (s.day === undefined || s.day < 0 || s.day > 6) {
+          return res.status(400).json({ success: false, error: 'Invalid day value (0-6)' });
+        }
+        if (s.time && !/^\d{2}:\d{2}$/.test(s.time)) {
+          return res.status(400).json({ success: false, error: 'Time must be in HH:MM format' });
+        }
+      }
+    }
+
+    const update = {
+      'collectionSchedule.setupCompleted': true,
+    };
+    if (typeof enabled === 'boolean') update['collectionSchedule.enabled'] = enabled;
+    if (Array.isArray(schedules)) update['collectionSchedule.schedules'] = schedules;
+    if (reminderMinutesBefore !== undefined) {
+      update['collectionSchedule.reminderMinutesBefore'] = Math.max(5, Math.min(120, Number(reminderMinutesBefore) || 30));
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { $set: update },
+      { new: true, runValidators: true }
+    ).select('collectionSchedule');
+
+    res.json({ success: true, data: user.collectionSchedule });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getCurrentUser,
   updateUserProfile,
@@ -427,4 +476,6 @@ module.exports = {
   updateUserRole,
   deactivateUser,
   reactivateUser,
+  getCollectionSchedule,
+  updateCollectionSchedule,
 };

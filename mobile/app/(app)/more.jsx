@@ -323,6 +323,21 @@ export default function MoreScreen() {
                 style={[styles.menuItem, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
                 onPress={() => {
                   Haptics.selectionAsync();
+                  router.push('/collection-schedule');
+                }}
+              >
+                <Ionicons name="calendar-outline" size={22} color={colors.accent} style={styles.menuIcon} />
+                <View style={styles.menuContent}>
+                  <Text style={[styles.menuTitle, { color: colors.text }]}>Collection Schedule</Text>
+                  <Text style={[styles.menuSubtitle, { color: colors.textSecondary }]}>Set waste pickup reminders</Text>
+                </View>
+                <Text style={[styles.menuArrow, { color: colors.textMuted }]}>›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.menuItem, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
+                onPress={() => {
+                  Haptics.selectionAsync();
                   Alert.alert('Coming Soon', 'Language settings coming soon!');
                 }}
               >

@@ -78,6 +78,16 @@ const userSchema = new mongoose.Schema(
         default: null,
       },
     },
+    collectionSchedule: {
+      enabled: { type: Boolean, default: false },
+      schedules: [{
+        day: { type: Number, min: 0, max: 6 },  // 0=Sun, 6=Sat
+        time: { type: String, default: '07:00' },
+        label: { type: String, default: '' },
+      }],
+      reminderMinutesBefore: { type: Number, default: 30 },
+      setupCompleted: { type: Boolean, default: false },
+    },
     passwordReset: {
       tokenHash: {
         type: String,

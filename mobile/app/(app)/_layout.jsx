@@ -162,7 +162,15 @@ export default function AppLayout() {
         <Tabs.Screen
           name="analytics"
           options={{
-            href: null, // This hides it from tabs but keeps the route
+            href: null,
+          }}
+        />
+
+        {/* Hide collection-schedule from tabs */}
+        <Tabs.Screen
+          name="collection-schedule"
+          options={{
+            href: null,
           }}
         />
       </Tabs>
