@@ -1,6 +1,9 @@
 const axios = require('axios');
 
-const WEBAPP_URL = (process.env.WEBAPP_URL || 'http://localhost:5173').replace(/\/+$/, '');
+let WEBAPP_URL = (process.env.WEBAPP_URL || 'http://localhost:5173').trim().replace(/\/+$/, '');
+if (WEBAPP_URL && !/^https?:\/\//i.test(WEBAPP_URL)) {
+    WEBAPP_URL = `https://${WEBAPP_URL}`;
+}
 const EMAIL_PROXY_SECRET = process.env.EMAIL_PROXY_SECRET?.trim();
 
 /**
