@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+import nodemailer from 'nodemailer';
 
 const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com';
 const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
@@ -9,7 +9,7 @@ const EMAIL_PROXY_SECRET = process.env.EMAIL_PROXY_SECRET;
 
 let transporter = null;
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
     // Only allow POST
     if (req.method !== 'POST') {
         return res.status(405).json({ success: false, error: 'Method not allowed' });
@@ -57,4 +57,4 @@ module.exports = async (req, res) => {
         console.error('[api/send-email] SMTP error:', error.message);
         return res.status(502).json({ success: false, error: 'Failed to send email' });
     }
-};
+}
