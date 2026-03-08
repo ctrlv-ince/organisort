@@ -136,13 +136,11 @@ const ensureGuides = (detection) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f4f5',
   },
   header: {
     paddingTop: 24,
     paddingBottom: 20,
     paddingHorizontal: 24,
-    backgroundColor: '#f4f4f5',
   },
   headerContent: {
     flexDirection: 'row',
@@ -166,7 +164,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#18181b',
     letterSpacing: -0.5,
   },
   headerPlaceholder: {
@@ -182,7 +179,6 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   statCard: {
-    backgroundColor: '#ffffff',
     borderRadius: 24,
     borderCurve: 'continuous',
     padding: 20,
@@ -197,19 +193,16 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#18181b',
     letterSpacing: -0.5,
   },
   statLabel: {
     fontSize: 12,
-    color: '#a1a1aa',
     marginTop: 4,
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   historyCard: {
-    backgroundColor: '#ffffff',
     borderRadius: 32,
     borderCurve: 'continuous',
     padding: 8,
@@ -239,7 +232,6 @@ const styles = StyleSheet.create({
   wasteType: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#18181b',
     flex: 1,
     letterSpacing: -0.5,
   },
@@ -253,7 +245,6 @@ const styles = StyleSheet.create({
   },
   timestamp: {
     fontSize: 14,
-    color: '#a1a1aa',
     fontWeight: '500',
     marginBottom: 16,
   },
@@ -263,7 +254,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   infoBadge: {
-    backgroundColor: '#f4f4f5',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
@@ -273,7 +263,6 @@ const styles = StyleSheet.create({
   },
   infoBadgeText: {
     fontSize: 13,
-    color: '#52525b',
     fontWeight: '700',
   },
   detectedTypesSection: {
@@ -282,7 +271,6 @@ const styles = StyleSheet.create({
   detectedTypesLabel: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#a1a1aa',
     marginBottom: 8,
   },
   detectedTypesList: {
@@ -291,7 +279,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   detectedTypeBadge: {
-    backgroundColor: '#f4f4f5',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
@@ -299,7 +286,6 @@ const styles = StyleSheet.create({
   },
   detectedTypeBadgeText: {
     fontSize: 13,
-    color: '#18181b',
     fontWeight: '600',
   },
   cardActions: {
@@ -309,14 +295,12 @@ const styles = StyleSheet.create({
   },
   viewDetailsButton: {
     flex: 1,
-    backgroundColor: '#f4f4f5',
     paddingVertical: 16,
     borderRadius: 16,
     borderCurve: 'continuous',
     alignItems: 'center',
   },
   viewDetailsText: {
-    color: '#18181b',
     fontWeight: '700',
     fontSize: 15,
   },
@@ -347,7 +331,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: '#a1a1aa',
     textAlign: 'center',
     marginBottom: 32,
     fontWeight: '500',
@@ -369,13 +352,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f4f4f5',
   },
 
   // Modal Styles
   modalContainer: {
     flex: 1,
-    backgroundColor: '#f4f4f5',
   },
   modalHeader: {
     flexDirection: 'row',
@@ -383,21 +364,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 24,
     paddingTop: 60,
-    backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: '#f4f4f5',
   },
   modalTitle: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#18181b',
     letterSpacing: -0.5,
   },
   closeButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f4f4f5',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -414,7 +391,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#e4e4e7',
   },
   detailsCard: {
-    backgroundColor: '#ffffff',
     borderRadius: 32,
     borderCurve: 'continuous',
     padding: 24,
@@ -428,20 +404,17 @@ const styles = StyleSheet.create({
   detailsTitle: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#18181b',
     marginBottom: 20,
     letterSpacing: -0.5,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#18181b',
     marginTop: 24,
     marginBottom: 16,
     letterSpacing: -0.5,
   },
   detectionItem: {
-    backgroundColor: '#f4f4f5',
     padding: 16,
     borderRadius: 16,
     borderCurve: 'continuous',
@@ -450,53 +423,43 @@ const styles = StyleSheet.create({
   detectionClass: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#18181b',
     marginBottom: 4,
   },
   detectionConfidence: {
     fontSize: 14,
-    color: '#71717a',
     fontWeight: '500',
   },
   guideCard: {
-    backgroundColor: '#fafafa',
     borderRadius: 16,
     borderCurve: 'continuous',
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#f4f4f5',
   },
   guideTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#18181b',
     marginBottom: 6,
   },
   guideText: {
     fontSize: 14,
-    color: '#52525b',
     marginBottom: 4,
     lineHeight: 20,
   },
   disposalGuideCard: {
-    backgroundColor: '#fafafa',
     borderRadius: 16,
     borderCurve: 'continuous',
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#f4f4f5',
   },
   disposalGuideTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#18181b',
     marginBottom: 6,
   },
   disposalGuideText: {
     fontSize: 14,
-    color: '#52525b',
     marginBottom: 4,
     lineHeight: 20,
   },
@@ -504,27 +467,22 @@ const styles = StyleSheet.create({
   // Disposal Map Modal Styles
   disposalModalContainer: {
     flex: 1,
-    backgroundColor: '#f4f4f5',
   },
   disposalModalHeader: {
-    backgroundColor: '#ffffff',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 24,
     paddingTop: 60,
     borderBottomWidth: 1,
-    borderBottomColor: '#f4f4f5',
   },
   disposalModalTitle: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#18181b',
     letterSpacing: -0.5,
   },
   disposalModalSubtitle: {
     fontSize: 14,
-    color: '#a1a1aa',
     marginTop: 2,
     fontWeight: '500',
   },
@@ -538,7 +496,6 @@ const styles = StyleSheet.create({
   },
   noLocationText: {
     fontSize: 16,
-    color: '#a1a1aa',
     marginTop: 16,
     fontWeight: '500',
   },
@@ -547,7 +504,6 @@ const styles = StyleSheet.create({
     bottom: 120,
     left: 24,
     right: 24,
-    backgroundColor: '#ffffff',
     borderRadius: 32,
     borderCurve: 'continuous',
     padding: 32,
@@ -561,13 +517,11 @@ const styles = StyleSheet.create({
   noLocationsText: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#18181b',
     marginTop: 16,
     textAlign: 'center',
   },
   noLocationsSubtext: {
     fontSize: 14,
-    color: '#a1a1aa',
     textAlign: 'center',
     marginTop: 8,
     lineHeight: 22,
@@ -577,7 +531,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#ffffff',
     padding: 32,
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
@@ -594,26 +547,22 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f4f4f5',
     alignItems: 'center',
     justifyContent: 'center',
   },
   locationName: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#18181b',
     marginBottom: 8,
     paddingRight: 40,
     letterSpacing: -0.5,
   },
   locationAddress: {
     fontSize: 15,
-    color: '#71717a',
     marginBottom: 6,
   },
   locationDistance: {
     fontSize: 15,
-    color: '#18181b',
     fontWeight: '800',
     marginBottom: 20,
   },
@@ -624,7 +573,6 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   wasteTypeBadge: {
-    backgroundColor: '#f4f4f5',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
@@ -632,7 +580,6 @@ const styles = StyleSheet.create({
   },
   wasteTypeBadgeText: {
     fontSize: 13,
-    color: '#52525b',
     fontWeight: '700',
   },
   directionsButton: {
@@ -689,11 +636,27 @@ export default function HistoryScreen() {
 
   const calculateStats = (detectionData) => {
     const total = detectionData.length;
-    const organic = total; // All detections are organic
+    let totalConfidence = 0;
+    let countWithConfidence = 0;
+
+    detectionData.forEach(d => {
+      if (d.summary?.average_confidence) {
+        totalConfidence += d.summary.average_confidence;
+        countWithConfidence++;
+      } else if (d.detections && d.detections.length > 0) {
+        const avg = d.detections.reduce((sum, det) => sum + det.confidence, 0) / d.detections.length;
+        totalConfidence += avg;
+        countWithConfidence++;
+      }
+    });
+
+    const avgConf = countWithConfidence > 0
+      ? `${((totalConfidence / countWithConfidence) * 100).toFixed(0)}%`
+      : 'N/A';
 
     setStats({
       total,
-      organic,
+      avgConfidence: avgConf,
     });
   };
 
@@ -862,25 +825,21 @@ export default function HistoryScreen() {
           {/* Stats */}
           {stats && (
             <View style={styles.statsRow}>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{stats.total}</Text>
-                <Text style={styles.statLabel}>Total</Text>
+              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+                <Text style={[styles.statValue, { color: colors.text }]}>{stats.total}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total</Text>
               </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{stats.organic}</Text>
-                <Text style={styles.statLabel}>Organic</Text>
+              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+                <Text style={[styles.statValue, { color: colors.text }]}>{stats.avgConfidence}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Avg Confidence</Text>
               </View>
-              {/* <View style={styles.statCard}>
-                <Text style={styles.statValue}>{stats.recyclable}</Text>
-                <Text style={styles.statLabel}>Recyclable</Text>
-              </View> */}
             </View>
           )}
 
           {/* History List */}
           {detections.length > 0 ? (
             detections.map((detection) => (
-              <View key={detection._id} style={styles.historyCard}>
+              <View key={detection._id} style={[styles.historyCard, { backgroundColor: colors.card }]}>
                 {detection.annotated_image && !failedImages[detection._id] ? (
                   <Image
                     source={{ uri: detection.annotated_image || detection.imageUrl }}
@@ -889,28 +848,28 @@ export default function HistoryScreen() {
                     onError={() => setFailedImages(prev => ({ ...prev, [detection._id]: true }))}
                   />
                 ) : (
-                  <View style={[styles.historyImage, { backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' }]}>
-                    <Ionicons name="image-outline" size={40} color="#94a3b8" />
+                  <View style={[styles.historyImage, { backgroundColor: colors.bgAlt, alignItems: 'center', justifyContent: 'center' }]}>
+                    <Ionicons name="image-outline" size={40} color={colors.textSecondary} />
                   </View>
                 )}
                 <View style={styles.historyContent}>
                   <View style={styles.historyHeader}>
-                    <Text style={styles.wasteType}>
+                    <Text style={[styles.wasteType, { color: colors.text }]}>
                       {detection.summary?.total_detections || detection.detections?.length || 0} Items
                     </Text>
                     <TouchableOpacity
-                      style={styles.deleteButton}
+                      style={[styles.deleteButton, { backgroundColor: colors.dangerBg || '#fff1f2' }]}
                       onPress={() => handleDelete(detection._id)}
                     >
-                      <Ionicons name="trash" size={20} color="#f43f5e" />
+                      <Ionicons name="trash" size={20} color={colors.danger || '#f43f5e'} />
                     </TouchableOpacity>
                   </View>
 
-                  <Text style={styles.timestamp}>{formatDate(detection.createdAt)}</Text>
+                  <Text style={[styles.timestamp, { color: colors.textSecondary }]}>{formatDate(detection.createdAt)}</Text>
 
                   <View style={styles.detectionInfo}>
-                    <View style={styles.infoBadge}>
-                      <Text style={styles.infoBadgeText}>
+                    <View style={[styles.infoBadge, { backgroundColor: colors.bgAlt }]}>
+                      <Text style={[styles.infoBadgeText, { color: colors.textSecondary }]}>
                         {detection.summary?.average_confidence
                           ? `${(detection.summary.average_confidence * 100).toFixed(1)}%`
                           : 'N/A'}{' '}
@@ -922,20 +881,20 @@ export default function HistoryScreen() {
                   {/* Detected Types */}
                   {(detection.detectedWasteTypes?.length > 0 || detection.detections?.length > 0) && (
                     <View style={styles.detectedTypesSection}>
-                      <Text style={styles.detectedTypesLabel}>DETECTED TYPES</Text>
+                      <Text style={[styles.detectedTypesLabel, { color: colors.textSecondary }]}>DETECTED TYPES</Text>
                       <View style={styles.detectedTypesList}>
                         {(detection.detectedWasteTypes || detection.detections?.map(d => d.class) || [])
                           .filter((v, i, a) => a.indexOf(v) === i)
                           .slice(0, 3)
                           .map((type, i) => (
-                            <View key={i} style={styles.detectedTypeBadge}>
-                              <Text style={styles.detectedTypeBadgeText}>{type}</Text>
+                            <View key={i} style={[styles.detectedTypeBadge, { backgroundColor: colors.bgAlt }]}>
+                              <Text style={[styles.detectedTypeBadgeText, { color: colors.text }]}>{type}</Text>
                             </View>
                           ))}
                         {(detection.detectedWasteTypes || detection.detections?.map(d => d.class) || [])
                           .filter((v, i, a) => a.indexOf(v) === i).length > 3 && (
-                            <View style={[styles.detectedTypeBadge, { backgroundColor: '#e4e4e7' }]}>
-                              <Text style={[styles.detectedTypeBadgeText, { color: '#52525b' }]}>
+                            <View style={[styles.detectedTypeBadge, { backgroundColor: colors.border }]}>
+                              <Text style={[styles.detectedTypeBadgeText, { color: colors.textSecondary }]}>
                                 +{(detection.detectedWasteTypes || detection.detections?.map(d => d.class) || [])
                                   .filter((v, i, a) => a.indexOf(v) === i).length - 3}
                               </Text>
@@ -947,15 +906,16 @@ export default function HistoryScreen() {
 
                   <View style={styles.cardActions}>
                     <TouchableOpacity
-                      style={styles.viewDetailsButton}
+                      style={[styles.viewDetailsButton, { backgroundColor: colors.bgAlt }]}
                       onPress={() => handleViewDetails(detection)}
                     >
-                      <Text style={styles.viewDetailsText}>View Details</Text>
+                      <Text style={[styles.viewDetailsText, { color: colors.text }]}>View Details</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                       style={[
                         styles.findDisposalButton,
+                        { backgroundColor: colors.text },
                         (!detection.detections?.length && !detection.summary?.total_detections) ? { opacity: 0.5 } : null
                       ]}
                       onPress={() => handleFindDisposal(detection)}
@@ -965,8 +925,8 @@ export default function HistoryScreen() {
                         <ActivityIndicator size="small" color="white" />
                       ) : (
                         <>
-                          <Ionicons name="navigate" size={16} color="white" />
-                          <Text style={styles.findDisposalText}>Find Disposal</Text>
+                          <Ionicons name="navigate" size={16} color={colors.bg} />
+                          <Text style={[styles.findDisposalText, { color: colors.bg }]}>Find Disposal</Text>
                         </>
                       )}
                     </TouchableOpacity>
@@ -976,12 +936,12 @@ export default function HistoryScreen() {
             ))
           ) : (
             <View style={styles.emptyState}>
-              <Ionicons name="folder-open" size={64} color="#e4e4e7" style={styles.emptyIcon} />
-              <Text style={styles.emptyText}>
+              <Ionicons name="folder-open" size={64} color={colors.textSecondary} style={styles.emptyIcon} />
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
                 No environmental data logged.{'\n'}Begin scanning objects to build your ledger.
               </Text>
-              <TouchableOpacity style={styles.emptyButton} onPress={() => router.back()}>
-                <Text style={styles.emptyButtonText}>Start Scanning</Text>
+              <TouchableOpacity style={[styles.emptyButton, { backgroundColor: colors.text }]} onPress={() => router.back()}>
+                <Text style={[styles.emptyButtonText, { color: colors.bg }]}>Start Scanning</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -990,11 +950,11 @@ export default function HistoryScreen() {
 
       {/* Details Modal */}
       <Modal visible={showDetails} animationType="slide" onRequestClose={() => setShowDetails(false)}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Intelligence</Text>
-            <TouchableOpacity style={styles.closeButton} onPress={() => setShowDetails(false)}>
-              <Ionicons name="close" size={24} color="#18181b" />
+        <View style={[styles.modalContainer, { backgroundColor: colors.bg }]}>
+          <View style={[styles.modalHeader, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Intelligence</Text>
+            <TouchableOpacity style={[styles.closeButton, { backgroundColor: colors.bgAlt }]} onPress={() => setShowDetails(false)}>
+              <Ionicons name="close" size={24} color={colors.text} />
             </TouchableOpacity>
           </View>
 
@@ -1003,61 +963,61 @@ export default function HistoryScreen() {
               <>
                 <Image
                   source={{ uri: selectedDetection.annotated_image || selectedDetection.imageUrl }}
-                  style={styles.modalImage}
+                  style={[styles.modalImage, { backgroundColor: colors.bgAlt }]}
                 />
 
-                <View style={styles.detailsCard}>
-                  <Text style={styles.detailsTitle}>Detected Items:</Text>
+                <View style={[styles.detailsCard, { backgroundColor: colors.card }]}>
+                  <Text style={[styles.detailsTitle, { color: colors.text }]}>Detected Items:</Text>
                   {selectedDetection.detections?.length > 0 ? (
                     selectedDetection.detections.map((detection, index) => (
-                      <View key={index} style={styles.detectionItem}>
-                        <Text style={styles.detectionClass}>{detection.class}</Text>
-                        <Text style={styles.detectionConfidence}>
+                      <View key={index} style={[styles.detectionItem, { backgroundColor: colors.bgAlt }]}>
+                        <Text style={[styles.detectionClass, { color: colors.text }]}>{detection.class}</Text>
+                        <Text style={[styles.detectionConfidence, { color: colors.textSecondary }]}>
                           Confidence: {(detection.confidence * 100).toFixed(1)}%
                         </Text>
                       </View>
                     ))
                   ) : (
-                    <Text style={styles.detectionConfidence}>No items were detected in this image.</Text>
+                    <Text style={[styles.detectionConfidence, { color: colors.textSecondary }]}>No items were detected in this image.</Text>
                   )}
 
-                  <Text style={styles.sectionTitle}>Waste Guides</Text>
+                  <Text style={[styles.sectionTitle, { color: colors.text }]}>Waste Guides</Text>
                   {Object.entries(selectedDetection.waste_guides || {}).length > 0 ? (
                     Object.entries(selectedDetection.waste_guides || {}).map(([className, guide]) => (
-                      <View key={`waste-guide-${className}`} style={styles.guideCard}>
-                        <Text style={styles.guideTitle}>{className}</Text>
-                        <Text style={styles.guideText}>{guide.description || 'No description available.'}</Text>
-                        <Text style={styles.guideText}>
+                      <View key={`waste-guide-${className}`} style={[styles.guideCard, { backgroundColor: colors.bgAlt, borderColor: colors.border }]}>
+                        <Text style={[styles.guideTitle, { color: colors.text }]}>{className}</Text>
+                        <Text style={[styles.guideText, { color: colors.textSecondary }]}>{guide.description || 'No description available.'}</Text>
+                        <Text style={[styles.guideText, { color: colors.textSecondary }]}>
                           Category: {guide.category || 'Unknown'} • Compostable: {guide.compostable === null ? 'Unknown' : guide.compostable ? 'Yes' : 'No'}
                         </Text>
                         {guide.avgDecompositionDays ? (
-                          <Text style={styles.guideText}>Decomposition: {guide.avgDecompositionDays} days</Text>
+                          <Text style={[styles.guideText, { color: colors.textSecondary }]}>Decomposition: {guide.avgDecompositionDays} days</Text>
                         ) : null}
-                        {guide.count ? <Text style={styles.guideText}>Detected count: {guide.count}</Text> : null}
+                        {guide.count ? <Text style={[styles.guideText, { color: colors.textSecondary }]}>Detected count: {guide.count}</Text> : null}
                       </View>
                     ))
                   ) : (
-                    <Text style={styles.detectionConfidence}>No waste-guide metadata available for this detection.</Text>
+                    <Text style={[styles.detectionConfidence, { color: colors.textSecondary }]}>No waste-guide metadata available for this detection.</Text>
                   )}
 
-                  <Text style={styles.sectionTitle}>Waste Disposal Guides</Text>
+                  <Text style={[styles.sectionTitle, { color: colors.text }]}>Waste Disposal Guides</Text>
                   {Object.entries(selectedDetection.waste_disposal_guides || {}).length > 0 ? (
                     Object.entries(selectedDetection.waste_disposal_guides || {}).map(([className, guide]) => (
-                      <View key={`disposal-guide-${className}`} style={styles.disposalGuideCard}>
-                        <Text style={styles.disposalGuideTitle}>{className}</Text>
-                        <Text style={styles.disposalGuideText}>Bin: {(guide.bin || 'residual').toUpperCase()}</Text>
+                      <View key={`disposal-guide-${className}`} style={[styles.disposalGuideCard, { backgroundColor: colors.bgAlt, borderColor: colors.border }]}>
+                        <Text style={[styles.disposalGuideTitle, { color: colors.text }]}>{className}</Text>
+                        <Text style={[styles.disposalGuideText, { color: colors.textSecondary }]}>Bin: {(guide.bin || 'residual').toUpperCase()}</Text>
                         {Array.isArray(guide.instructions) && guide.instructions.map((instruction, idx) => (
-                          <Text key={`${className}-instruction-${idx}`} style={styles.disposalGuideText}>• {instruction}</Text>
+                          <Text key={`${className}-instruction-${idx}`} style={[styles.disposalGuideText, { color: colors.textSecondary }]}>• {instruction}</Text>
                         ))}
-                        {guide.notes ? <Text style={styles.disposalGuideText}>Note: {guide.notes}</Text> : null}
-                        {guide.count ? <Text style={styles.disposalGuideText}>Detected count: {guide.count}</Text> : null}
+                        {guide.notes ? <Text style={[styles.disposalGuideText, { color: colors.textSecondary }]}>Note: {guide.notes}</Text> : null}
+                        {guide.count ? <Text style={[styles.disposalGuideText, { color: colors.textSecondary }]}>Detected count: {guide.count}</Text> : null}
                       </View>
                     ))
                   ) : (
-                    <Text style={styles.detectionConfidence}>No waste-disposal guide available for this detection.</Text>
+                    <Text style={[styles.detectionConfidence, { color: colors.textSecondary }]}>No waste-disposal guide available for this detection.</Text>
                   )}
 
-                  <Text style={[styles.timestamp, { marginTop: 16, textAlign: 'center' }]}>
+                  <Text style={[styles.timestamp, { color: colors.textSecondary, marginTop: 16, textAlign: 'center' }]}>
                     Detected on {new Date(selectedDetection.createdAt).toLocaleString()}
                   </Text>
                 </View>
@@ -1069,16 +1029,16 @@ export default function HistoryScreen() {
 
       {/* Disposal Locations Map Modal */}
       <Modal visible={showDisposalMap} animationType="slide" onRequestClose={() => setShowDisposalMap(false)}>
-        <View style={styles.disposalModalContainer}>
-          <View style={styles.disposalModalHeader}>
+        <View style={[styles.disposalModalContainer, { backgroundColor: colors.bg }]}>
+          <View style={[styles.disposalModalHeader, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
             <View>
-              <Text style={styles.disposalModalTitle}>Facilities</Text>
-              <Text style={styles.disposalModalSubtitle}>
+              <Text style={[styles.disposalModalTitle, { color: colors.text }]}>Facilities</Text>
+              <Text style={[styles.disposalModalSubtitle, { color: colors.textSecondary }]}>
                 {disposalLocations.length} match{disposalLocations.length !== 1 ? 'es' : ''} found
               </Text>
             </View>
-            <TouchableOpacity style={styles.closeButton} onPress={() => { setShowDisposalMap(false); setSelectedMapLocation(null); }}>
-              <Ionicons name="close" size={24} color="#18181b" />
+            <TouchableOpacity style={[styles.closeButton, { backgroundColor: colors.bgAlt }]} onPress={() => { setShowDisposalMap(false); setSelectedMapLocation(null); }}>
+              <Ionicons name="close" size={24} color={colors.text} />
             </TouchableOpacity>
           </View>
 
@@ -1116,43 +1076,43 @@ export default function HistoryScreen() {
 
           {!userLocation && (
             <View style={styles.noLocationContainer}>
-              <Ionicons name="location-outline" size={48} color="#9ca3af" />
-              <Text style={styles.noLocationText}>Location not available</Text>
+              <Ionicons name="location-outline" size={48} color={colors.textSecondary} />
+              <Text style={[styles.noLocationText, { color: colors.textSecondary }]}>Location not available</Text>
             </View>
           )}
 
           {disposalLocations.length === 0 && (
-            <View style={styles.noLocationsOverlay}>
-              <Ionicons name="location-outline" size={48} color="#9ca3af" />
-              <Text style={styles.noLocationsText}>No disposal locations found nearby</Text>
-              <Text style={styles.noLocationsSubtext}>
+            <View style={[styles.noLocationsOverlay, { backgroundColor: colors.card }]}>
+              <Ionicons name="location-outline" size={48} color={colors.textSecondary} />
+              <Text style={[styles.noLocationsText, { color: colors.text }]}>No disposal locations found nearby</Text>
+              <Text style={[styles.noLocationsSubtext, { color: colors.textSecondary }]}>
                 Check with your local waste management authority for proper disposal.
               </Text>
             </View>
           )}
 
           {selectedMapLocation && (
-            <View style={styles.locationCard}>
+            <View style={[styles.locationCard, { backgroundColor: colors.card }]}>
               <TouchableOpacity
-                style={styles.closeLocationCard}
+                style={[styles.closeLocationCard, { backgroundColor: colors.bgAlt }]}
                 onPress={() => setSelectedMapLocation(null)}
               >
-                <Ionicons name="close" size={24} color="#666" />
+                <Ionicons name="close" size={24} color={colors.textSecondary} />
               </TouchableOpacity>
-              <Text style={styles.locationName}>{selectedMapLocation.name}</Text>
-              <Text style={styles.locationAddress}>{selectedMapLocation.address}</Text>
-              <Text style={styles.locationDistance}>{selectedMapLocation.distanceText} away</Text>
+              <Text style={[styles.locationName, { color: colors.text }]}>{selectedMapLocation.name}</Text>
+              <Text style={[styles.locationAddress, { color: colors.textSecondary }]}>{selectedMapLocation.address}</Text>
+              <Text style={[styles.locationDistance, { color: colors.text }]}>{selectedMapLocation.distanceText} away</Text>
 
               {selectedMapLocation.acceptedWasteTypes && (
                 <View style={styles.wasteTypesRow}>
                   {selectedMapLocation.acceptedWasteTypes.slice(0, 4).map((type, i) => (
-                    <View key={i} style={styles.wasteTypeBadge}>
-                      <Text style={styles.wasteTypeBadgeText}>{type}</Text>
+                    <View key={i} style={[styles.wasteTypeBadge, { backgroundColor: colors.bgAlt }]}>
+                      <Text style={[styles.wasteTypeBadgeText, { color: colors.textSecondary }]}>{type}</Text>
                     </View>
                   ))}
                   {selectedMapLocation.acceptedWasteTypes.length > 4 && (
-                    <View style={styles.wasteTypeBadge}>
-                      <Text style={styles.wasteTypeBadgeText}>
+                    <View style={[styles.wasteTypeBadge, { backgroundColor: colors.bgAlt }]}>
+                      <Text style={[styles.wasteTypeBadgeText, { color: colors.textSecondary }]}>
                         +{selectedMapLocation.acceptedWasteTypes.length - 4}
                       </Text>
                     </View>
@@ -1161,11 +1121,11 @@ export default function HistoryScreen() {
               )}
 
               <TouchableOpacity
-                style={styles.directionsButton}
+                style={[styles.directionsButton, { backgroundColor: colors.text }]}
                 onPress={() => handleDirections(selectedMapLocation)}
               >
-                <Ionicons name="navigate" size={20} color="white" />
-                <Text style={styles.directionsButtonText}>Get Directions</Text>
+                <Ionicons name="navigate" size={20} color={colors.bg} />
+                <Text style={[styles.directionsButtonText, { color: colors.bg }]}>Get Directions</Text>
               </TouchableOpacity>
             </View>
           )}

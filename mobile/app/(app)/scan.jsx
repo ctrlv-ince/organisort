@@ -247,14 +247,14 @@ export default function ScanScreen() {
 
         {!capturedImage && (
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.primaryButton} onPress={openCamera}>
+            <TouchableOpacity style={[styles.primaryButton, { backgroundColor: colors.text }]} onPress={openCamera}>
               <Ionicons name="camera" size={24} color="white" />
               <Text style={styles.buttonText}>Open Camera</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.secondaryButton} onPress={pickImage}>
-              <Ionicons name="images" size={24} color="#18181b" />
-              <Text style={styles.secondaryButtonText}>Choose from Gallery</Text>
+            <TouchableOpacity style={[styles.secondaryButton, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={pickImage}>
+              <Ionicons name="images" size={24} color={colors.text} />
+              <Text style={[styles.secondaryButtonText, { color: colors.text }]}>Choose from Gallery</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -267,7 +267,7 @@ export default function ScanScreen() {
                 <Text style={styles.retakeButtonText}>Retake</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.analyzeButton, analyzing && styles.analyzeButtonDisabled]}
+                style={[styles.analyzeButton, { backgroundColor: colors.text }, analyzing && styles.analyzeButtonDisabled]}
                 onPress={analyzeImage}
                 disabled={analyzing}
               >
@@ -289,68 +289,68 @@ export default function ScanScreen() {
             />
 
             <View style={styles.statsContainer}>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{result.summary?.total_detections || 0}</Text>
-                <Text style={styles.statLabel}>Items</Text>
+              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+                <Text style={[styles.statValue, { color: colors.text }]}>{result.summary?.total_detections || 0}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Items</Text>
               </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{result.summary?.unique_classes || 0}</Text>
-                <Text style={styles.statLabel}>Types</Text>
+              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+                <Text style={[styles.statValue, { color: colors.text }]}>{result.summary?.unique_classes || 0}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Types</Text>
               </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>
+              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+                <Text style={[styles.statValue, { color: colors.text }]}>
                   {result.summary?.average_confidence
                     ? `${(result.summary.average_confidence * 100).toFixed(0)}%`
                     : 'N/A'}
                 </Text>
-                <Text style={styles.statLabel}>Confidence</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Confidence</Text>
               </View>
             </View>
 
-            <View style={styles.detectionsList}>
-              <Text style={styles.sectionTitle}>Detected Items</Text>
+            <View style={[styles.detectionsList, { backgroundColor: colors.card }]}>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Detected Items</Text>
               {result.detections?.length > 0 ? (
                 result.detections.map((detection, index) => (
-                  <View key={index} style={styles.detectionItem}>
-                    <Text style={styles.detectionClass}>{detection.class}</Text>
-                    <Text style={styles.detectionConfidence}>
+                  <View key={index} style={[styles.detectionItem, { borderBottomColor: colors.border }]}>
+                    <Text style={[styles.detectionClass, { color: colors.text }]}>{detection.class}</Text>
+                    <Text style={[styles.detectionConfidence, { color: colors.textSecondary }]}>
                       {(detection.confidence * 100).toFixed(1)}%
                     </Text>
                   </View>
                 ))
               ) : (
-                <View style={styles.detectionItem}>
-                  <Text style={styles.detectionClass}>No items were detected in this image.</Text>
+                <View style={[styles.detectionItem, { borderBottomColor: colors.border }]}>
+                  <Text style={[styles.detectionClass, { color: colors.text }]}>No items were detected in this image.</Text>
                 </View>
               )}
             </View>
 
             {result.ai_tips && result.ai_tips.length > 0 && (
-              <View style={styles.aiTipsSection}>
+              <View style={[styles.aiTipsSection, { backgroundColor: colors.card, borderColor: colors.accentSurfaceBorder }]}>
                 <View style={styles.aiTipsHeader}>
-                  <Ionicons name="sparkles" size={20} color="#8b5cf6" />
-                  <Text style={styles.sectionTitle}>AI Smart Tips</Text>
+                  <Ionicons name="sparkles" size={20} color={colors.accent} />
+                  <Text style={[styles.sectionTitle, { color: colors.text }]}>AI Smart Tips</Text>
                 </View>
                 {result.ai_tips.map((tip, index) => (
-                  <View key={index} style={styles.aiTipItem}>
-                    <View style={styles.aiTipBullet}>
-                      <Text style={styles.aiTipBulletText}>{index + 1}</Text>
+                  <View key={index} style={[styles.aiTipItem, { borderBottomColor: colors.border }]}>
+                    <View style={[styles.aiTipBullet, { backgroundColor: colors.accentSurface }]}>
+                      <Text style={[styles.aiTipBulletText, { color: colors.accent }]}>{index + 1}</Text>
                     </View>
-                    <Text style={styles.aiTipText}>{tip}</Text>
+                    <Text style={[styles.aiTipText, { color: colors.textSecondary }]}>{tip}</Text>
                   </View>
                 ))}
               </View>
             )}
 
             {disposalLocations.length > 0 ? (
-              <View style={styles.disposalSection}>
-                <Text style={styles.sectionTitle}>Nearby Disposal Locations</Text>
-                <Text style={styles.disposalSubtitle}>
+              <View style={[styles.disposalSection, { backgroundColor: colors.card }]}>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>Nearby Disposal Locations</Text>
+                <Text style={[styles.disposalSubtitle, { color: colors.textSecondary }]}>
                   Found {disposalLocations.length} location{disposalLocations.length !== 1 ? 's' : ''} that accept this waste
                 </Text>
 
                 <TouchableOpacity
-                  style={styles.viewMapButton}
+                  style={[styles.viewMapButton, { backgroundColor: colors.text }]}
                   onPress={() => setShowMap(true)}
                 >
                   <Ionicons name="map" size={20} color="white" />
@@ -358,48 +358,48 @@ export default function ScanScreen() {
                 </TouchableOpacity>
 
                 {disposalLocations[0] && (
-                  <View style={styles.nearestCard}>
+                  <View style={[styles.nearestCard, { backgroundColor: colors.bgAlt, borderColor: colors.border }]}>
                     <View style={styles.nearestHeader}>
-                      <Ionicons name="location" size={20} color="#18181b" />
-                      <Text style={styles.nearestTitle}>Nearest Location</Text>
+                      <Ionicons name="location" size={20} color={colors.text} />
+                      <Text style={[styles.nearestTitle, { color: colors.text }]}>Nearest Location</Text>
                     </View>
-                    <Text style={styles.nearestName}>{disposalLocations[0].name}</Text>
-                    <Text style={styles.nearestDistance}>{disposalLocations[0].distanceText} away</Text>
+                    <Text style={[styles.nearestName, { color: colors.text }]}>{disposalLocations[0].name}</Text>
+                    <Text style={[styles.nearestDistance, { color: colors.textSecondary }]}>{disposalLocations[0].distanceText} away</Text>
                     <TouchableOpacity
-                      style={styles.directionsButton}
+                      style={[styles.directionsButton, { backgroundColor: colors.bgAlt }]}
                       onPress={() => handleDirections(disposalLocations[0])}
                     >
-                      <Ionicons name="navigate" size={16} color="#18181b" />
-                      <Text style={styles.directionsButtonText}>Get Directions</Text>
+                      <Ionicons name="navigate" size={16} color={colors.text} />
+                      <Text style={[styles.directionsButtonText, { color: colors.text }]}>Get Directions</Text>
                     </TouchableOpacity>
                   </View>
                 )}
               </View>
             ) : (
-              <View style={styles.emptyStateContainer}>
-                <View style={styles.emptyStateIconWrapper}>
-                  <Ionicons name="location-outline" size={32} color="#a1a1aa" />
+              <View style={[styles.emptyStateContainer, { backgroundColor: colors.card }]}>
+                <View style={[styles.emptyStateIconWrapper, { backgroundColor: colors.bgAlt, borderColor: colors.border }]}>
+                  <Ionicons name="location-outline" size={32} color={colors.textSecondary} />
                 </View>
-                <Text style={styles.emptyStateTitle}>No facilities located nearby</Text>
-                <Text style={styles.emptyStateText}>
+                <Text style={[styles.emptyStateTitle, { color: colors.text }]}>No facilities located nearby</Text>
+                <Text style={[styles.emptyStateText, { color: colors.textSecondary }]}>
                   We couldn't lock onto any affiliated disposal drop-offs in your specific region. Please check with local sorting authorities.
                 </Text>
               </View>
             )}
 
-            <TouchableOpacity style={styles.retakeButton} onPress={retake}>
-              <Ionicons name="refresh" size={20} color="#18181b" />
-              <Text style={styles.retakeButtonText}>Scan Another</Text>
+            <TouchableOpacity style={[styles.retakeButton, { backgroundColor: colors.bgAlt }]} onPress={retake}>
+              <Ionicons name="refresh" size={20} color={colors.text} />
+              <Text style={[styles.retakeButtonText, { color: colors.text }]}>Scan Another</Text>
             </TouchableOpacity>
           </View>
         )}
 
         <Modal visible={showMap} animationType="slide" onRequestClose={() => setShowMap(false)}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Disposal Locations</Text>
-              <TouchableOpacity style={styles.closeButton} onPress={() => setShowMap(false)}>
-                <Ionicons name="close" size={24} color="#18181b" />
+          <View style={[styles.modalContainer, { backgroundColor: colors.bg }]}>
+            <View style={[styles.modalHeader, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>Disposal Locations</Text>
+              <TouchableOpacity style={[styles.closeButton, { backgroundColor: colors.bgAlt }]} onPress={() => setShowMap(false)}>
+                <Ionicons name="close" size={24} color={colors.text} />
               </TouchableOpacity>
             </View>
 
@@ -467,7 +467,6 @@ export default function ScanScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f4f5',
   },
   content: {
     padding: 24,
@@ -479,13 +478,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 34,
     fontWeight: '900',
-    color: '#18181b',
     marginBottom: 8,
     letterSpacing: -0.5,
   },
   headerSubtitle: {
     fontSize: 16,
-    color: '#71717a',
     fontWeight: '500',
     lineHeight: 24,
   },
@@ -493,7 +490,6 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   primaryButton: {
-    backgroundColor: '#18181b',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -508,7 +504,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   secondaryButton: {
-    backgroundColor: '#ffffff',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -516,11 +511,9 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     borderCurve: 'continuous',
     borderWidth: 2,
-    borderColor: '#f4f4f5',
     gap: 12,
   },
   secondaryButtonText: {
-    color: '#18181b',
     fontSize: 18,
     fontWeight: '700',
   },
@@ -603,11 +596,9 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 16,
     borderCurve: 'continuous',
-    backgroundColor: '#f4f4f5',
     gap: 8,
   },
   retakeButtonText: {
-    color: '#18181b',
     fontSize: 16,
     fontWeight: '700',
   },
@@ -644,7 +635,6 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#ffffff',
     padding: 20,
     borderRadius: 24,
     borderCurve: 'continuous',
@@ -658,18 +648,15 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#18181b',
     marginBottom: 4,
     letterSpacing: -0.5,
   },
   statLabel: {
     fontSize: 13,
-    color: '#a1a1aa',
     fontWeight: '700',
     textTransform: 'uppercase',
   },
   detectionsList: {
-    backgroundColor: '#ffffff',
     padding: 24,
     borderRadius: 32,
     borderCurve: 'continuous',
@@ -682,7 +669,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#18181b',
     marginBottom: 16,
     letterSpacing: -0.5,
   },
@@ -692,21 +678,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f4f4f5',
   },
   detectionClass: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#18181b',
     textTransform: 'capitalize',
   },
   detectionConfidence: {
     fontSize: 15,
-    color: '#71717a',
     fontWeight: '600',
   },
   disposalSection: {
-    backgroundColor: '#ffffff',
     padding: 24,
     borderRadius: 32,
     borderCurve: 'continuous',
@@ -718,7 +700,6 @@ const styles = StyleSheet.create({
   },
   disposalSubtitle: {
     fontSize: 15,
-    color: '#71717a',
     marginBottom: 20,
     lineHeight: 22,
   },
@@ -739,12 +720,10 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   nearestCard: {
-    backgroundColor: '#fafafa',
     padding: 20,
     borderRadius: 20,
     borderCurve: 'continuous',
     borderWidth: 1,
-    borderColor: '#f4f4f5',
   },
   nearestHeader: {
     flexDirection: 'row',
@@ -755,22 +734,18 @@ const styles = StyleSheet.create({
   nearestTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#18181b',
   },
   nearestName: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#18181b',
     marginBottom: 4,
     letterSpacing: -0.5,
   },
   nearestDistance: {
     fontSize: 14,
-    color: '#71717a',
     marginBottom: 16,
   },
   directionsButton: {
-    backgroundColor: '#f4f4f5',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -780,35 +755,29 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   directionsButtonText: {
-    color: '#18181b',
     fontSize: 15,
     fontWeight: '700',
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: '#f4f4f5',
   },
   modalHeader: {
-    backgroundColor: '#ffffff',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 24,
     paddingTop: 60,
     borderBottomWidth: 1,
-    borderBottomColor: '#f4f4f5',
   },
   modalTitle: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#18181b',
     letterSpacing: -0.5,
   },
   closeButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f4f4f5',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -820,7 +789,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#ffffff',
     padding: 32,
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
@@ -837,26 +805,22 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f4f4f5',
     alignItems: 'center',
     justifyContent: 'center',
   },
   locationName: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#18181b',
     marginBottom: 8,
     paddingRight: 40,
     letterSpacing: -0.5,
   },
   locationAddress: {
     fontSize: 15,
-    color: '#71717a',
     marginBottom: 6,
   },
   locationDistance: {
     fontSize: 15,
-    color: '#18181b',
     fontWeight: '800',
     marginBottom: 20,
   },
@@ -873,7 +837,6 @@ const styles = StyleSheet.create({
   emptyStateContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ffffff',
     paddingVertical: 40,
     paddingHorizontal: 24,
     borderRadius: 32,
@@ -888,27 +851,22 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 20,
-    backgroundColor: '#fafafa',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#f4f4f5',
   },
   emptyStateTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#18181b',
     marginBottom: 8,
   },
   emptyStateText: {
     fontSize: 14,
-    color: '#71717a',
     textAlign: 'center',
     lineHeight: 22,
   },
   aiTipsSection: {
-    backgroundColor: '#ffffff',
     padding: 24,
     borderRadius: 32,
     borderCurve: 'continuous',
@@ -918,7 +876,6 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 3,
     borderWidth: 1,
-    borderColor: '#ede9fe',
   },
   aiTipsHeader: {
     flexDirection: 'row',
@@ -932,13 +889,11 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f5f3ff',
   },
   aiTipBullet: {
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#ede9fe',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 2,
@@ -946,13 +901,11 @@ const styles = StyleSheet.create({
   aiTipBulletText: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#7c3aed',
   },
   aiTipText: {
     flex: 1,
     fontSize: 14,
     lineHeight: 22,
-    color: '#3f3f46',
     fontWeight: '500',
   },
 });

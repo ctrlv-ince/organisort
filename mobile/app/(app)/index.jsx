@@ -319,7 +319,7 @@ export default function HomeScreen() {
           {!scheduleSetup && (
             <TouchableOpacity
               style={{
-                backgroundColor: '#ecfdf5',
+                backgroundColor: colors.accentSurface,
                 borderRadius: 24,
                 padding: 20,
                 marginBottom: 20,
@@ -327,7 +327,7 @@ export default function HomeScreen() {
                 alignItems: 'center',
                 gap: 14,
                 borderWidth: 1,
-                borderColor: '#bbf7d0',
+                borderColor: colors.accentSurfaceBorder,
               }}
               onPress={() => router.push('/collection-schedule')}
               activeOpacity={0.7}
@@ -397,7 +397,7 @@ export default function HomeScreen() {
                 label="Activity Ledger"
                 onPress={() => router.push('/history')}
                 color="#3b82f6"
-                bg="#eff6ff"
+                bg={colors.bgAlt}
                 cardBg={colors.card}
                 textColor={colors.text}
               />
@@ -406,7 +406,7 @@ export default function HomeScreen() {
                 label="Identity Profile"
                 onPress={() => router.push('/profile')}
                 color="#8b5cf6"
-                bg="#f5f3ff"
+                bg={colors.bgAlt}
                 cardBg={colors.card}
                 textColor={colors.text}
               />
@@ -415,7 +415,7 @@ export default function HomeScreen() {
                 label="Social Rank"
                 onPress={() => router.push('/more')}
                 color="#f59e0b"
-                bg="#fffbeb"
+                bg={colors.bgAlt}
                 cardBg={colors.card}
                 textColor={colors.text}
               />

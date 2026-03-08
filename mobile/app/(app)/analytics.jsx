@@ -38,12 +38,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionIcon: { fontSize: 24, marginRight: 12 },
-  sectionTitle: { fontSize: 22, fontWeight: '800', color: '#18181b', flex: 1, letterSpacing: -0.5 },
+  sectionTitle: { fontSize: 22, fontWeight: '800', flex: 1, letterSpacing: -0.5 },
 
   // Stats Grid
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   statCard: {
-    backgroundColor: '#ffffff',
     borderRadius: 24,
     borderCurve: 'continuous',
     padding: 20,
@@ -55,13 +54,12 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 2,
   },
-  statValue: { fontSize: 32, fontWeight: '900', color: '#18181b', marginBottom: 4, letterSpacing: -0.5 },
-  statLabel: { fontSize: 13, color: '#a1a1aa', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 },
-  statSubtext: { fontSize: 12, color: '#10b981', marginTop: 6, fontWeight: '600' },
+  statValue: { fontSize: 32, fontWeight: '900', marginBottom: 4, letterSpacing: -0.5 },
+  statLabel: { fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 },
+  statSubtext: { fontSize: 12, marginTop: 6, fontWeight: '600' },
 
   // Impact Card
   impactCard: {
-    backgroundColor: '#ffffff',
     borderRadius: 32,
     borderCurve: 'continuous',
     padding: 24,
@@ -77,26 +75,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f4f4f5',
   },
   impactIconContainer: {
     width: 48,
     height: 48,
     borderRadius: 16,
     borderCurve: 'continuous',
-    backgroundColor: '#f4f4f5',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
   },
   impactIcon: { fontSize: 24 },
   impactContent: { flex: 1 },
-  impactValue: { fontSize: 22, fontWeight: '800', color: '#18181b', letterSpacing: -0.5 },
-  impactLabel: { fontSize: 14, color: '#71717a', marginTop: 2, fontWeight: '500' },
+  impactValue: { fontSize: 22, fontWeight: '800', letterSpacing: -0.5 },
+  impactLabel: { fontSize: 14, marginTop: 2, fontWeight: '500' },
 
   // Chart Container
   chartCard: {
-    backgroundColor: '#ffffff',
     borderRadius: 32,
     borderCurve: 'continuous',
     padding: 24,
@@ -107,7 +102,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     marginBottom: 16,
   },
-  chartTitle: { fontSize: 18, fontWeight: '800', color: '#18181b', marginBottom: 20, letterSpacing: -0.5 },
+  chartTitle: { fontSize: 18, fontWeight: '800', marginBottom: 20, letterSpacing: -0.5 },
 
   // Waste Type List
   wasteTypeItem: {
@@ -115,27 +110,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f4f4f5',
   },
   wasteTypeRank: {
     width: 36,
     height: 36,
     borderRadius: 12,
     borderCurve: 'continuous',
-    backgroundColor: '#f4f4f5',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
   },
-  wasteTypeRankText: { color: '#18181b', fontSize: 15, fontWeight: '800' },
-  wasteTypeName: { flex: 1, fontSize: 16, fontWeight: '700', color: '#18181b' },
-  wasteTypeCount: { fontSize: 16, fontWeight: '800', color: '#18181b', marginRight: 8 },
-  wasteTypePercentage: { fontSize: 14, color: '#a1a1aa', fontWeight: '600' },
+  wasteTypeRankText: { fontSize: 15, fontWeight: '800' },
+  wasteTypeName: { flex: 1, fontSize: 16, fontWeight: '700' },
+  wasteTypeCount: { fontSize: 16, fontWeight: '800', marginRight: 8 },
+  wasteTypePercentage: { fontSize: 14, fontWeight: '600' },
 
   // Progress Bar
   progressBar: {
     height: 12,
-    backgroundColor: '#f4f4f5',
     borderRadius: 6,
     marginTop: 12,
     overflow: 'hidden',
@@ -158,22 +150,21 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginRight: 12,
   },
-  compositionLabel: { flex: 1, fontSize: 15, fontWeight: '700', color: '#18181b' },
-  compositionValue: { fontSize: 18, fontWeight: '800', color: '#18181b' },
+  compositionLabel: { flex: 1, fontSize: 15, fontWeight: '700' },
+  compositionValue: { fontSize: 18, fontWeight: '800' },
 
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: 100,
-    backgroundColor: '#f4f4f5',
   },
   emptyState: {
     alignItems: 'center',
     paddingVertical: 60,
   },
   emptyIcon: { fontSize: 64, marginBottom: 24, opacity: 0.3 },
-  emptyText: { fontSize: 16, color: '#a1a1aa', textAlign: 'center', fontWeight: '500', lineHeight: 24 },
+  emptyText: { fontSize: 16, textAlign: 'center', fontWeight: '500', lineHeight: 24 },
 });
 
 export default function AnalyticsScreen() {
@@ -337,8 +328,8 @@ export default function AnalyticsScreen() {
           </View>
           <View style={styles.content}>
             <View style={styles.emptyState}>
-              <Ionicons name="bar-chart-outline" size={64} color="#94a3b8" style={{ marginBottom: 16, opacity: 0.5 }} />
-              <Text style={styles.emptyText}>
+              <Ionicons name="bar-chart-outline" size={64} color={colors.textSecondary} style={{ marginBottom: 16, opacity: 0.5 }} />
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
                 No data yet.{'\n'}Start scanning to see your analytics!
               </Text>
             </View>
@@ -366,29 +357,29 @@ export default function AnalyticsScreen() {
           {/* Overview Stats */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="bar-chart-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
-              <Text style={styles.sectionTitle}>Overview</Text>
+              <Ionicons name="bar-chart-outline" size={28} color={colors.accent} style={{ marginRight: 12 }} />
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Overview</Text>
             </View>
             <View style={styles.statsGrid}>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{analytics.totalScans}</Text>
-                <Text style={styles.statLabel}>Total Scans</Text>
-                <Text style={styles.statSubtext}>+{analytics.weeklyGrowth}% this week</Text>
+              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+                <Text style={[styles.statValue, { color: colors.text }]}>{analytics.totalScans}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total Scans</Text>
+                <Text style={[styles.statSubtext, { color: colors.accent }]}>+{analytics.weeklyGrowth}% this week</Text>
               </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{analytics.totalItems}</Text>
-                <Text style={styles.statLabel}>Items Detected</Text>
-                <Text style={styles.statSubtext}>Across all scans</Text>
+              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+                <Text style={[styles.statValue, { color: colors.text }]}>{analytics.totalItems}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Items Detected</Text>
+                <Text style={[styles.statSubtext, { color: colors.accent }]}>Across all scans</Text>
               </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{analytics.uniqueTypes}</Text>
-                <Text style={styles.statLabel}>Unique Types</Text>
-                <Text style={styles.statSubtext}>Different waste categories</Text>
+              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+                <Text style={[styles.statValue, { color: colors.text }]}>{analytics.uniqueTypes}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Unique Types</Text>
+                <Text style={[styles.statSubtext, { color: colors.accent }]}>Different waste categories</Text>
               </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{analytics.averageConfidence}%</Text>
-                <Text style={styles.statLabel}>Avg Confidence</Text>
-                <Text style={styles.statSubtext}>Detection accuracy</Text>
+              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+                <Text style={[styles.statValue, { color: colors.text }]}>{analytics.averageConfidence}%</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Avg Confidence</Text>
+                <Text style={[styles.statSubtext, { color: colors.accent }]}>Detection accuracy</Text>
               </View>
             </View>
           </View>
@@ -396,54 +387,54 @@ export default function AnalyticsScreen() {
           {/* Environmental Impact */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="earth-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
-              <Text style={styles.sectionTitle}>Environmental Impact</Text>
+              <Ionicons name="earth-outline" size={28} color={colors.accent} style={{ marginRight: 12 }} />
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Environmental Impact</Text>
             </View>
-            <View style={styles.impactCard}>
-              <View style={styles.impactRow}>
-                <View style={styles.impactIconContainer}>
+            <View style={[styles.impactCard, { backgroundColor: colors.card }]}>
+              <View style={[styles.impactRow, { borderBottomColor: colors.border }]}>
+                <View style={[styles.impactIconContainer, { backgroundColor: colors.bgAlt }]}>
                   <Text style={styles.impactIcon}>🌱</Text>
                 </View>
                 <View style={styles.impactContent}>
-                  <Text style={styles.impactValue}>{analytics.impactStats.co2Saved} kg</Text>
-                  <Text style={styles.impactLabel}>CO₂ Emissions Avoided</Text>
+                  <Text style={[styles.impactValue, { color: colors.text }]}>{analytics.impactStats.co2Saved} kg</Text>
+                  <Text style={[styles.impactLabel, { color: colors.textSecondary }]}>CO₂ Emissions Avoided</Text>
                 </View>
               </View>
-              <View style={styles.impactRow}>
-                <View style={styles.impactIconContainer}>
+              <View style={[styles.impactRow, { borderBottomColor: colors.border }]}>
+                <View style={[styles.impactIconContainer, { backgroundColor: colors.bgAlt }]}>
                   <Text style={styles.impactIcon}>🗑️</Text>
                 </View>
                 <View style={styles.impactContent}>
-                  <Text style={styles.impactValue}>
+                  <Text style={[styles.impactValue, { color: colors.text }]}>
                     {analytics.impactStats.landfillDiverted} kg
                   </Text>
-                  <Text style={styles.impactLabel}>Landfill Waste Diverted</Text>
+                  <Text style={[styles.impactLabel, { color: colors.textSecondary }]}>Landfill Waste Diverted</Text>
                 </View>
               </View>
-              <View style={styles.impactRow}>
-                <View style={styles.impactIconContainer}>
+              <View style={[styles.impactRow, { borderBottomColor: colors.border }]}>
+                <View style={[styles.impactIconContainer, { backgroundColor: colors.bgAlt }]}>
                   <Text style={styles.impactIcon}>💧</Text>
                 </View>
                 <View style={styles.impactContent}>
-                  <Text style={styles.impactValue}>{analytics.impactStats.waterSaved} L</Text>
-                  <Text style={styles.impactLabel}>Water Conserved</Text>
+                  <Text style={[styles.impactValue, { color: colors.text }]}>{analytics.impactStats.waterSaved} L</Text>
+                  <Text style={[styles.impactLabel, { color: colors.textSecondary }]}>Water Conserved</Text>
                 </View>
               </View>
               <View style={[styles.impactRow, { borderBottomWidth: 0 }]}>
-                <View style={styles.impactIconContainer}>
+                <View style={[styles.impactIconContainer, { backgroundColor: colors.bgAlt }]}>
                   <Text style={styles.impactIcon}>🌳</Text>
                 </View>
                 <View style={styles.impactContent}>
-                  <Text style={styles.impactValue}>
+                  <Text style={[styles.impactValue, { color: colors.text }]}>
                     {analytics.impactStats.treesEquivalent}
                   </Text>
-                  <Text style={styles.impactLabel}>Trees Equivalent Impact</Text>
+                  <Text style={[styles.impactLabel, { color: colors.textSecondary }]}>Trees Equivalent Impact</Text>
                 </View>
               </View>
             </View>
             {analytics.aiInsight ? (
               <View style={{
-                backgroundColor: '#f5f3ff',
+                backgroundColor: colors.accentSurface,
                 borderRadius: 16,
                 padding: 16,
                 marginTop: 12,
@@ -451,15 +442,15 @@ export default function AnalyticsScreen() {
                 alignItems: 'flex-start',
                 gap: 10,
                 borderWidth: 1,
-                borderColor: '#ede9fe',
+                borderColor: colors.accentSurfaceBorder,
               }}>
-                <Ionicons name="sparkles" size={18} color="#7c3aed" style={{ marginTop: 2 }} />
-                <Text style={{ flex: 1, fontSize: 13, lineHeight: 20, color: '#5b21b6', fontWeight: '500' }}>
+                <Ionicons name="sparkles" size={18} color={colors.accent} style={{ marginTop: 2 }} />
+                <Text style={{ flex: 1, fontSize: 13, lineHeight: 20, color: colors.accent, fontWeight: '500' }}>
                   {analytics.aiInsight}
                 </Text>
               </View>
             ) : (
-              <Text style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', marginTop: 8 }}>
+              <Text style={{ fontSize: 12, color: colors.textSecondary, textAlign: 'center', marginTop: 8 }}>
                 *Estimates based on proper waste sorting & disposal
               </Text>
             )}
@@ -468,16 +459,16 @@ export default function AnalyticsScreen() {
           {/* Waste Composition */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="pie-chart-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
-              <Text style={styles.sectionTitle}>Waste Composition</Text>
+              <Ionicons name="pie-chart-outline" size={28} color={colors.accent} style={{ marginRight: 12 }} />
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Waste Composition</Text>
             </View>
-            <View style={styles.chartCard}>
+            <View style={[styles.chartCard, { backgroundColor: colors.card }]}>
               <View style={styles.compositionItem}>
                 <View style={[styles.compositionColor, { backgroundColor: '#10b981' }]} />
-                <Text style={styles.compositionLabel}>Organic Waste</Text>
-                <Text style={styles.compositionValue}>{analytics.organicPercentage}%</Text>
+                <Text style={[styles.compositionLabel, { color: colors.text }]}>Organic Waste</Text>
+                <Text style={[styles.compositionValue, { color: colors.text }]}>{analytics.organicPercentage}%</Text>
               </View>
-              <View style={styles.progressBar}>
+              <View style={[styles.progressBar, { backgroundColor: colors.bgAlt }]}>
                 <View
                   style={[styles.progressFill, { width: `${analytics.organicPercentage}%` }]}
                 />
@@ -487,12 +478,12 @@ export default function AnalyticsScreen() {
                 <>
                   <View style={[styles.compositionItem, { marginTop: 16 }]}>
                     <View style={[styles.compositionColor, { backgroundColor: '#ef4444' }]} />
-                    <Text style={styles.compositionLabel}>Non-Organic Waste</Text>
-                    <Text style={styles.compositionValue}>
+                    <Text style={[styles.compositionLabel, { color: colors.text }]}>Non-Organic Waste</Text>
+                    <Text style={[styles.compositionValue, { color: colors.text }]}>
                       {analytics.nonOrganicPercentage}%
                     </Text>
                   </View>
-                  <View style={styles.progressBar}>
+                  <View style={[styles.progressBar, { backgroundColor: colors.bgAlt }]}>
                     <View
                       style={[
                         styles.progressFill,
@@ -506,7 +497,7 @@ export default function AnalyticsScreen() {
               <Text
                 style={{
                   fontSize: 12,
-                  color: '#64748b',
+                  color: colors.textSecondary,
                   marginTop: 16,
                   textAlign: 'center',
                 }}
@@ -519,36 +510,38 @@ export default function AnalyticsScreen() {
           {/* Most Common Waste Types */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="trending-up-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
-              <Text style={styles.sectionTitle}>Top Waste Types</Text>
+              <Ionicons name="trending-up-outline" size={28} color={colors.accent} style={{ marginRight: 12 }} />
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Top Waste Types</Text>
             </View>
-            <View style={styles.chartCard}>
-              <Text style={styles.chartTitle}>Most Frequently Detected</Text>
+            <View style={[styles.chartCard, { backgroundColor: colors.card }]}>
+              <Text style={[styles.chartTitle, { color: colors.text }]}>Most Frequently Detected</Text>
               {analytics.topWasteTypes.map((item, index) => (
                 <View
                   key={item.name}
                   style={[
                     styles.wasteTypeItem,
+                    { borderBottomColor: colors.border },
                     index === analytics.topWasteTypes.length - 1 && { borderBottomWidth: 0 },
                   ]}
                 >
                   <View
                     style={[
                       styles.wasteTypeRank,
+                      { backgroundColor: colors.bgAlt },
                       item.rank === 1 && { backgroundColor: '#fef3c7' },
                       item.rank === 2 && { backgroundColor: '#f1f5f9' },
                       item.rank === 3 && { backgroundColor: '#ffedd5' },
                     ]}
                   >
-                    <Text style={[styles.wasteTypeRankText,
+                    <Text style={[styles.wasteTypeRankText, { color: colors.text },
                     item.rank === 1 && { color: '#d97706' },
                     item.rank === 2 && { color: '#475569' },
                     item.rank === 3 && { color: '#ea580c' },
                     ]}>{item.rank}</Text>
                   </View>
-                  <Text style={styles.wasteTypeName}>{item.name}</Text>
-                  <Text style={styles.wasteTypeCount}>{item.count}</Text>
-                  <Text style={styles.wasteTypePercentage}>({item.percentage}%)</Text>
+                  <Text style={[styles.wasteTypeName, { color: colors.text }]}>{item.name}</Text>
+                  <Text style={[styles.wasteTypeCount, { color: colors.text }]}>{item.count}</Text>
+                  <Text style={[styles.wasteTypePercentage, { color: colors.textSecondary }]}>({item.percentage}%)</Text>
                 </View>
               ))}
             </View>
@@ -557,27 +550,27 @@ export default function AnalyticsScreen() {
           {/* Classification Breakdown */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="flask-outline" size={28} color="#10b981" style={{ marginRight: 12 }} />
-              <Text style={styles.sectionTitle}>Classification Stats</Text>
+              <Ionicons name="flask-outline" size={28} color={colors.accent} style={{ marginRight: 12 }} />
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Classification Stats</Text>
             </View>
             <View style={styles.statsGrid}>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>{analytics.uniqueTypes}</Text>
-                <Text style={styles.statLabel}>Waste Categories</Text>
-                <Text style={styles.statSubtext}>Identified types</Text>
+              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+                <Text style={[styles.statValue, { color: colors.text }]}>{analytics.uniqueTypes}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Waste Categories</Text>
+                <Text style={[styles.statSubtext, { color: colors.accent }]}>Identified types</Text>
               </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statValue}>
+              <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+                <Text style={[styles.statValue, { color: colors.text }]}>
                   {(analytics.totalItems / analytics.totalScans).toFixed(1)}
                 </Text>
-                <Text style={styles.statLabel}>Items per Scan</Text>
-                <Text style={styles.statSubtext}>Average detection</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Items per Scan</Text>
+                <Text style={[styles.statSubtext, { color: colors.accent }]}>Average detection</Text>
               </View>
             </View>
           </View>
 
           {/* Footer */}
-          <Text style={{ textAlign: 'center', color: '#94a3b8', fontSize: 12, marginTop: 16 }}>
+          <Text style={{ textAlign: 'center', color: colors.textSecondary, fontSize: 12, marginTop: 16 }}>
             Last updated: {new Date().toLocaleDateString()}
           </Text>
         </View>

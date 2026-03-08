@@ -31,7 +31,6 @@ const styles = StyleSheet.create({
 
   // Profile Header
   profileHeader: {
-    backgroundColor: '#ffffff',
     borderRadius: 32,
     borderCurve: 'continuous',
     padding: 32,
@@ -63,11 +62,10 @@ const styles = StyleSheet.create({
     height: 112,
     borderRadius: 56,
   },
-  avatarText: { fontSize: 40, color: '#18181b', fontWeight: '900', letterSpacing: -0.5 },
-  displayName: { fontSize: 26, fontWeight: '900', color: '#18181b', marginBottom: 6, letterSpacing: -0.5 },
-  email: { fontSize: 15, color: '#71717a', marginBottom: 20, fontWeight: '500' },
+  avatarText: { fontSize: 40, fontWeight: '900', letterSpacing: -0.5 },
+  displayName: { fontSize: 26, fontWeight: '900', marginBottom: 6, letterSpacing: -0.5 },
+  email: { fontSize: 15, marginBottom: 20, fontWeight: '500' },
   badge: {
-    backgroundColor: '#18181b',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 20,
@@ -77,11 +75,10 @@ const styles = StyleSheet.create({
 
   // Stats Section
   statsSection: { marginBottom: 32 },
-  sectionTitle: { fontSize: 20, fontWeight: '800', color: '#18181b', marginBottom: 20, letterSpacing: -0.5 },
+  sectionTitle: { fontSize: 20, fontWeight: '800', marginBottom: 20, letterSpacing: -0.5 },
   statsGrid: { flexDirection: 'row', justifyContent: 'space-between', gap: 12 },
   statCard: {
     flex: 1,
-    backgroundColor: '#ffffff',
     borderRadius: 24,
     borderCurve: 'continuous',
     padding: 20,
@@ -93,13 +90,12 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   statIcon: { marginBottom: 12, opacity: 0.8 },
-  statValue: { fontSize: 28, fontWeight: '900', color: '#18181b', letterSpacing: -0.5 },
-  statLabel: { fontSize: 12, color: '#a1a1aa', marginTop: 4, textAlign: 'center', fontWeight: '700', textTransform: 'uppercase' },
+  statValue: { fontSize: 28, fontWeight: '900', letterSpacing: -0.5 },
+  statLabel: { fontSize: 12, marginTop: 4, textAlign: 'center', fontWeight: '700', textTransform: 'uppercase' },
 
   // Info Cards
   infoSection: { marginBottom: 32 },
   infoCard: {
-    backgroundColor: '#ffffff',
     borderRadius: 24,
     borderCurve: 'continuous',
     padding: 20,
@@ -116,13 +112,12 @@ const styles = StyleSheet.create({
   infoLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   infoIcon: { marginRight: 16, opacity: 0.8 },
   infoContent: { flex: 1 },
-  infoLabel: { fontSize: 13, color: '#71717a', marginBottom: 4, fontWeight: '500' },
-  infoValue: { fontSize: 16, fontWeight: '700', color: '#18181b' },
-  infoArrow: { fontSize: 24, color: '#d4d4d8', fontWeight: '300' },
+  infoLabel: { fontSize: 13, marginBottom: 4, fontWeight: '500' },
+  infoValue: { fontSize: 16, fontWeight: '700' },
+  infoArrow: { fontSize: 24, fontWeight: '300' },
 
   // Action Buttons
   actionButton: {
-    backgroundColor: '#ffffff',
     borderRadius: 24,
     borderCurve: 'continuous',
     padding: 20,
@@ -136,14 +131,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   actionIcon: { marginRight: 16, opacity: 0.8 },
-  actionText: { fontSize: 16, fontWeight: '700', color: '#18181b', flex: 1 },
+  actionText: { fontSize: 16, fontWeight: '700', flex: 1 },
 
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: 100,
-    backgroundColor: '#f4f4f5',
   },
 });
 
@@ -274,16 +268,16 @@ export default function ProfileScreen() {
               {(userData?.photoURL || user?.photoURL) ? (
                 <Image source={{ uri: userData?.photoURL || user?.photoURL }} style={styles.avatar} />
               ) : (
-                <Text style={styles.avatarText}>
+                <Text style={[styles.avatarText, { color: colors.text }]}>
                   {userData?.displayName?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                 </Text>
               )}
             </View>
-            <Text style={styles.displayName}>
+            <Text style={[styles.displayName, { color: colors.text }]}>
               {userData?.displayName || user?.email?.split('@')[0] || 'User'}
             </Text>
-            <Text style={styles.email}>{user?.email}</Text>
-            <View style={styles.badge}>
+            <Text style={[styles.email, { color: colors.textSecondary }]}>{user?.email}</Text>
+            <View style={[styles.badge, { backgroundColor: colors.text }]}>
               <Text style={styles.badgeText}>
                 {userData?.role === 'admin' ? '👑 Admin' : '🌱 User'}
               </Text>
@@ -295,19 +289,19 @@ export default function ProfileScreen() {
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Your Statistics</Text>
             <View style={styles.statsGrid}>
               <View style={[styles.statCard, { backgroundColor: colors.card }]}>
-                <Ionicons name="analytics-outline" size={28} color="#18181b" style={styles.statIcon} />
-                <Text style={styles.statValue}>{stats.totalDetections}</Text>
-                <Text style={styles.statLabel}>Total Scans</Text>
+                <Ionicons name="analytics-outline" size={28} color={colors.text} style={styles.statIcon} />
+                <Text style={[styles.statValue, { color: colors.text }]}>{stats.totalDetections}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total Scans</Text>
               </View>
               <View style={[styles.statCard, { backgroundColor: colors.card }]}>
                 <Ionicons name="cube-outline" size={28} color={colors.text} style={styles.statIcon} />
-                <Text style={styles.statValue}>{stats.totalItems}</Text>
-                <Text style={styles.statLabel}>Items Detected</Text>
+                <Text style={[styles.statValue, { color: colors.text }]}>{stats.totalItems}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Items Detected</Text>
               </View>
               <View style={[styles.statCard, { backgroundColor: colors.card }]}>
                 <Ionicons name="pricetag-outline" size={28} color={colors.text} style={styles.statIcon} />
-                <Text style={styles.statValue}>{stats.uniqueTypes}</Text>
-                <Text style={styles.statLabel}>Unique Types</Text>
+                <Text style={[styles.statValue, { color: colors.text }]}>{stats.uniqueTypes}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Unique Types</Text>
               </View>
             </View>
           </View>
@@ -316,46 +310,46 @@ export default function ProfileScreen() {
           <View style={styles.infoSection}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Account Information</Text>
 
-            <View style={styles.infoCard}>
+            <View style={[styles.infoCard, { backgroundColor: colors.card }]}>
               <View style={styles.infoLeft}>
-                <Ionicons name="mail-outline" size={24} color="#18181b" style={styles.infoIcon} />
+                <Ionicons name="mail-outline" size={24} color={colors.text} style={styles.infoIcon} />
                 <View style={styles.infoContent}>
-                  <Text style={styles.infoLabel}>Email Address</Text>
-                  <Text style={styles.infoValue}>{user?.email}</Text>
+                  <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Email Address</Text>
+                  <Text style={[styles.infoValue, { color: colors.text }]}>{user?.email}</Text>
                 </View>
               </View>
             </View>
 
-            <View style={styles.infoCard}>
+            <View style={[styles.infoCard, { backgroundColor: colors.card }]}>
               <View style={styles.infoLeft}>
-                <Ionicons name="person-outline" size={24} color="#18181b" style={styles.infoIcon} />
+                <Ionicons name="person-outline" size={24} color={colors.text} style={styles.infoIcon} />
                 <View style={styles.infoContent}>
-                  <Text style={styles.infoLabel}>Display Name</Text>
-                  <Text style={styles.infoValue}>
+                  <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Display Name</Text>
+                  <Text style={[styles.infoValue, { color: colors.text }]}>
                     {userData?.displayName || 'Not set'}
                   </Text>
                 </View>
               </View>
             </View>
 
-            <View style={styles.infoCard}>
+            <View style={[styles.infoCard, { backgroundColor: colors.card }]}>
               <View style={styles.infoLeft}>
-                <Ionicons name="calendar-outline" size={24} color="#18181b" style={styles.infoIcon} />
+                <Ionicons name="calendar-outline" size={24} color={colors.text} style={styles.infoIcon} />
                 <View style={styles.infoContent}>
-                  <Text style={styles.infoLabel}>Member Since</Text>
-                  <Text style={styles.infoValue}>
+                  <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Member Since</Text>
+                  <Text style={[styles.infoValue, { color: colors.text }]}>
                     {formatDate(userData?.createdAt)}
                   </Text>
                 </View>
               </View>
             </View>
 
-            <View style={styles.infoCard}>
+            <View style={[styles.infoCard, { backgroundColor: colors.card }]}>
               <View style={styles.infoLeft}>
-                <Ionicons name="checkmark-circle-outline" size={24} color="#18181b" style={styles.infoIcon} />
+                <Ionicons name="checkmark-circle-outline" size={24} color={colors.text} style={styles.infoIcon} />
                 <View style={styles.infoContent}>
-                  <Text style={styles.infoLabel}>Account Status</Text>
-                  <Text style={styles.infoValue}>
+                  <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Account Status</Text>
+                  <Text style={[styles.infoValue, { color: colors.text }]}>
                     {userData?.isActive ? 'Active' : 'Inactive'}
                   </Text>
                 </View>
@@ -368,31 +362,31 @@ export default function ProfileScreen() {
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Quick Actions</Text>
 
             <TouchableOpacity
-              style={styles.actionButton}
+              style={[styles.actionButton, { backgroundColor: colors.card }]}
               onPress={() => router.push('/history')}
             >
-              <Ionicons name="bar-chart-outline" size={24} color="#18181b" style={styles.actionIcon} />
-              <Text style={styles.actionText}>View Detection History</Text>
-              <Text style={styles.infoArrow}>›</Text>
+              <Ionicons name="bar-chart-outline" size={24} color={colors.text} style={styles.actionIcon} />
+              <Text style={[styles.actionText, { color: colors.text }]}>View Detection History</Text>
+              <Text style={[styles.infoArrow, { color: colors.textMuted }]}>›</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.actionButton}
+              style={[styles.actionButton, { backgroundColor: colors.card }]}
               onPress={() => router.push('/edit-profile')}
             >
-              <Ionicons name="create-outline" size={24} color="#18181b" style={styles.actionIcon} />
-              <Text style={styles.actionText}>Edit Profile</Text>
-              <Text style={styles.infoArrow}>›</Text>
+              <Ionicons name="create-outline" size={24} color={colors.text} style={styles.actionIcon} />
+              <Text style={[styles.actionText, { color: colors.text }]}>Edit Profile</Text>
+              <Text style={[styles.infoArrow, { color: colors.textMuted }]}>›</Text>
             </TouchableOpacity>
 
             {userData?.role === 'admin' && (
               <TouchableOpacity
-                style={styles.actionButton}
+                style={[styles.actionButton, { backgroundColor: colors.card }]}
                 onPress={() => router.push('/admin')}
               >
-                <Ionicons name="shield-outline" size={24} color="#18181b" style={styles.actionIcon} />
-                <Text style={styles.actionText}>Admin Dashboard</Text>
-                <Text style={styles.infoArrow}>›</Text>
+                <Ionicons name="shield-outline" size={24} color={colors.text} style={styles.actionIcon} />
+                <Text style={[styles.actionText, { color: colors.text }]}>Admin Dashboard</Text>
+                <Text style={[styles.infoArrow, { color: colors.textMuted }]}>›</Text>
               </TouchableOpacity>
             )}
           </View>
