@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "OrganiSort",
-    "slug": "organisort-app",
+    "slug": "waste-detection-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -32,7 +32,11 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#2563eb"
       },
-      "package": "com.tupt.organicwastedetection"
+      "package": "com.tupt.organicwastedetection",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -42,6 +46,7 @@
       "eas": {
         "projectId": "c2a2fe7b-2e6a-44b9-99b6-4d254e81f31a"
       }
-    }
+    },
+    "owner": "ctrlv-ince"
   }
 }
