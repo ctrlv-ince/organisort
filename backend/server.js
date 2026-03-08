@@ -22,6 +22,7 @@ const disposalLocationRoutes = require("./routes/disposal-location-routes");
 const notificationRoutes = require("./routes/notification-routes");
 const digestRoutes = require("./routes/digest-routes");
 const collectionReminderRoutes = require("./routes/collection-reminder-routes");
+const reviewRoutes = require("./routes/review-routes");
 
 // Initialize Firebase
 initializeFirebase();
@@ -95,6 +96,7 @@ app.use("/api/disposal-locations", disposalLocationRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/digest", digestRoutes);
 app.use("/api/reminders", collectionReminderRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 // Error logging middleware (before error handler)
 app.use(logErrorActivity);

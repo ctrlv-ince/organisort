@@ -6,6 +6,9 @@ from PIL import Image, ImageDraw, ImageFont
 from ultralytics import YOLO
 import numpy as np
 import colorsys
+import os
+import torch
+from transformers import pipeline
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -19,6 +22,29 @@ try:
 except Exception as e:
     print(f"❌ Error loading YOLOv8 model: {e}")
     model = None
+
+# Load HuggingFace Sentiment Model
+try:
+    print("⏳ Loading multilingual sentiment analysis model...")
+    # Map 1-5 output labels to our specific sentiments
+    sentiment_map = {
+        "1 star": "very negative",
+        "2 stars": "negative",
+        "3 stars": "neutral",
+        "4 stars": "positive",
+        "5 stars": "very positive" 
+    }
+    # Use GPU if available
+    device = 0 if torch.cuda.is_available() else -1
+    sentiment_analyzer = pipeline(
+        "sentiment-analysis", 
+        model="tabularisai/multilingual-sentiment-analysis", 
+        device=device
+    )
+    print("✅ Sentiment analysis model loaded successfully.")
+except Exception as e:
+    print(f"❌ Error loading sentiment model: {e}")
+    sentiment_analyzer = None
 
 def generate_colors(n):
     """
@@ -234,8 +260,45 @@ def health():
     return jsonify({
         'status': 'healthy',
         'model_loaded': model is not None,
+        'sentiment_model_loaded': sentiment_analyzer is not None,
         'num_classes': len(model.names) if model else 0
     })
+
+@app.route('/analyze-sentiment', methods=['POST'])
+def analyze_sentiment():
+    """
+    Perform sentiment analysis on text (supports Taglish/Multilingual).
+    Expects JSON: {"text": "review content"}
+    """
+    if sentiment_analyzer is None:
+        return jsonify({'error': 'Sentiment model not loaded.'}), 500
+
+    data = request.get_json()
+    if not data or 'text' not in data:
+        return jsonify({'error': 'No text provided'}), 400
+
+    text = data['text']
+    if not isinstance(text, str) or not text.strip():
+         return jsonify({'error': 'Invalid text provided'}), 400
+
+    try:
+        # Run inference
+        result = sentiment_analyzer(text)[0] # pipeline returns a list of dicts
+        label = result['label']
+        confidence = result['score']
+
+        # Map '1 star' to '5 stars' to our categories
+        sentiment = sentiment_map.get(label, "neutral")
+
+        return jsonify({
+            'success': True,
+            'sentiment': sentiment,
+            'confidence': float(confidence),
+            'raw_label': label
+        })
+    except Exception as e:
+        print(f"❌ Sentiment analysis error: {e}")
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     print("🚀 Starting Waste Detection API...")
