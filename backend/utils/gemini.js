@@ -72,12 +72,23 @@ const generateWasteTips = async (wasteClasses) => {
 
     try {
         const classList = wasteClasses.join(', ');
-        const prompt = `You are an eco-friendly waste management assistant for a Philippine waste sorting app called OrganiSort. The user just scanned and detected these waste items: ${classList}.
+        const prompt = `You are a highly knowledgeable environmental scientist, agronomist, and waste management expert for a Philippine waste sorting app called OrganiSort.
+The user just scanned the following waste items: ${classList}.
 
-Give exactly 4 short, practical, and actionable tips about how to properly dispose of or recycle these specific items. Consider Philippine context (barangay collection, junkshops, composting). Each tip should be 1-2 sentences max.
+Provide a highly detailed, educational, and actionable deep dive into these specific items. Your response MUST be an array of EXACTLY 5 strings, where each string is a detailed paragraph (3-5 sentences) focusing on a specific scientific or practical aspect.
 
-Respond ONLY with a JSON array of strings. No markdown, no explanation. Example format:
-["Tip 1 here.", "Tip 2 here.", "Tip 3 here.", "Tip 4 here."]`;
+FORMATTING RULES:
+- DO NOT use any markdown formatting (no asterisks, no bolding, no italics).
+- Each string must begin exactly with its category title followed by a colon and a space.
+
+1. "Immediate Prep & Segregation: " - Step-by-step instructions on how the user should prepare this item at home before composting or disposal (e.g., crushing eggshells, cutting banana peels, washing).
+2. "Decomposition Biology: " - Detail exactly how long it takes to break down naturally in a compost bin versus a landfill, the biological process of its decomposition, and factors that speed it up.
+3. "Soil & Composting Value: " - For organic waste, explain its carbon-to-nitrogen (C:N) ratio, the specific nutrients it adds to the soil (like Potassium, Phosphorus), and how it benefits plant growth. For non-organics, discuss recyclability.
+4. "Environmental Impact: " - Explain the negative consequences if this ends up in a landfill (e.g., anaerobic decomposition releasing methane) versus the positive impact of proper diversion.
+5. "Local Philippine Context: " - How to integrate this waste into the local waste ecosystem (e.g., barangay MRFs, local junkshops, community gardens, or feeding stray animals/livestock if applicable).
+
+Respond ONLY with a valid JSON array of five strings. Do not include markdown code fences around the JSON. Example format:
+["Immediate Prep & Segregation: ...", "Decomposition Biology: ...", "Soil & Composting Value: ...", "Environmental Impact: ...", "Local Philippine Context: ..."]`;
 
         const text = await callGemini(prompt);
         if (!text) return [];
@@ -123,14 +134,15 @@ const generateEcoImpact = async (wasteSummary, totalItems) => {
         const prompt = `You are an environmental impact calculator for a Philippine waste sorting app. A user has properly sorted and detected the following waste items: ${wasteList}. Total: ${totalItems} items.
 
 Calculate realistic environmental impact estimates IF these items were properly sorted and disposed of (composted for organic, recycled for recyclable, etc.) compared to all going to landfill. Use real environmental science data for your calculations.
+CRITICAL: ALL VALUES MUST BE POSITIVE NUMBERS. DO NOT RETURN NEGATIVE VALUES. For example, if emissions are avoided, return a positive number representing the amount avoided.
 
 Respond ONLY with a JSON object in this exact format, no markdown:
 {
   "impact": {
-    "co2_kg": <number as string with 1 decimal>,
-    "landfill_kg": <number as string with 1 decimal>,
-    "water_liters": <number as string with 0 decimal>,
-    "trees_equivalent": <number as string with 2 decimals>
+    "co2_kg": <positive number as string with 1 decimal>,
+    "landfill_kg": <positive number as string with 1 decimal>,
+    "water_liters": <positive number as string with 0 decimal>,
+    "trees_equivalent": <positive number as string with 2 decimals>
   },
   "aiInsight": "<one personalized 2-sentence insight about their environmental impact, mentioning their most common waste type and a specific eco tip>"
 }`;

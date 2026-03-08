@@ -570,31 +570,50 @@ const MyDetections = () => {
                   </div>
 
                   <div className="space-y-6">
-                    <div>
-                      <h3 className="text-xl font-bold mb-4 tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>Recycling Path</h3>
-                      {getWasteDisposalGuideEntries(selectedDetection).length ? (
-                        <div className="space-y-4">
-                          {getWasteDisposalGuideEntries(selectedDetection).map(([className, guide]) => (
-                            <div key={className} className="rounded-2xl p-5 relative overflow-hidden" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)' }}>
-                              <div className="absolute top-0 left-0 w-1.5 h-full rounded-l-2xl" style={{ background: 'var(--theme-accent, #15803d)' }}></div>
-                              <p className="font-bold capitalize text-lg tracking-tight mb-2" style={{ color: 'var(--theme-text, #111827)' }}>{className.replace(/-/g, ' ')}</p>
-                              <div className="inline-block font-extrabold uppercase tracking-widest text-[10px] px-3 py-1.5 rounded-lg shadow-sm mb-3" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)', color: 'var(--theme-accent, #15803d)' }}>
-                                {guide.bin || 'residual'}
+                    {selectedDetection.ai_tips && selectedDetection.ai_tips.length > 0 ? (
+                      <div>
+                        <div className="flex items-center gap-2 mb-4">
+                          <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                          <h3 className="text-xl font-bold tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>AI Smart Tips</h3>
+                        </div>
+                        <div className="space-y-3">
+                          {selectedDetection.ai_tips.map((tip, index) => (
+                            <div key={index} className="rounded-xl p-4 flex items-start gap-4" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)' }}>
+                              <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: 'var(--theme-accent, #15803d)', color: 'white' }}>
+                                <span className="text-xs font-bold">{index + 1}</span>
                               </div>
-                              {Array.isArray(guide.instructions) && guide.instructions.length > 0 && (
-                                <ul className="list-disc list-inside text-sm space-y-1.5 font-medium ml-1" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>
-                                  {guide.instructions.map((instruction, index) => (
-                                    <li key={`${className}-instruction-${index}`}>{instruction}</li>
-                                  ))}
-                                </ul>
-                              )}
+                              <p className="text-sm font-medium leading-relaxed" style={{ color: 'var(--theme-text-secondary, #475569)' }}>{tip}</p>
                             </div>
                           ))}
                         </div>
-                      ) : (
-                        <p className="text-sm font-medium" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>No waste disposal data connected.</p>
-                      )}
-                    </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <h3 className="text-xl font-bold mb-4 tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>Recycling Path</h3>
+                        {getWasteDisposalGuideEntries(selectedDetection).length ? (
+                          <div className="space-y-4">
+                            {getWasteDisposalGuideEntries(selectedDetection).map(([className, guide]) => (
+                              <div key={className} className="rounded-2xl p-5 relative overflow-hidden" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)' }}>
+                                <div className="absolute top-0 left-0 w-1.5 h-full rounded-l-2xl" style={{ background: 'var(--theme-accent, #15803d)' }}></div>
+                                <p className="font-bold capitalize text-lg tracking-tight mb-2" style={{ color: 'var(--theme-text, #111827)' }}>{className.replace(/-/g, ' ')}</p>
+                                <div className="inline-block font-extrabold uppercase tracking-widest text-[10px] px-3 py-1.5 rounded-lg shadow-sm mb-3" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-accent-surface-border, #bbf7d0)', color: 'var(--theme-accent, #15803d)' }}>
+                                  {guide.bin || 'residual'}
+                                </div>
+                                {Array.isArray(guide.instructions) && guide.instructions.length > 0 && (
+                                  <ul className="list-disc list-inside text-sm space-y-1.5 font-medium ml-1" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>
+                                    {guide.instructions.map((instruction, index) => (
+                                      <li key={`${className}-instruction-${index}`}>{instruction}</li>
+                                    ))}
+                                  </ul>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-sm font-medium" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>No waste disposal data connected.</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

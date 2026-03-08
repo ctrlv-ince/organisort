@@ -429,6 +429,44 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
+  aiTipsSection: {
+    padding: 24,
+    borderRadius: 24,
+    borderCurve: 'continuous',
+    borderWidth: 1,
+    marginTop: 24,
+  },
+  aiTipsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  aiTipItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+  },
+  aiTipBullet: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  aiTipBulletText: {
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  aiTipText: {
+    flex: 1,
+    fontSize: 14,
+    lineHeight: 22,
+    fontWeight: '500',
+  },
   guideCard: {
     borderRadius: 16,
     borderCurve: 'continuous',
@@ -981,40 +1019,61 @@ export default function HistoryScreen() {
                     <Text style={[styles.detectionConfidence, { color: colors.textSecondary }]}>No items were detected in this image.</Text>
                   )}
 
-                  <Text style={[styles.sectionTitle, { color: colors.text }]}>Waste Guides</Text>
-                  {Object.entries(selectedDetection.waste_guides || {}).length > 0 ? (
-                    Object.entries(selectedDetection.waste_guides || {}).map(([className, guide]) => (
-                      <View key={`waste-guide-${className}`} style={[styles.guideCard, { backgroundColor: colors.bgAlt, borderColor: colors.border }]}>
-                        <Text style={[styles.guideTitle, { color: colors.text }]}>{className}</Text>
-                        <Text style={[styles.guideText, { color: colors.textSecondary }]}>{guide.description || 'No description available.'}</Text>
-                        <Text style={[styles.guideText, { color: colors.textSecondary }]}>
-                          Category: {guide.category || 'Unknown'} • Compostable: {guide.compostable === null ? 'Unknown' : guide.compostable ? 'Yes' : 'No'}
-                        </Text>
-                        {guide.avgDecompositionDays ? (
-                          <Text style={[styles.guideText, { color: colors.textSecondary }]}>Decomposition: {guide.avgDecompositionDays} days</Text>
-                        ) : null}
-                        {guide.count ? <Text style={[styles.guideText, { color: colors.textSecondary }]}>Detected count: {guide.count}</Text> : null}
+                  {selectedDetection.ai_tips && selectedDetection.ai_tips.length > 0 && (
+                    <View style={[styles.aiTipsSection, { backgroundColor: colors.bgAlt, borderColor: colors.accentSurfaceBorder }]}>
+                      <View style={styles.aiTipsHeader}>
+                        <Ionicons name="sparkles" size={20} color={colors.accent} />
+                        <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 0, marginBottom: 0 }]}>AI Smart Tips</Text>
                       </View>
-                    ))
-                  ) : (
-                    <Text style={[styles.detectionConfidence, { color: colors.textSecondary }]}>No waste-guide metadata available for this detection.</Text>
+                      {selectedDetection.ai_tips.map((tip, index) => (
+                        <View key={index} style={[styles.aiTipItem, { borderBottomColor: colors.border }]}>
+                          <View style={[styles.aiTipBullet, { backgroundColor: colors.accentSurface }]}>
+                            <Text style={[styles.aiTipBulletText, { color: colors.accent }]}>{index + 1}</Text>
+                          </View>
+                          <Text style={[styles.aiTipText, { color: colors.textSecondary }]}>{tip}</Text>
+                        </View>
+                      ))}
+                    </View>
                   )}
 
-                  <Text style={[styles.sectionTitle, { color: colors.text }]}>Waste Disposal Guides</Text>
-                  {Object.entries(selectedDetection.waste_disposal_guides || {}).length > 0 ? (
-                    Object.entries(selectedDetection.waste_disposal_guides || {}).map(([className, guide]) => (
-                      <View key={`disposal-guide-${className}`} style={[styles.disposalGuideCard, { backgroundColor: colors.bgAlt, borderColor: colors.border }]}>
-                        <Text style={[styles.disposalGuideTitle, { color: colors.text }]}>{className}</Text>
-                        <Text style={[styles.disposalGuideText, { color: colors.textSecondary }]}>Bin: {(guide.bin || 'residual').toUpperCase()}</Text>
-                        {Array.isArray(guide.instructions) && guide.instructions.map((instruction, idx) => (
-                          <Text key={`${className}-instruction-${idx}`} style={[styles.disposalGuideText, { color: colors.textSecondary }]}>• {instruction}</Text>
-                        ))}
-                        {guide.notes ? <Text style={[styles.disposalGuideText, { color: colors.textSecondary }]}>Note: {guide.notes}</Text> : null}
-                        {guide.count ? <Text style={[styles.disposalGuideText, { color: colors.textSecondary }]}>Detected count: {guide.count}</Text> : null}
-                      </View>
-                    ))
-                  ) : (
-                    <Text style={[styles.detectionConfidence, { color: colors.textSecondary }]}>No waste-disposal guide available for this detection.</Text>
+                  {(!selectedDetection.ai_tips || selectedDetection.ai_tips.length === 0) && (
+                    <>
+                      <Text style={[styles.sectionTitle, { color: colors.text }]}>Waste Guides</Text>
+                      {Object.entries(selectedDetection.waste_guides || {}).length > 0 ? (
+                        Object.entries(selectedDetection.waste_guides || {}).map(([className, guide]) => (
+                          <View key={`waste-guide-${className}`} style={[styles.guideCard, { backgroundColor: colors.bgAlt, borderColor: colors.border }]}>
+                            <Text style={[styles.guideTitle, { color: colors.text }]}>{className}</Text>
+                            <Text style={[styles.guideText, { color: colors.textSecondary }]}>{guide.description || 'No description available.'}</Text>
+                            <Text style={[styles.guideText, { color: colors.textSecondary }]}>
+                              Category: {guide.category || 'Unknown'} • Compostable: {guide.compostable === null ? 'Unknown' : guide.compostable ? 'Yes' : 'No'}
+                            </Text>
+                            {guide.avgDecompositionDays ? (
+                              <Text style={[styles.guideText, { color: colors.textSecondary }]}>Decomposition: {guide.avgDecompositionDays} days</Text>
+                            ) : null}
+                            {guide.count ? <Text style={[styles.guideText, { color: colors.textSecondary }]}>Detected count: {guide.count}</Text> : null}
+                          </View>
+                        ))
+                      ) : (
+                        <Text style={[styles.detectionConfidence, { color: colors.textSecondary }]}>No waste-guide metadata available for this detection.</Text>
+                      )}
+
+                      <Text style={[styles.sectionTitle, { color: colors.text }]}>Waste Disposal Guides</Text>
+                      {Object.entries(selectedDetection.waste_disposal_guides || {}).length > 0 ? (
+                        Object.entries(selectedDetection.waste_disposal_guides || {}).map(([className, guide]) => (
+                          <View key={`disposal-guide-${className}`} style={[styles.disposalGuideCard, { backgroundColor: colors.bgAlt, borderColor: colors.border }]}>
+                            <Text style={[styles.disposalGuideTitle, { color: colors.text }]}>{className}</Text>
+                            <Text style={[styles.disposalGuideText, { color: colors.textSecondary }]}>Bin: {(guide.bin || 'residual').toUpperCase()}</Text>
+                            {Array.isArray(guide.instructions) && guide.instructions.map((instruction, idx) => (
+                              <Text key={`${className}-instruction-${idx}`} style={[styles.disposalGuideText, { color: colors.textSecondary }]}>• {instruction}</Text>
+                            ))}
+                            {guide.notes ? <Text style={[styles.disposalGuideText, { color: colors.textSecondary }]}>Note: {guide.notes}</Text> : null}
+                            {guide.count ? <Text style={[styles.disposalGuideText, { color: colors.textSecondary }]}>Detected count: {guide.count}</Text> : null}
+                          </View>
+                        ))
+                      ) : (
+                        <Text style={[styles.detectionConfidence, { color: colors.textSecondary }]}>No waste-disposal guide available for this detection.</Text>
+                      )}
+                    </>
                   )}
 
                   <Text style={[styles.timestamp, { color: colors.textSecondary, marginTop: 16, textAlign: 'center' }]}>

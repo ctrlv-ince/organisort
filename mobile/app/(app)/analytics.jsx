@@ -269,10 +269,10 @@ export default function AnalyticsScreen() {
     // Use Gemini eco impact if available, fallback to local estimates
     const impact = ecoData?.impact;
     const impactStats = {
-      co2Saved: impact?.co2_kg || (totalItems * 0.3).toFixed(1),
-      landfillDiverted: impact?.landfill_kg || (totalItems * 0.5).toFixed(1),
-      waterSaved: impact?.water_liters || (totalItems * 2).toFixed(0),
-      treesEquivalent: impact?.trees_equivalent || (totalItems * 0.01).toFixed(2),
+      co2Saved: impact?.co2_kg ? Math.abs(parseFloat(impact.co2_kg)).toFixed(1) : (totalItems * 0.3).toFixed(1),
+      landfillDiverted: impact?.landfill_kg ? Math.abs(parseFloat(impact.landfill_kg)).toFixed(1) : (totalItems * 0.5).toFixed(1),
+      waterSaved: impact?.water_liters ? Math.abs(parseFloat(impact.water_liters)).toFixed(0) : (totalItems * 2).toFixed(0),
+      treesEquivalent: impact?.trees_equivalent ? Math.abs(parseFloat(impact.trees_equivalent)).toFixed(2) : (totalItems * 0.01).toFixed(2),
     };
 
     const organicPercentage = 100;
