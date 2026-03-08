@@ -9,8 +9,8 @@ import DetectionsPage from './DetectionsPage';
 import UsersPage from './UsersPage';
 import ActivityLogs from './ActivityLogs';
 import AnalyticsPage from './AnalyticsPage';
-import WasteCategoriesPage from './WasteCategoriesPage';
 import ReportsPage from './ReportsPage';
+import ReviewsPage from './ReviewsPage';
 import AdminSettings from './AdminSettings';
 
 const containerVariants = {
@@ -512,11 +512,14 @@ const AdminDashboard = () => {
               {/* Reports Tab */}
               {activeTab === 'reports' && <ReportsPage />}
 
+              {/* Reviews Tab */}
+              {activeTab === 'reviews' && <ReviewsPage />}
+
               {/* Settings Tab */}
               {activeTab === 'settings' && <AdminSettings userData={userData} />}
 
               {/* Placeholder for other tabs */}
-              {!['home', 'users', 'detections', 'waste-types', 'logs', 'analytics', 'reports', 'settings'].includes(activeTab) && (
+              {!['home', 'users', 'detections', 'waste-types', 'logs', 'analytics', 'reports', 'reviews', 'settings'].includes(activeTab) && (
                 <div className="rounded-[2rem] shadow-sm p-16" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
                   <div className="text-center">
                     <span className="text-7xl mb-6 block drop-shadow-sm">🚧</span>

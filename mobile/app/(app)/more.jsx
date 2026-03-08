@@ -265,6 +265,21 @@ export default function MoreScreen() {
                 </View>
                 <Text style={[styles.menuArrow, { color: colors.textMuted }]}>›</Text>
               </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.menuItem, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
+                onPress={() => {
+                  Haptics.selectionAsync();
+                  router.push('/submit-review');
+                }}
+              >
+                <Ionicons name="star-half-outline" size={22} color={colors.accent} style={styles.menuIcon} />
+                <View style={styles.menuContent}>
+                  <Text style={[styles.menuTitle, { color: colors.text }]}>Leave a Review</Text>
+                  <Text style={[styles.menuSubtitle, { color: colors.textSecondary }]}>Tell us about your experience</Text>
+                </View>
+                <Text style={[styles.menuArrow, { color: colors.textMuted }]}>›</Text>
+              </TouchableOpacity>
             </View>
 
             {/* Settings Section */}

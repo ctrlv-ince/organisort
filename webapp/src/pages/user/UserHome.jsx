@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import InfoCard from '../../components/InfoCard';
 import PageHeaderCard from '../../components/PageHeaderCard';
 import PrimaryButton from '../../components/PrimaryButton';
+import ReviewModal from '../../components/ReviewModal';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -22,6 +23,7 @@ const UserHome = ({ userData, setActiveTab }) => {
   const [detections, setDetections] = useState([]);
   const [stats, setStats] = useState({ total: 0, thisMonth: 0, thisWeek: 0 });
   const [loading, setLoading] = useState(true);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -149,6 +151,21 @@ const UserHome = ({ userData, setActiveTab }) => {
               </svg>
               <span>View Achievements</span>
             </PrimaryButton>
+
+            <button
+              onClick={() => setIsReviewModalOpen(true)}
+              className="py-4 px-6 w-full group rounded-2xl font-black uppercase tracking-widest text-sm flex items-center justify-center transition-all shadow-sm hover:shadow-md col-span-1 md:col-span-2"
+              style={{
+                background: 'var(--theme-accent-surface, #f0fdf4)',
+                color: 'var(--theme-accent, #15803d)',
+                border: '1px solid var(--theme-accent-surface-border, #bbf7d0)'
+              }}
+            >
+              <svg className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              <span>Leave a Review</span>
+            </button>
           </div>
         </InfoCard>
       </motion.div>
@@ -250,6 +267,12 @@ const UserHome = ({ userData, setActiveTab }) => {
           )}
         </InfoCard>
       </motion.div>
+
+      {/* Review Modal */}
+      <ReviewModal
+        isOpen={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
+      />
 
     </motion.div>
   );
