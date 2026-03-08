@@ -180,7 +180,7 @@ export default function ProfileScreen() {
       calculateStats(detections);
     } catch (error) {
       console.error('Failed to fetch profile data:', error);
-      Alert.alert('Error', 'Failed to load profile data');
+      Alert.alert('Error', error?.response?.data?.error || 'Failed to load profile data');
     } finally {
       setLoading(false);
       setRefreshing(false);

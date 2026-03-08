@@ -102,7 +102,7 @@ export default function MoreScreen() {
       setLeaderboardData(leaderboard);
     } catch (error) {
       console.error('Failed to fetch leaderboard:', error);
-      Alert.alert('Error', 'Failed to load leaderboard');
+      Alert.alert('Error', error?.response?.data?.error || 'Failed to load leaderboard');
     } finally {
       setLoading(false);
     }

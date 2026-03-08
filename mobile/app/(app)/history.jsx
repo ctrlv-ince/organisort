@@ -680,7 +680,7 @@ export default function HistoryScreen() {
       calculateStats(detectionData);
     } catch (error) {
       console.error('Failed to fetch history:', error);
-      Alert.alert('Error', 'Failed to load detection history');
+      Alert.alert('Error', error?.response?.data?.error || 'Failed to load detection history');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -752,7 +752,7 @@ export default function HistoryScreen() {
       }
     } catch (error) {
       console.error('Error fetching disposal locations:', error);
-      Alert.alert('Error', 'Failed to fetch disposal locations.');
+      Alert.alert('Error', error?.response?.data?.error || 'Failed to fetch disposal locations.');
     } finally {
       setLoadingLocations(false);
     }
@@ -787,7 +787,7 @@ export default function HistoryScreen() {
               Alert.alert('Success', 'Detection deleted');
             } catch (error) {
               console.error('Failed to delete:', error);
-              Alert.alert('Error', 'Failed to delete detection');
+              Alert.alert('Error', error?.response?.data?.error || 'Failed to delete detection');
             }
           },
         },

@@ -86,7 +86,7 @@ export default function CollectionScheduleScreen() {
             ]);
         } catch (error) {
             console.error('Error saving schedule:', error);
-            Alert.alert('Error', 'Failed to save schedule. Please try again.');
+            Alert.alert('Error', error?.response?.data?.error || 'Failed to save schedule. Please try again.');
         } finally {
             setSaving(false);
         }

@@ -35,7 +35,9 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401 && !isHandlingUnauthorized) {
+    const url = error.config?.url || '';
+    const isAuthRoute = url.includes('/api/auth/');
+    if (error.response?.status === 401 && !isHandlingUnauthorized && !isAuthRoute) {
       isHandlingUnauthorized = true;
       console.error('Unauthorized - Invalid or expired token');
       try {

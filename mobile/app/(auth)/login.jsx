@@ -78,7 +78,7 @@ export default function LoginScreen() {
       }
       router.replace('/(app)');
     } catch (error) {
-      Alert.alert('Sign-In Error', error.message || 'Invalid email or password');
+      Alert.alert('Sign-In Error', error?.response?.data?.error || error.message || 'Unable to sign in. Please try again.');
     } finally {
       setEmailLoading(false);
     }

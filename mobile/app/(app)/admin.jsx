@@ -80,7 +80,7 @@ export default function AdminDashboard() {
       setUsers(response.data);
     } catch (err) {
       console.error('Failed to fetch users:', err);
-      setError('Failed to load users. Please check your authentication and try again.');
+      setError(err?.response?.data?.error || 'Failed to load users. Please check your connection and try again.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -119,7 +119,7 @@ export default function AdminDashboard() {
       handleRefresh();
     } catch (err) {
       console.error('Failed to update user status:', err);
-      Alert.alert('Error', 'Failed to update user status');
+      Alert.alert('Error', err?.response?.data?.error || 'Failed to update user status');
     }
   };
 
@@ -139,7 +139,7 @@ export default function AdminDashboard() {
               handleRefresh();
             } catch (err) {
               console.error('Failed to delete user:', err);
-              Alert.alert('Error', 'Failed to delete user');
+              Alert.alert('Error', err?.response?.data?.error || 'Failed to delete user');
             }
           },
         },

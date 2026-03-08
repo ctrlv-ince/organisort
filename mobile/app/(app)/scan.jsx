@@ -179,7 +179,7 @@ export default function ScanScreen() {
     } catch (error) {
       console.error('Analysis error:', error);
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Error', 'Failed to analyze the image. Please try again.');
+      Alert.alert('Error', error?.response?.data?.error || 'Failed to analyze the image. Please try again.');
     } finally {
       setAnalyzing(false);
     }
