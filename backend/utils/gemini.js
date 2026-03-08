@@ -30,7 +30,10 @@ async function callGemini(prompt) {
             try {
                 const model = getModel(modelName);
                 const result = await model.generateContent(prompt);
-                return result.response.text().trim();
+                let text = result.response.text().trim();
+                // Strip markdown code fences (```json ... ```) that some models add
+                text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+                return text;
             } catch (err) {
                 const is429 = err.message?.includes('429') || err.message?.includes('quota');
                 if (is429 && attempt === 0) {
