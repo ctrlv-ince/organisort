@@ -202,7 +202,7 @@ const loginUser = async (req, res, next) => {
       return res.json({
         success: true,
         token,
-        data: { _id: user._id, email: user.email, displayName: user.displayName, role: user.role },
+        data: { _id: user._id, email: user.email, displayName: user.displayName, photoURL: user.photoURL, role: user.role },
       });
     }
 
@@ -301,7 +301,7 @@ const verifyEmailOtp = async (req, res, next) => {
     res.json({
       success: true,
       token,
-      data: { _id: user._id, email: user.email, displayName: user.displayName, role: user.role },
+      data: { _id: user._id, email: user.email, displayName: user.displayName, photoURL: user.photoURL, role: user.role },
     });
   } catch (error) {
     console.error('[auth.verify-email-otp] failed', error);

@@ -271,8 +271,8 @@ export default function ProfileScreen() {
           {/* Profile Header */}
           <View style={[styles.profileHeader, { backgroundColor: colors.card }]}>
             <View style={styles.avatarContainer}>
-              {user?.photoURL ? (
-                <Image source={{ uri: user.photoURL }} style={styles.avatar} />
+              {(userData?.photoURL || user?.photoURL) ? (
+                <Image source={{ uri: userData?.photoURL || user?.photoURL }} style={styles.avatar} />
               ) : (
                 <Text style={styles.avatarText}>
                   {userData?.displayName?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
