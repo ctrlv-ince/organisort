@@ -4,8 +4,8 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY?.trim();
 
 let genAI = null;
 
-// Models to try in order — each has its own separate quota
-const MODEL_CHAIN = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash'];
+// Models to try in order — only models with active free-tier quota
+const MODEL_CHAIN = ['gemini-3.1-flash-lite', 'gemini-2.5-flash-lite', 'gemini-2.5-flash'];
 const modelInstances = {};
 
 function getModel(modelName) {
