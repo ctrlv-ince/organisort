@@ -3,36 +3,71 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY?.trim();
 
 let genAI = null;
-let model = null;
 
-// Simple in-memory cache: key = sorted waste classes, value = { tips, timestamp }
-const tipsCache = new Map();
-const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+// Models to try in order — each has its own separate quota
+const MODEL_CHAIN = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash'];
+const modelInstances = {};
+
+function getModel(modelName) {
+    if (!genAI) {
+        genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+    }
+    if (!modelInstances[modelName]) {
+        modelInstances[modelName] = genAI.getGenerativeModel({ model: modelName });
+    }
+    return modelInstances[modelName];
+}
 
 /**
- * Generate personalized waste disposal tips using Gemini.
- *
- * @param {string[]} wasteClasses - Array of detected waste class names (e.g. ["plastic-bottle", "banana-peel"])
- * @returns {Promise<string[]>} Array of tip strings, or empty array on failure
+ * Call Gemini with automatic retry + model fallback.
+ * Tries each model in MODEL_CHAIN; retries once on 429 with a short delay.
  */
-const generateWasteTips = async (wasteClasses) => {
-    if (!GEMINI_API_KEY || !wasteClasses || wasteClasses.length === 0) {
-        return [];
-    }
+async function callGemini(prompt) {
+    if (!GEMINI_API_KEY) return null;
 
-    // Check cache
+    for (const modelName of MODEL_CHAIN) {
+        for (let attempt = 0; attempt < 2; attempt++) {
+            try {
+                const model = getModel(modelName);
+                const result = await model.generateContent(prompt);
+                return result.response.text().trim();
+            } catch (err) {
+                const is429 = err.message?.includes('429') || err.message?.includes('quota');
+                if (is429 && attempt === 0) {
+                    // Retry after short delay for per-minute limits
+                    await new Promise(r => setTimeout(r, 4000));
+                    continue;
+                }
+                if (is429) {
+                    // This model's quota is exhausted, try next model
+                    console.warn(`[gemini] ${modelName} quota exhausted, trying fallback...`);
+                    break;
+                }
+                // Non-quota error, throw
+                throw err;
+            }
+        }
+    }
+    console.warn('[gemini] All models exhausted — returning null');
+    return null;
+}
+
+// ─── Caches ──────────────────────────────────────────────
+const tipsCache = new Map();
+const CACHE_TTL_MS = 3 * 60 * 60 * 1000; // 3 hours (was 1h)
+
+const impactCache = new Map();
+const IMPACT_CACHE_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours (was 6h)
+
+// ─── Waste Tips ──────────────────────────────────────────
+const generateWasteTips = async (wasteClasses) => {
+    if (!GEMINI_API_KEY || !wasteClasses || wasteClasses.length === 0) return [];
+
     const cacheKey = [...wasteClasses].sort().join('|');
     const cached = tipsCache.get(cacheKey);
-    if (cached && (Date.now() - cached.timestamp) < CACHE_TTL_MS) {
-        return cached.tips;
-    }
+    if (cached && (Date.now() - cached.timestamp) < CACHE_TTL_MS) return cached.tips;
 
     try {
-        if (!genAI) {
-            genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-            model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-        }
-
         const classList = wasteClasses.join(', ');
         const prompt = `You are an eco-friendly waste management assistant for a Philippine waste sorting app called OrganiSort. The user just scanned and detected these waste items: ${classList}.
 
@@ -41,17 +76,14 @@ Give exactly 4 short, practical, and actionable tips about how to properly dispo
 Respond ONLY with a JSON array of strings. No markdown, no explanation. Example format:
 ["Tip 1 here.", "Tip 2 here.", "Tip 3 here.", "Tip 4 here."]`;
 
-        const result = await model.generateContent(prompt);
-        const text = result.response.text().trim();
+        const text = await callGemini(prompt);
+        if (!text) return [];
 
-        // Parse the JSON array from the response
         const tips = JSON.parse(text);
-
         if (Array.isArray(tips) && tips.length > 0) {
             tipsCache.set(cacheKey, { tips, timestamp: Date.now() });
             return tips;
         }
-
         return [];
     } catch (error) {
         console.error('[gemini.js] Failed to generate waste tips:', error.message);
@@ -59,17 +91,7 @@ Respond ONLY with a JSON array of strings. No markdown, no explanation. Example 
     }
 };
 
-// Cache for eco impact results (longer TTL since these change less frequently)
-const impactCache = new Map();
-const IMPACT_CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
-
-/**
- * Generate environmental impact estimates using Gemini.
- *
- * @param {Object} wasteSummary - Map of waste class → count (e.g. { "banana-peel": 15, "plastic-bottle": 8 })
- * @param {number} totalItems - Total number of items detected
- * @returns {Promise<Object>} { impact: { co2_kg, landfill_kg, water_liters, trees_equivalent }, aiInsight: string }
- */
+// ─── Eco Impact ──────────────────────────────────────────
 const generateEcoImpact = async (wasteSummary, totalItems) => {
     const fallback = {
         impact: {
@@ -81,26 +103,16 @@ const generateEcoImpact = async (wasteSummary, totalItems) => {
         aiInsight: null,
     };
 
-    if (!GEMINI_API_KEY || totalItems === 0) {
-        return fallback;
-    }
+    if (!GEMINI_API_KEY || totalItems === 0) return fallback;
 
-    // Build cache key from waste summary
     const cacheKey = 'eco|' + Object.entries(wasteSummary)
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([k, v]) => `${k}:${v}`)
         .join('|');
     const cached = impactCache.get(cacheKey);
-    if (cached && (Date.now() - cached.timestamp) < IMPACT_CACHE_TTL_MS) {
-        return cached.result;
-    }
+    if (cached && (Date.now() - cached.timestamp) < IMPACT_CACHE_TTL_MS) return cached.result;
 
     try {
-        if (!genAI) {
-            genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-            model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-        }
-
         const wasteList = Object.entries(wasteSummary)
             .map(([type, count]) => `${type}: ${count} items`)
             .join(', ');
@@ -120,15 +132,14 @@ Respond ONLY with a JSON object in this exact format, no markdown:
   "aiInsight": "<one personalized 2-sentence insight about their environmental impact, mentioning their most common waste type and a specific eco tip>"
 }`;
 
-        const result = await model.generateContent(prompt);
-        const text = result.response.text().trim();
-        const parsed = JSON.parse(text);
+        const text = await callGemini(prompt);
+        if (!text) return fallback;
 
+        const parsed = JSON.parse(text);
         if (parsed.impact) {
             impactCache.set(cacheKey, { result: parsed, timestamp: Date.now() });
             return parsed;
         }
-
         return fallback;
     } catch (error) {
         console.error('[gemini.js] Failed to generate eco impact:', error.message);
