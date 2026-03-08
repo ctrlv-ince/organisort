@@ -8,17 +8,19 @@ const PYTHON_SERVICE_URL = process.env.PYTHON_SERVICE_URL || 'http://localhost:5
 // @access  Private
 const createReview = async (req, res) => {
     try {
-        const { rating, comment } = req.body;
+        const { comment } = req.body;
 
-        if (!rating || !comment) {
+        if (!comment) {
             return res.status(400).json({
                 success: false,
-                message: 'Please provide both rating and comment',
+                message: 'Please provide a comment',
             });
         }
 
         // Call Python AI Service for Sentiment Analysis
         let sentiment = 'neutral';
+        let rating = 3;
+
         try {
             const aiResponse = await axios.post(`${PYTHON_SERVICE_URL}/analyze-sentiment`, {
                 text: comment,
@@ -26,6 +28,16 @@ const createReview = async (req, res) => {
 
             if (aiResponse.data && aiResponse.data.success) {
                 sentiment = aiResponse.data.sentiment;
+
+                // Derive rating from sentiment
+                switch (sentiment) {
+                    case 'very negative': rating = 1; break;
+                    case 'negative': rating = 2; break;
+                    case 'neutral': rating = 3; break;
+                    case 'positive': rating = 4; break;
+                    case 'very positive': rating = 5; break;
+                    default: rating = 3;
+                }
             }
         } catch (error) {
             console.error('Error analyzing sentiment with Python Service. Falling back to neutral', error.message);

@@ -22,14 +22,8 @@ export default function SubmitReviewScreen() {
     const { colors } = useTheme();
     const router = useRouter();
 
-    const [rating, setRating] = useState(5);
     const [comment, setComment] = useState('');
     const [submitting, setSubmitting] = useState(false);
-
-    const handleRating = (value) => {
-        Haptics.selectionAsync();
-        setRating(value);
-    };
 
     const handleSubmit = async () => {
         if (!comment.trim()) {
@@ -40,7 +34,6 @@ export default function SubmitReviewScreen() {
         setSubmitting(true);
         try {
             const response = await apiClient.post('/api/reviews', {
-                rating,
                 comment,
             });
 
@@ -87,29 +80,12 @@ export default function SubmitReviewScreen() {
                 <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
                     <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
 
-                        {/* Rating Stars */}
-                        <Text style={[styles.label, { color: colors.textSecondary }]}>Overall Experience</Text>
-                        <View style={styles.starsContainer}>
-                            {[1, 2, 3, 4, 5].map((star) => (
-                                <TouchableOpacity
-                                    key={star}
-                                    onPress={() => handleRating(star)}
-                                    style={styles.starButton}
-                                    disabled={submitting}
-                                >
-                                    <Ionicons
-                                        name={rating >= star ? 'star' : 'star-outline'}
-                                        size={40}
-                                        color={rating >= star ? '#fbbf24' : colors.textMuted}
-                                    />
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-
-                        <View style={[styles.divider, { backgroundColor: colors.border }]} />
-
                         {/* Comment Input */}
                         <Text style={[styles.label, { color: colors.textSecondary }]}>Tell us more (Taglish accepted!)</Text>
+                        <Text style={[styles.hintText, { color: colors.textMuted }]}>
+                            Note: The system will automatically detect the sentiment of your review and assign a star rating for you!
+                        </Text>
+
                         <TextInput
                             style={[
                                 styles.textInput,
@@ -192,21 +168,14 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         textTransform: 'uppercase',
         letterSpacing: 0.5,
-        marginBottom: 16,
+        marginBottom: 8,
         textAlign: 'center',
     },
-    starsContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginBottom: 24,
-        gap: 8,
-    },
-    starButton: {
-        padding: 4,
-    },
-    divider: {
-        height: 1,
-        marginVertical: 20,
+    hintText: {
+        fontSize: 12,
+        textAlign: 'center',
+        marginBottom: 20,
+        fontStyle: 'italic',
     },
     textInput: {
         borderWidth: 1,

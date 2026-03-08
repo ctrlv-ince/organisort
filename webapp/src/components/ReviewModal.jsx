@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import PrimaryButton from './PrimaryButton';
 
 const ReviewModal = ({ isOpen, onClose }) => {
-    const [rating, setRating] = useState(5);
     const [comment, setComment] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -29,7 +28,7 @@ const ReviewModal = ({ isOpen, onClose }) => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ rating, comment })
+                body: JSON.stringify({ comment })
             });
 
             const data = await response.json();
@@ -39,7 +38,6 @@ const ReviewModal = ({ isOpen, onClose }) => {
                 setTimeout(() => {
                     onClose();
                     setSuccess(false);
-                    setRating(5);
                     setComment('');
                 }, 3000);
             } else {
@@ -115,42 +113,19 @@ const ReviewModal = ({ isOpen, onClose }) => {
                                     )}
 
                                     <div className="space-y-6">
-                                        {/* Star Rating */}
-                                        <div>
-                                            <label className="block text-sm font-bold uppercase tracking-wider mb-3" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>
-                                                Overall Experience
-                                            </label>
-                                            <div className="flex gap-2 justify-center">
-                                                {[1, 2, 3, 4, 5].map((star) => (
-                                                    <button
-                                                        key={star}
-                                                        type="button"
-                                                        onClick={() => setRating(star)}
-                                                        className="p-2 transition-transform hover:scale-110 focus:outline-none"
-                                                        disabled={submitting}
-                                                    >
-                                                        <svg
-                                                            className={`w-10 h-10 transition-colors ${rating >= star ? 'text-yellow-400 drop-shadow-sm' : 'text-gray-200'}`}
-                                                            fill="currentColor"
-                                                            viewBox="0 0 20 20"
-                                                        >
-                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                        </svg>
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-
                                         {/* Comment Area */}
                                         <div>
                                             <label className="block text-sm font-bold uppercase tracking-wider mb-3" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>
                                                 Tell us more (Taglish accepted!)
                                             </label>
+                                            <p className="text-xs mb-3 italic" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>
+                                                Note: The system will automatically detect the sentiment of your review and assign a star rating for you!
+                                            </p>
                                             <textarea
                                                 value={comment}
                                                 onChange={(e) => setComment(e.target.value)}
                                                 placeholder="Ang ganda ng app, very helpful..."
-                                                className="w-full w-full px-5 py-4 rounded-2xl outline-none focus:ring-2 transition-all resize-none h-32"
+                                                className="w-full px-5 py-4 rounded-2xl outline-none focus:ring-2 transition-all resize-none h-32"
                                                 style={{
                                                     background: 'var(--theme-input-bg, #f9fafb)',
                                                     color: 'var(--theme-text, #111827)',
