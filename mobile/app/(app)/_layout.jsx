@@ -190,8 +190,6 @@ function HomeIcon({ color, size = 24 }) {
   );
 }
 
-import { Ionicons } from '@expo/vector-icons';
-
 function ScanIcon({ color, size = 24 }) {
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
