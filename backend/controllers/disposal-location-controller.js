@@ -25,6 +25,8 @@ const WASTE_TYPE_SYNONYMS = {
   pear: ['fruit', 'food-waste'], 'pear-core': ['fruit', 'food-waste'],
   'pear-peel': ['fruit', 'food-waste'], pineapple: ['fruit', 'food-waste'],
   avocado: ['fruit', 'food-waste'], calamansi: ['fruit', 'food-waste'],
+  papaya: ['fruit', 'food-waste'], watermelon: ['fruit', 'food-waste'],
+  'watermelon-rotten': ['fruit', 'food-waste'],
   // Proteins
   meat: ['protein', 'food-waste'], fish: ['protein', 'food-waste'],
   'bone-fish': ['protein', 'food-waste'], shrimp: ['protein', 'food-waste'],
@@ -34,7 +36,9 @@ const WASTE_TYPE_SYNONYMS = {
   // Grains
   rice: ['grain', 'food-waste'], bread: ['grain', 'food-waste'],
   noodle: ['grain', 'food-waste'], pasta: ['grain', 'food-waste'],
-  bun: ['grain', 'food-waste'],
+  bun: ['grain', 'food-waste'], bread_fresh: ['grain', 'food-waste'],
+  bread_in_trash: ['grain', 'food-waste'], bread_moldy: ['grain', 'food-waste'],
+  bread_rotten: ['grain', 'food-waste'], bread_stale: ['grain', 'food-waste'],
   // Eggs / Other
   'egg-shell': ['food-waste'], 'egg-scramble': ['food-waste'],
   eggshell: ['food-waste'], 'egg-yolk': ['food-waste'],

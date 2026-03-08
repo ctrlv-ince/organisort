@@ -98,6 +98,27 @@ const WASTE_GUIDES = {
     avgDecompositionDays: '30-60',
     color: '#ef4444',
   },
+  papaya: {
+    category: 'Fruits',
+    description: 'Papaya flesh, seeds, and skin',
+    compostable: true,
+    avgDecompositionDays: '14-30',
+    color: '#ef4444',
+  },
+  watermelon: {
+    category: 'Fruits',
+    description: 'Watermelon flesh and rind',
+    compostable: true,
+    avgDecompositionDays: '14-30',
+    color: '#ef4444',
+  },
+  'watermelon-rotten': {
+    category: 'Fruits',
+    description: 'Spoiled or rotting watermelon',
+    compostable: true,
+    avgDecompositionDays: '7-14',
+    color: '#ef4444',
+  },
 
   // Vegetables
   broccoli: {
@@ -300,6 +321,41 @@ const WASTE_GUIDES = {
     description: 'Bread pieces and crusts',
     compostable: true,
     avgDecompositionDays: '14-30',
+    color: '#8b5cf6',
+  },
+  bread_fresh: {
+    category: 'Grains',
+    description: 'Fresh bread portions',
+    compostable: true,
+    avgDecompositionDays: '14-30',
+    color: '#8b5cf6',
+  },
+  bread_in_trash: {
+    category: 'Grains',
+    description: 'Discarded bread',
+    compostable: true,
+    avgDecompositionDays: '14-30',
+    color: '#8b5cf6',
+  },
+  bread_moldy: {
+    category: 'Grains',
+    description: 'Moldy bread',
+    compostable: true,
+    avgDecompositionDays: '7-21',
+    color: '#8b5cf6',
+  },
+  bread_rotten: {
+    category: 'Grains',
+    description: 'Heavily spoiled bread',
+    compostable: true,
+    avgDecompositionDays: '7-21',
+    color: '#8b5cf6',
+  },
+  bread_stale: {
+    category: 'Grains',
+    description: 'Hard, stale bread',
+    compostable: true,
+    avgDecompositionDays: '21-40',
     color: '#8b5cf6',
   },
   bun: {

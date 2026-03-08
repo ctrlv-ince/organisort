@@ -126,6 +126,31 @@ const WASTE_DISPOSAL_GUIDES = {
     notes: 'The tough outer skin takes longer — cut it up to help it break down.',
     decompositionDays: 45,
   },
+  papaya: {
+    bin: 'compost',
+    instructions: [
+      'Place papaya slices, seeds, and skin directly in the compost bin.',
+      'Remove any produce stickers from the skin.',
+    ],
+    decompositionDays: 14,
+  },
+  watermelon: {
+    bin: 'compost',
+    instructions: [
+      'Place watermelon rind and flesh in the compost bin.',
+      'Chop the thick rind into smaller pieces to speed up decomposition.',
+    ],
+    notes: 'Rinds take longer to break down than the watery flesh.',
+    decompositionDays: 21,
+  },
+  'watermelon-rotten': {
+    bin: 'compost',
+    instructions: [
+      'Place rotting watermelon directly into the compost bin.',
+      'Cover with dry brown materials (like dried leaves or paper) to absorb excess moisture and prevent odors.',
+    ],
+    decompositionDays: 10,
+  },
 
   // ── Vegetables ───────────────────────────────────────────────────────────
   broccoli: {
@@ -390,6 +415,46 @@ const WASTE_DISPOSAL_GUIDES = {
     ],
     notes: 'Mouldy bread is fine to compost — mould helps break it down.',
     decompositionDays: 21,
+  },
+  bread_fresh: {
+    bin: 'compost',
+    instructions: [
+      'Tear fresh bread into smaller pieces before composting.',
+      'Use a closed compost bin to avoid attracting pests.',
+    ],
+    decompositionDays: 21,
+  },
+  bread_in_trash: {
+    bin: 'compost',
+    instructions: [
+      'If the bread is free from plastic wrappers or non-organic liquids, it can be composted.',
+      'Tear it up and bury it in your compost pile.',
+    ],
+    decompositionDays: 21,
+  },
+  bread_moldy: {
+    bin: 'compost',
+    instructions: [
+      'Moldy bread is ideal for composting as the fungi have already started breaking it down.',
+      'Bury it within the pile to prevent spores from flying around.',
+    ],
+    decompositionDays: 14,
+  },
+  bread_rotten: {
+    bin: 'compost',
+    instructions: [
+      'Place severely spoiled bread in the compost bin.',
+      'Cover immediately with browns (soil, dry leaves) to trap any odors.',
+    ],
+    decompositionDays: 14,
+  },
+  bread_stale: {
+    bin: 'compost',
+    instructions: [
+      'Stale, hard bread takes slightly longer to decompose.',
+      'Soak it in water briefly or break it into small chunks before adding to the compost.',
+    ],
+    decompositionDays: 30,
   },
   bun: {
     bin: 'compost',
