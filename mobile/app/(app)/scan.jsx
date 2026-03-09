@@ -527,7 +527,7 @@ const styles = StyleSheet.create({
   cameraOverlay: {
     flex: 1,
     backgroundColor: 'transparent',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     paddingVertical: 24,
     paddingHorizontal: 16,
   },

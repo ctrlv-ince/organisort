@@ -11,6 +11,7 @@ const WASTE_TYPE_SYNONYMS = {
   // Vegetables
   potato: ['vegetable', 'food-waste'], tomato: ['vegetable', 'food-waste'],
   broccoli: ['vegetable', 'food-waste'], cucumber: ['vegetable', 'food-waste'],
+  corn: ['vegetable', 'food-waste'],
   garlic: ['vegetable', 'food-waste'], onion: ['vegetable', 'food-waste'],
   mushroom: ['vegetable', 'food-waste'], cabbage: ['vegetable', 'food-waste'],
   'cabbage-core': ['vegetable', 'food-waste'], 'carrot-peel': ['vegetable', 'food-waste'],

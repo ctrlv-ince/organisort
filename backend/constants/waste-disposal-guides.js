@@ -195,6 +195,15 @@ const WASTE_DISPOSAL_GUIDES = {
     ],
     decompositionDays: 10,
   },
+  corn: {
+    bin: 'compost',
+    instructions: [
+      'Add corn kernels and husks directly to the compost bin.',
+      'For corn cobs, chop them into smaller pieces to speed up decomposition.',
+    ],
+    notes: 'Whole corn cobs can take months to break down completely.',
+    decompositionDays: 45,
+  },
   garlic: {
     bin: 'compost',
     instructions: [

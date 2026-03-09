@@ -123,7 +123,7 @@ const AnalyticsPage = () => {
 
   const categories = {
     'Fruits': ['apple', 'apple-core', 'apple-peel', 'avocado', 'banana-peel', 'bitten-apple', 'calamansi', 'mango', 'orange', 'orange-peel', 'pear', 'pear-core', 'pear-peel', 'pineapple'],
-    'Vegetables': ['broccoli', 'cabbage', 'cabbage-core', 'carrot-peel', 'cucumber', 'garlic', 'garlic-skin', 'kangkong', 'mushroom', 'onion', 'onion-skin', 'pechay', 'potato', 'seed', 'tomato'],
+    'Vegetables': ['broccoli', 'cabbage', 'cabbage-core', 'carrot-peel', 'corn', 'cucumber', 'garlic', 'garlic-skin', 'kangkong', 'mushroom', 'onion', 'onion-skin', 'pechay', 'potato', 'seed', 'tomato'],
     'Proteins': ['bone', 'bone-fish', 'chicken-bone', 'chicken-skin', 'fish', 'meat', 'mussel-shell', 'shrimp', 'shrimp-shell'],
     'Eggs': ['egg-scramble', 'egg-shell', 'egg-yolk'],
     'Grains': ['bread', 'bun', 'noodle', 'pasta', 'rice'],

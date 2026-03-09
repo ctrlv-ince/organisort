@@ -156,6 +156,13 @@ const WASTE_GUIDES = {
     avgDecompositionDays: '7-14',
     color: '#10b981',
   },
+  corn: {
+    category: 'Vegetables',
+    description: 'Corn kernels, cobs, and husks',
+    compostable: true,
+    avgDecompositionDays: '30-60',
+    color: '#10b981',
+  },
   garlic: {
     category: 'Vegetables',
     description: 'Garlic cloves',
