@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }) => {
   /**
    * Register with email and password (and optional avatar image)
    */
-  const register = async (email, password, avatarFile = null) => {
+  const register = async (email, password, displayName, avatarFile = null) => {
     try {
       setError(null);
 
@@ -113,10 +113,11 @@ export const AuthProvider = ({ children }) => {
         payload = new FormData();
         payload.append('email', email);
         payload.append('password', password);
+        payload.append('displayName', displayName);
         payload.append('avatar', avatarFile);
         headers['Content-Type'] = 'multipart/form-data';
       } else {
-        payload = { email, password };
+        payload = { email, password, displayName };
         headers['Content-Type'] = 'application/json';
       }
 

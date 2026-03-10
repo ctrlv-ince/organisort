@@ -147,9 +147,13 @@ const ReviewsPage = () => {
                             >
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-sm" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', color: 'var(--theme-accent, #15803d)' }}>
-                                            {review.user?.displayName?.charAt(0) || review.user?.firstName?.charAt(0) || 'U'}
-                                        </div>
+                                        {review.user?.photoURL ? (
+                                            <img src={review.user.photoURL} alt="Avatar" className="w-10 h-10 rounded-full object-cover shadow-sm" />
+                                        ) : (
+                                            <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-sm" style={{ background: 'var(--theme-accent-surface, #f0fdf4)', color: 'var(--theme-accent, #15803d)' }}>
+                                                {review.user?.displayName?.charAt(0) || review.user?.firstName?.charAt(0) || 'U'}
+                                            </div>
+                                        )}
                                         <div>
                                             <p className="font-bold" style={{ color: 'var(--theme-text, #111827)' }}>
                                                 {review.user?.displayName || `${review.user?.firstName} ${review.user?.lastName}` || 'Anonymous User'}

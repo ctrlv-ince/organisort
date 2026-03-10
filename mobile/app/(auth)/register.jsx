@@ -46,6 +46,7 @@ export default function RegisterScreen() {
   const { registerWithEmail, loading } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [avatarUri, setAvatarUri] = useState(null);
@@ -71,6 +72,7 @@ export default function RegisterScreen() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     const newErrors = {};
+    if (!displayName) newErrors.displayName = 'Display Name is required';
     if (!email) newErrors.email = 'Email is required';
     if (!password) newErrors.password = 'Password is required';
     if (!confirmPassword) newErrors.confirmPassword = 'Confirm Password is required';
@@ -83,7 +85,7 @@ export default function RegisterScreen() {
 
     try {
       setFormLoading(true);
-      const result = await registerWithEmail(email, password, avatarUri);
+      const result = await registerWithEmail(email, password, displayName, avatarUri);
       if (result?.requires2FA) {
         // Redirect to login screen with OTP challenge params
         router.replace({
@@ -152,6 +154,20 @@ export default function RegisterScreen() {
                   </>
                 )}
               </TouchableOpacity>
+            </View>
+
+            {/* Display Name Input */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Display Name</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Juan Cruz"
+                placeholderTextColor="#9ca3af"
+                value={displayName}
+                onChangeText={setDisplayName}
+                editable={!formLoading}
+              />
+              {errors.displayName && <Text style={styles.error}>{errors.displayName}</Text>}
             </View>
 
             {/* Email Input */}

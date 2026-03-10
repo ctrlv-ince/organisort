@@ -116,7 +116,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const registerWithEmail = async (email, password, avatarUri = null) => {
+  const registerWithEmail = async (email, password, displayName, avatarUri = null) => {
     try {
       setLoading(true);
 
@@ -127,6 +127,7 @@ export const AuthProvider = ({ children }) => {
         payload = new FormData();
         payload.append('email', email);
         payload.append('password', password);
+        payload.append('displayName', displayName);
 
         // React Native specific FormData file upload format
         const filename = avatarUri.split('/').pop() || 'avatar.jpg';
@@ -141,7 +142,7 @@ export const AuthProvider = ({ children }) => {
 
         headers['Content-Type'] = 'multipart/form-data';
       } else {
-        payload = { email, password };
+        payload = { email, password, displayName };
         headers['Content-Type'] = 'application/json';
       }
 

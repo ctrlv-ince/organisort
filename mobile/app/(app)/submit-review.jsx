@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -24,13 +24,28 @@ export default function SubmitReviewScreen() {
 
     const [comment, setComment] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [hasExistingReview, setHasExistingReview] = useState(false);
+    const [loadingReview, setLoadingReview] = useState(true);
 
-    const handleSubmit = async () => {
-        if (!comment.trim()) {
-            Alert.alert('Hold On', 'Please write a short comment about your experience.');
-            return;
-        }
+    useEffect(() => {
+        const fetchExistingReview = async () => {
+            try {
+                const response = await apiClient.get('/api/reviews/me');
+                if (response.data.success && response.data.data) {
+                    setComment(response.data.data.comment);
+                    setHasExistingReview(true);
+                }
+            } catch (error) {
+                console.error('Error fetching existing review:', error);
+            } finally {
+                setLoadingReview(false);
+            }
+        };
 
+        fetchExistingReview();
+    }, []);
+
+    const doSubmit = async () => {
         setSubmitting(true);
         try {
             const response = await apiClient.post('/api/reviews', {
@@ -41,7 +56,7 @@ export default function SubmitReviewScreen() {
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 Alert.alert(
                     'Thank You!',
-                    'Your review has been submitted successfully.',
+                    hasExistingReview ? 'Your review has been updated successfully.' : 'Your review has been submitted successfully.',
                     [{ text: 'Great', onPress: () => router.back() }]
                 );
             } else {
@@ -52,6 +67,26 @@ export default function SubmitReviewScreen() {
             Alert.alert('Error', 'Failed to submit review. Please try again later.');
         } finally {
             setSubmitting(false);
+        }
+    };
+
+    const handleSubmit = async () => {
+        if (!comment.trim()) {
+            Alert.alert('Hold On', 'Please write a short comment about your experience.');
+            return;
+        }
+
+        if (hasExistingReview) {
+            Alert.alert(
+                'Overwrite Review?',
+                'You have already submitted a review. Submitting this will overwrite your previous review. Do you want to continue?',
+                [
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Overwrite', style: 'destructive', onPress: doSubmit },
+                ]
+            );
+        } else {
+            doSubmit();
         }
     };
 
@@ -68,7 +103,9 @@ export default function SubmitReviewScreen() {
                 >
                     <Ionicons name="arrow-back" size={24} color={colors.text} />
                 </TouchableOpacity>
-                <Text style={[styles.headerTitle, { color: colors.text }]}>Leave a Review</Text>
+                <Text style={[styles.headerTitle, { color: colors.text }]}>
+                    {hasExistingReview ? 'Edit Review' : 'Leave a Review'}
+                </Text>
                 <View style={{ width: 40 }} /> {/* Spacer */}
             </View>
 
@@ -102,7 +139,7 @@ export default function SubmitReviewScreen() {
                             textAlignVertical="top"
                             value={comment}
                             onChangeText={setComment}
-                            editable={!submitting}
+                            editable={!submitting && !loadingReview}
                         />
 
                     </View>
@@ -119,7 +156,9 @@ export default function SubmitReviewScreen() {
                         <ActivityIndicator color="#ffffff" />
                     ) : (
                         <>
-                            <Text style={styles.submitButtonText}>Submit Review</Text>
+                            <Text style={styles.submitButtonText}>
+                                {hasExistingReview ? 'Update Review' : 'Submit Review'}
+                            </Text>
                             <Ionicons name="send" size={18} color="#ffffff" style={{ marginLeft: 8 }} />
                         </>
                     )}

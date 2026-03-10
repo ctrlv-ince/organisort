@@ -19,6 +19,7 @@ const Register = () => {
       : 'border-gray-300 focus:ring-green-600 focus:border-green-600'
   );
 
+  const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -33,8 +34,8 @@ const Register = () => {
   const navigate = useNavigate();
 
   const values = useMemo(
-    () => ({ email, password, confirmPassword }),
-    [email, password, confirmPassword]
+    () => ({ displayName, email, password, confirmPassword }),
+    [displayName, email, password, confirmPassword]
   );
   const {
     touched,
@@ -46,10 +47,11 @@ const Register = () => {
   } = useAuthFormValidation({
     values,
     validators: validateRegisterFields,
-    fields: ['email', 'password', 'confirmPassword'],
+    fields: ['displayName', 'email', 'password', 'confirmPassword'],
     debounceMs: 250,
   });
 
+  const displayNameError = touched.displayName ? fieldErrors.displayName : '';
   const emailError = touched.email ? fieldErrors.email : '';
   const passwordError = touched.password ? fieldErrors.password : '';
   const confirmPasswordError = touched.confirmPassword ? fieldErrors.confirmPassword : '';
@@ -58,6 +60,7 @@ const Register = () => {
 
   const handlePasswordChange = (value) => {
     const nextValues = {
+      displayName,
       email,
       password: value,
       confirmPassword,
@@ -77,6 +80,7 @@ const Register = () => {
     setConfirmPassword(value);
 
     const nextValues = {
+      displayName,
       email,
       password,
       confirmPassword: value,
@@ -90,6 +94,7 @@ const Register = () => {
 
   const handleEmailChange = (value) => {
     const nextValues = {
+      displayName,
       email: value,
       password,
       confirmPassword,
@@ -99,6 +104,21 @@ const Register = () => {
 
     if (touched.email || value) {
       touchField('email', nextValues);
+    }
+  };
+
+  const handleDisplayNameChange = (value) => {
+    const nextValues = {
+      displayName: value,
+      email,
+      password,
+      confirmPassword,
+    };
+
+    setDisplayName(value);
+
+    if (touched.displayName || value) {
+      touchField('displayName', nextValues);
     }
   };
 
@@ -115,7 +135,7 @@ const Register = () => {
 
     setLoading(true);
     try {
-      const result = await register(email, password, avatarFile);
+      const result = await register(email, password, displayName, avatarFile);
       if (result?.requires2FA) {
         // Redirect to login page with OTP challenge state
         navigate('/login', {
@@ -213,6 +233,36 @@ const Register = () => {
                 onChange={handleAvatarChange}
               />
               <p className="text-xs text-gray-500 mt-2">Optional Profile Picture</p>
+            </div>
+
+            {/* Display Name Field */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="register-displayname">
+                Display Name
+              </label>
+              <input
+                id="register-displayname"
+                type="text"
+                value={displayName}
+                onChange={(e) => handleDisplayNameChange(e.target.value)}
+                onBlur={() => touchField('displayName')}
+                placeholder="Juan Cruz"
+                aria-invalid={Boolean(displayNameError)}
+                aria-errormessage={displayNameError ? 'register-displayname-error' : undefined}
+                aria-describedby={displayNameError ? 'register-displayname-error' : undefined}
+                className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 outline-none transition ${getInputStateClasses(Boolean(displayNameError))}`}
+                required
+              />
+              {displayNameError && (
+                <p
+                  id="register-displayname-error"
+                  role="alert"
+                  aria-live="polite"
+                  className="mt-2 text-sm text-red-700 font-medium"
+                >
+                  {displayNameError}
+                </p>
+              )}
             </div>
 
             {/* Email Field */}

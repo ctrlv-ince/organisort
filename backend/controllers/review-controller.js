@@ -44,18 +44,36 @@ const createReview = async (req, res) => {
             // Continue with saving the review even if sentiment analysis fails
         }
 
-        const review = await Review.create({
-            user: req.user._id,
-            rating,
-            comment,
-            sentiment,
-        });
+        // Check if user already has a review
+        let review = await Review.findOne({ user: req.user._id });
 
-        res.status(201).json({
-            success: true,
-            data: review,
-            message: 'Review submitted successfully',
-        });
+        if (review) {
+            // Update existing
+            review.comment = comment;
+            review.sentiment = sentiment;
+            review.rating = rating;
+            await review.save();
+
+            return res.status(200).json({
+                success: true,
+                data: review,
+                message: 'Review updated successfully',
+            });
+        } else {
+            // Create new
+            review = await Review.create({
+                user: req.user._id,
+                rating,
+                comment,
+                sentiment,
+            });
+
+            return res.status(201).json({
+                success: true,
+                data: review,
+                message: 'Review submitted successfully',
+            });
+        }
     } catch (error) {
         console.error('Create Review Error:', error);
         res.status(500).json({
@@ -72,7 +90,7 @@ const createReview = async (req, res) => {
 const getAllReviews = async (req, res) => {
     try {
         const reviews = await Review.find()
-            .populate('user', 'firstName lastName email')
+            .populate('user', 'displayName photoURL email')
             .sort({ createdAt: -1 });
 
         res.status(200).json({
@@ -90,7 +108,36 @@ const getAllReviews = async (req, res) => {
     }
 };
 
+// @desc    Get user's own review
+// @route   GET /api/reviews/me
+// @access  Private
+const getMyReview = async (req, res) => {
+    try {
+        const review = await Review.findOne({ user: req.user._id });
+
+        if (!review) {
+            return res.status(200).json({
+                success: true,
+                data: null,
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: review,
+        });
+    } catch (error) {
+        console.error('Get My Review Error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while fetching your review',
+            error: error.message,
+        });
+    }
+};
+
 module.exports = {
     createReview,
     getAllReviews,
+    getMyReview,
 };

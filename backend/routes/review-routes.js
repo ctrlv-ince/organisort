@@ -8,6 +8,11 @@ const { protect } = require('../middleware/auth-middleware');
 // @access  Private
 router.post('/', protect, reviewController.createReview);
 
+// @route   GET /api/reviews/me
+// @desc    Get user's own review
+// @access  Private
+router.get('/me', protect, reviewController.getMyReview);
+
 // @route   GET /api/reviews
 // @desc    Get all reviews
 // @access  Private/Admin

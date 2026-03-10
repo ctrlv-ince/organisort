@@ -2,6 +2,14 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const PASSWORD_POLICY_MESSAGE = 'Use at least 8 characters and include at least one number or symbol.';
 
+export const validateDisplayName = (name) => {
+  const value = name.trim();
+  if (!value) {
+    return 'Display Name is required.';
+  }
+  return '';
+};
+
 export const validateEmail = (email) => {
   const value = email.trim();
 
@@ -45,8 +53,9 @@ export const validateLoginFields = ({ email, password }) => ({
   password: validateRequiredPassword(password),
 });
 
-export const validateRegisterFields = ({ email, password, confirmPassword }) => {
+export const validateRegisterFields = ({ email, password, confirmPassword, displayName }) => {
   const errors = {
+    displayName: validateDisplayName(displayName || ''),
     email: validateEmail(email),
     password: validatePasswordPolicy(password),
     confirmPassword: '',
