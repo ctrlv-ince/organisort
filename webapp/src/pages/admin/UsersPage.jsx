@@ -339,9 +339,13 @@ const UsersPage = () => {
                       {/* User Info */}
                       <td className="px-8 py-5 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white text-sm font-black flex-shrink-0 shadow-sm border border-white/20 ${user.role === 'admin' ? 'bg-gradient-to-br from-amber-400 to-amber-600 shadow-amber-500/20' : 'bg-gradient-to-br from-purple-500 to-indigo-600 shadow-purple-500/20'}`}>
-                            {getInitials(user.displayName, user.email)}
-                          </div>
+                          {user.photoURL ? (
+                            <img src={user.photoURL} alt="Avatar" className="w-12 h-12 rounded-2xl object-cover shadow-sm border border-white/20 flex-shrink-0" />
+                          ) : (
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white text-sm font-black flex-shrink-0 shadow-sm border border-white/20 ${user.role === 'admin' ? 'bg-gradient-to-br from-amber-400 to-amber-600 shadow-amber-500/20' : 'bg-gradient-to-br from-purple-500 to-indigo-600 shadow-purple-500/20'}`}>
+                              {getInitials(user.displayName, user.email)}
+                            </div>
+                          )}
                           <div className="ml-5">
                             <div className="text-sm font-extrabold tracking-tight" style={{ color: 'var(--theme-text)' }}>{user.displayName || 'No Display Name'}</div>
                             <div className="text-xs font-semibold mt-0.5" style={{ color: 'var(--theme-text-secondary)' }}>{user.email}</div>
