@@ -554,6 +554,58 @@ const MyDetections = () => {
                   </div>
                 </div>
 
+                {selectedDetection.analytics && (
+                  <div className="rounded-2xl p-6 mb-8" style={{ background: 'var(--theme-card, #ffffff)', border: '1px solid var(--theme-border, #f0f0f0)' }}>
+                    <h3 className="text-xl font-bold mb-6 tracking-tight flex items-center gap-2" style={{ color: 'var(--theme-text, #111827)' }}>
+                      <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                      Scan Impact Breakdown
+                    </h3>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                      <div className="p-4 rounded-xl" style={{ background: 'var(--theme-input-bg, #f9fafb)', border: '1px solid var(--theme-border, #f0f0f0)' }}>
+                        <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>CO₂ Avoided</p>
+                        <p className="text-2xl font-extrabold" style={{ color: 'var(--theme-text, #111827)' }}>{selectedDetection.analytics.impact?.co2_kg || 0} <span className="text-sm font-semibold text-gray-500">kg</span></p>
+                      </div>
+                      <div className="p-4 rounded-xl" style={{ background: 'var(--theme-input-bg, #f9fafb)', border: '1px solid var(--theme-border, #f0f0f0)' }}>
+                        <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>Water Conserved</p>
+                        <p className="text-2xl font-extrabold" style={{ color: 'var(--theme-text, #111827)' }}>{selectedDetection.analytics.impact?.water_liters || 0} <span className="text-sm font-semibold text-gray-500">L</span></p>
+                      </div>
+                      <div className="p-4 rounded-xl" style={{ background: 'var(--theme-input-bg, #f9fafb)', border: '1px solid var(--theme-border, #f0f0f0)' }}>
+                        <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>Landfill Diverted</p>
+                        <p className="text-2xl font-extrabold" style={{ color: 'var(--theme-text, #111827)' }}>{selectedDetection.analytics.impact?.landfill_kg || 0} <span className="text-sm font-semibold text-gray-500">kg</span></p>
+                      </div>
+                      <div className="p-4 rounded-xl" style={{ background: 'var(--theme-input-bg, #f9fafb)', border: '1px solid var(--theme-border, #f0f0f0)' }}>
+                        <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>Recyclability</p>
+                        <p className="text-2xl font-extrabold" style={{ color: 'var(--theme-text, #111827)' }}>{selectedDetection.analytics.recyclabilityScore || 0}<span className="text-sm font-semibold text-gray-500">/10</span></p>
+                      </div>
+                    </div>
+
+                    {selectedDetection.analytics.materialBreakdown && (
+                      <div className="mb-6">
+                        <div className="h-3 rounded-full flex overflow-hidden mb-3">
+                          <div style={{ flex: selectedDetection.analytics.materialBreakdown.organicPercentage || 0, backgroundColor: '#10b981' }} />
+                          <div style={{ flex: selectedDetection.analytics.materialBreakdown.recyclablePercentage || 0, backgroundColor: '#3b82f6' }} />
+                          <div style={{ flex: selectedDetection.analytics.materialBreakdown.nonRecyclablePercentage || 0, backgroundColor: '#ef4444' }} />
+                        </div>
+                        <div className="flex flex-wrap gap-4 text-sm font-medium">
+                          <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div><span style={{ color: 'var(--theme-text, #111827)' }}>Organic {selectedDetection.analytics.materialBreakdown.organicPercentage || 0}%</span></div>
+                          <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div><span style={{ color: 'var(--theme-text, #111827)' }}>Recyclable {selectedDetection.analytics.materialBreakdown.recyclablePercentage || 0}%</span></div>
+                          <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-red-500"></div><span style={{ color: 'var(--theme-text, #111827)' }}>Other {selectedDetection.analytics.materialBreakdown.nonRecyclablePercentage || 0}%</span></div>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedDetection.analytics.historicalComparison && (
+                      <div className="rounded-xl p-4 flex items-start gap-3" style={{ background: 'linear-gradient(135deg, rgba(21,128,61,0.06) 0%, rgba(16,185,129,0.06) 100%)', border: '1px solid rgba(21,128,61,0.1)' }}>
+                        <svg className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                        <p className="text-sm font-semibold text-emerald-800 leading-relaxed">
+                          {selectedDetection.analytics.historicalComparison}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <div className="grid md:grid-cols-2 gap-8">
                   <div>
                     <h3 className="text-xl font-bold mb-4 tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>Classification Details</h3>

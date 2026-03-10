@@ -307,6 +307,72 @@ export default function ScanScreen() {
               </View>
             </View>
 
+            {result.analytics && (
+              <View style={[styles.analyticsCard, { backgroundColor: colors.card }]}>
+                <View style={styles.analyticsHeader}>
+                  <Ionicons name="stats-chart" size={24} color={colors.accent} />
+                  <Text style={[styles.analyticsTitle, { color: colors.text }]}>Scan Impact Breakdown</Text>
+                </View>
+
+                {/* Impact Metrics */}
+                <View style={styles.analyticsRow}>
+                  <View style={[styles.analyticsBox, { backgroundColor: colors.bgAlt, borderColor: colors.border }]}>
+                    <Text style={[styles.analyticsBoxLabel, { color: colors.textSecondary }]}>CO₂ Avoided</Text>
+                    <Text style={[styles.analyticsBoxValue, { color: colors.text }]}>
+                      {result.analytics.impact?.co2_kg || 0} kg
+                    </Text>
+                  </View>
+                  <View style={[styles.analyticsBox, { backgroundColor: colors.bgAlt, borderColor: colors.border }]}>
+                    <Text style={[styles.analyticsBoxLabel, { color: colors.textSecondary }]}>Recyclability</Text>
+                    <Text style={[styles.analyticsBoxValue, { color: colors.text }]}>
+                      {result.analytics.recyclabilityScore || 0}/10
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Material Breakdown */}
+                {result.analytics.materialBreakdown && (
+                  <View>
+                    <View style={styles.breakdownBar}>
+                      <View style={{ flex: result.analytics.materialBreakdown.organicPercentage || 0, backgroundColor: '#10b981' }} />
+                      <View style={{ flex: result.analytics.materialBreakdown.recyclablePercentage || 0, backgroundColor: '#3b82f6' }} />
+                      <View style={{ flex: result.analytics.materialBreakdown.nonRecyclablePercentage || 0, backgroundColor: '#ef4444' }} />
+                    </View>
+                    <View style={styles.breakdownLabels}>
+                      <View style={styles.breakdownLabel}>
+                        <View style={[styles.breakdownDot, { backgroundColor: '#10b981' }]} />
+                        <Text style={[styles.breakdownText, { color: colors.text }]}>
+                          Organic {result.analytics.materialBreakdown.organicPercentage || 0}%
+                        </Text>
+                      </View>
+                      <View style={styles.breakdownLabel}>
+                        <View style={[styles.breakdownDot, { backgroundColor: '#3b82f6' }]} />
+                        <Text style={[styles.breakdownText, { color: colors.text }]}>
+                          Recyclable {result.analytics.materialBreakdown.recyclablePercentage || 0}%
+                        </Text>
+                      </View>
+                      <View style={styles.breakdownLabel}>
+                        <View style={[styles.breakdownDot, { backgroundColor: '#ef4444' }]} />
+                        <Text style={[styles.breakdownText, { color: colors.text }]}>
+                          Other {result.analytics.materialBreakdown.nonRecyclablePercentage || 0}%
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                )}
+
+                {/* Historical Comparison */}
+                {result.analytics.historicalComparison && (
+                  <View style={[styles.historicalBox, { backgroundColor: colors.accentSurface }]}>
+                    <Ionicons name="trending-up" size={20} color={colors.accent} />
+                    <Text style={[styles.historicalText, { color: colors.accent }]}>
+                      {result.analytics.historicalComparison}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )}
+
             <View style={[styles.detectionsList, { backgroundColor: colors.card }]}>
               <Text style={[styles.sectionTitle, { color: colors.text }]}>Detected Items</Text>
               {result.detections?.length > 0 ? (
@@ -655,6 +721,90 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
     textTransform: 'uppercase',
+  },
+  analyticsCard: {
+    padding: 24,
+    borderRadius: 32,
+    borderCurve: 'continuous',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    elevation: 3,
+  },
+  analyticsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 20,
+  },
+  analyticsTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    letterSpacing: -0.5,
+  },
+  analyticsRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 20,
+  },
+  analyticsBox: {
+    flex: 1,
+    padding: 16,
+    borderRadius: 20,
+    borderCurve: 'continuous',
+    borderWidth: 1,
+  },
+  analyticsBoxLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+  },
+  analyticsBoxValue: {
+    fontSize: 24,
+    fontWeight: '900',
+    letterSpacing: -0.5,
+  },
+  breakdownBar: {
+    height: 12,
+    borderRadius: 6,
+    flexDirection: 'row',
+    overflow: 'hidden',
+    marginBottom: 12,
+  },
+  breakdownLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  breakdownLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  breakdownDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  breakdownText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  historicalBox: {
+    padding: 16,
+    borderRadius: 16,
+    borderCurve: 'continuous',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  historicalText: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '600',
+    lineHeight: 20,
   },
   detectionsList: {
     padding: 24,

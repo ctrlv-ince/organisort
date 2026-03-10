@@ -98,6 +98,12 @@ const userSchema = new mongoose.Schema(
         default: null,
       },
     },
+    ecoImpact: {
+      co2_kg: { type: Number, default: 0 },
+      landfill_kg: { type: Number, default: 0 },
+      water_liters: { type: Number, default: 0 },
+      trees_equivalent: { type: Number, default: 0 },
+    },
   },
   {
     timestamps: false, // We're managing timestamps manually

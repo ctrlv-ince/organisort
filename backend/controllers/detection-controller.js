@@ -3,6 +3,7 @@ const axios = require('axios');
 const crypto = require('crypto');
 const FormData = require('form-data');
 const mongoose = require('mongoose');
+const User = require('../models/User');
 const Detection = require('../models/Detection');
 const {
   WASTE_DISPOSAL_GUIDES,
@@ -12,7 +13,7 @@ const { buildPythonServiceUrl } = require('../utils/python-service-url');
 const { getPaginationParams } = require('../utils/pagination');
 const { WASTE_GUIDES, buildDisposalGuides } = require('../data/waste-guides');
 const { uploadImageToCloudinary, deleteCloudinaryImage } = require('../utils/cloudinary');
-const { generateWasteTips } = require('../utils/gemini');
+const { generateWasteTips, generateScanAnalytics } = require('../utils/gemini');
 
 const DEFAULT_WASTE_GUIDE = {
   category: 'Unknown',
@@ -171,13 +172,68 @@ const analyzeImage = asyncHandler(async (req, res) => {
 
     // Generate AI tips BEFORE saving so they persist in the DB
     let aiTips = [];
+    let scanAnalytics = null;
+    let historicalComparison = "Great job scanning your waste today!";
     try {
       const wasteClasses = [...new Set(
         (detections || []).map(d => d?.class).filter(Boolean)
       )];
-      aiTips = await generateWasteTips(wasteClasses);
+
+      const wasteSummary = {};
+      let totalItems = 0;
+      (detections || []).forEach(item => {
+        if (item?.class) {
+          wasteSummary[item.class] = (wasteSummary[item.class] || 0) + 1;
+          totalItems++;
+        }
+      });
+
+      [aiTips, scanAnalytics] = await Promise.all([
+        generateWasteTips(wasteClasses),
+        generateScanAnalytics(wasteSummary, totalItems)
+      ]);
+
+      // Calculate Historical Comparison (this week vs last week for top waste type)
+      if (wasteClasses.length > 0) {
+        const primaryType = wasteClasses[0];
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        const twoWeeksAgo = new Date();
+        twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+
+        const thisWeekCount = await Detection.countDocuments({
+          user: req.user.id,
+          primaryWasteType: primaryType,
+          createdAt: { $gte: oneWeekAgo }
+        });
+
+        const lastWeekCount = await Detection.countDocuments({
+          user: req.user.id,
+          primaryWasteType: primaryType,
+          createdAt: { $gte: twoWeeksAgo, $lt: oneWeekAgo }
+        });
+
+        if (lastWeekCount > 0) {
+          const diff = thisWeekCount - lastWeekCount;
+          const percent = Math.round((Math.abs(diff) / lastWeekCount) * 100);
+          if (diff > 0) {
+            historicalComparison = `You've scanned ${percent}% more ${primaryType}s this week compared to last week.`;
+          } else if (diff < 0) {
+            historicalComparison = `You've scanned ${percent}% fewer ${primaryType}s this week compared to last week!`;
+          } else {
+            historicalComparison = `You're scanning ${primaryType}s at the same rate as last week.`;
+          }
+        } else if (thisWeekCount > 0) {
+          historicalComparison = `This is your first week tracking ${primaryType}s!`;
+        }
+      }
+
     } catch (tipErr) {
-      console.error('[analyzeImage] AI tips generation failed:', tipErr.message);
+      console.error('[analyzeImage] AI tips/analytics generation failed:', tipErr.message);
+    }
+
+    if (scanAnalytics) {
+      scanAnalytics.historicalComparison = historicalComparison;
     }
 
     const detection = await Detection.create({
@@ -188,17 +244,32 @@ const analyzeImage = asyncHandler(async (req, res) => {
       summary,
       image_dimensions: imageDimensions,
       ai_tips: aiTips,
+      analytics: scanAnalytics
     });
+
+    // Increment User's total eco impact
+    if (scanAnalytics && scanAnalytics.impact) {
+      await User.findByIdAndUpdate(req.user.id, {
+        $inc: {
+          'ecoImpact.co2_kg': scanAnalytics.impact.co2_kg || 0,
+          'ecoImpact.landfill_kg': scanAnalytics.impact.landfill_kg || 0,
+          'ecoImpact.water_liters': scanAnalytics.impact.water_liters || 0,
+          'ecoImpact.trees_equivalent': scanAnalytics.impact.trees_equivalent || 0,
+        }
+      }).catch(err => console.error('Failed to update User ecoImpact:', err));
+    }
 
     // Return the URL-backed image to clients; keeps response shape stable.
     pythonServiceResponse.annotated_image = imageResult?.secureUrl || '';
     pythonServiceResponse.ai_tips = aiTips;
+    pythonServiceResponse.analytics = scanAnalytics;
 
     console.log('Detection saved to database:', detection._id, {
       storedInCloudinary: imageResult?.storedInCloudinary,
       cloudinaryPublicId: imageResult?.publicId,
       storageNote: imageResult?.reason,
       aiTipsCount: aiTips.length,
+      hasAnalytics: !!scanAnalytics
     });
   } catch (error) {
     // Log the error but don't block the user

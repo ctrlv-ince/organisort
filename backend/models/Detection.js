@@ -48,6 +48,20 @@ const DetectionSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    analytics: {
+      impact: {
+        co2_kg: { type: Number, default: 0 },
+        landfill_kg: { type: Number, default: 0 },
+        water_liters: { type: Number, default: 0 },
+        trees_equivalent: { type: Number, default: 0 },
+      },
+      materialBreakdown: {
+        organicPercentage: { type: Number, default: 0 },
+        recyclablePercentage: { type: Number, default: 0 },
+        nonRecyclablePercentage: { type: Number, default: 0 },
+      },
+      recyclabilityScore: { type: Number, default: 0 }, // 1-10
+    },
   },
   {
     timestamps: true,

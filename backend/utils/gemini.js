@@ -162,7 +162,78 @@ Respond ONLY with a JSON object in this exact format, no markdown:
     }
 };
 
+// ─── Scan Analytics (Single Scan) ──────────────────────────
+const generateScanAnalytics = async (wasteSummary, totalItems) => {
+    const fallback = {
+        impact: {
+            co2_kg: 0,
+            landfill_kg: 0,
+            water_liters: 0,
+            trees_equivalent: 0,
+        },
+        materialBreakdown: {
+            organicPercentage: 0,
+            recyclablePercentage: 0,
+            nonRecyclablePercentage: 0,
+        },
+        recyclabilityScore: 5,
+        aiInsight: "Dispose of items properly to minimize environmental impact.",
+    };
+
+    if (!GEMINI_API_KEY || totalItems === 0) return fallback;
+
+    try {
+        const wasteList = Object.entries(wasteSummary)
+            .map(([type, count]) => `${type}: ${count} items`)
+            .join(', ');
+
+        const prompt = `You are an environmental data analyzer for a waste sorting app. A user just scanned the following waste items: ${wasteList}. Total: ${totalItems} items.
+
+Calculate realistic environmental impact estimates for THIS SPECIFIC SCAN if these items were properly sorted and disposed of (e.g., composted, recycled) compared to going to a landfill. 
+Also, estimate the material breakdown percentages (must sum to 100) and provide a Recyclability Score from 1 to 10 (10 being easiest to recycle/compost).
+CRITICAL: ALL VALUES MUST BE POSITIVE NUMBERS.
+
+Respond ONLY with a JSON object in this exact format, no markdown:
+{
+  "impact": {
+    "co2_kg": <positive number as string with 1 decimal>,
+    "landfill_kg": <positive number as string with 1 decimal>,
+    "water_liters": <positive number as string with 0 decimal>,
+    "trees_equivalent": <positive number as string with 2 decimals>
+  },
+  "materialBreakdown": {
+    "organicPercentage": <number between 0-100>,
+    "recyclablePercentage": <number between 0-100>,
+    "nonRecyclablePercentage": <number between 0-100>
+  },
+  "recyclabilityScore": <number between 1-10>,
+  "aiInsight": "<one personalized 1-sentence insight about this specific scan's environmental impact>"
+}
+
+Ensure "organicPercentage" + "recyclablePercentage" + "nonRecyclablePercentage" = 100.`;
+
+        const text = await callGemini(prompt);
+        if (!text) return fallback;
+
+        const parsed = JSON.parse(text);
+
+        // Ensure values are numbers
+        if (parsed.impact) {
+            parsed.impact.co2_kg = parseFloat(parsed.impact.co2_kg) || 0;
+            parsed.impact.landfill_kg = parseFloat(parsed.impact.landfill_kg) || 0;
+            parsed.impact.water_liters = parseFloat(parsed.impact.water_liters) || 0;
+            parsed.impact.trees_equivalent = parseFloat(parsed.impact.trees_equivalent) || 0;
+        }
+
+        return parsed.impact ? parsed : fallback;
+    } catch (error) {
+        console.error('[gemini.js] Failed to generate scan analytics:', error.message);
+        return fallback;
+    }
+};
+
 module.exports = {
     generateWasteTips,
     generateEcoImpact,
+    generateScanAnalytics,
 };
