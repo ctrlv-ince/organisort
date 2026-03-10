@@ -15,6 +15,7 @@ import { useAuth } from '@/src/context/AuthContext';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import { Image } from 'expo-image';
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#10b981' },
@@ -136,12 +137,15 @@ export default function LoginScreen() {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {/* Logo */}
           <View style={styles.logoContainer}>
-            <Ionicons name="leaf" size={48} color="#10b981" />
+            <Image
+              source={require('../../assets/icon.png')}
+              style={{ width: 96, height: 96, borderRadius: 48 }}
+            />
           </View>
 
           {/* Header */}
           <Text style={styles.title}>OrganiSort</Text>
-          <Text style={styles.subtitle}>OrganiSort</Text>
+          <Text style={styles.subtitle}>Intelligent Organic Waste Detection</Text>
 
           {/* Sign In Card */}
           <View style={styles.card}>
@@ -270,7 +274,7 @@ export default function LoginScreen() {
           )}
 
           {/* Footer */}
-          <Text style={styles.footer}>© 2026 OrganiSort • Waste Detection AI</Text>
+          <Text style={styles.footer}>© 2026 OrganiSort • Organic Waste Detection AI</Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

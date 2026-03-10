@@ -22,7 +22,8 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
+            <img src="/icon.png" alt="OrganiSort Logo" className="w-8 h-8 rounded-full" />
             <h1 className="text-base font-extrabold tracking-tight" style={{ color: 'var(--theme-text)' }}>OrganiSort</h1>
           </div>
 

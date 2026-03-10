@@ -173,6 +173,14 @@ export default function AppLayout() {
             href: null,
           }}
         />
+
+        {/* Hide submit-review from tabs */}
+        <Tabs.Screen
+          name="submit-review"
+          options={{
+            href: null,
+          }}
+        />
       </Tabs>
     </ProtectedScreen>
   );
@@ -192,17 +200,11 @@ function HomeIcon({ color, size = 24 }) {
 
 function ScanIcon({ color, size = 24 }) {
   return (
-    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{
-        width: size * 1.2,
-        height: size * 1.2,
-        borderRadius: size * 0.6,
-        backgroundColor: color,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-        <Ionicons name="camera" size={size * 0.6} color="white" />
-      </View>
+    <View style={{ width: size, height: size }}>
+      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+        <Path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round" />
+        <Circle cx="12" cy="13" r="4" strokeLinecap="round" strokeLinejoin="round" />
+      </Svg>
     </View>
   );
 }

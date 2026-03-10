@@ -111,12 +111,15 @@ export default function RegisterScreen() {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {/* Logo */}
           <View style={styles.logoContainer}>
-            <Ionicons name="leaf" size={48} color="#10b981" />
+            <Image
+              source={require('../../assets/icon.png')}
+              style={{ width: 96, height: 96, borderRadius: 48 }}
+            />
           </View>
 
           {/* Header */}
           <Text style={styles.title}>OrganiSort</Text>
-          <Text style={styles.subtitle}>OrganiSort</Text>
+          <Text style={styles.subtitle}>Intelligent Organic Waste Detection</Text>
 
           {/* Register Card */}
           <View style={styles.card}>
@@ -260,7 +263,7 @@ export default function RegisterScreen() {
           </View>
 
           {/* Footer */}
-          <Text style={styles.footer}>© 2026 OrganiSort • Waste Detection AI</Text>
+          <Text style={styles.footer}>© 2026 OrganiSort • Organic Waste Detection AI</Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

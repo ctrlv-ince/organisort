@@ -277,11 +277,13 @@ export default function ProfileScreen() {
               {userData?.displayName || user?.email?.split('@')[0] || 'User'}
             </Text>
             <Text style={[styles.email, { color: colors.textSecondary }]}>{user?.email}</Text>
-            <View style={[styles.badge, { backgroundColor: colors.text }]}>
-              <Text style={styles.badgeText}>
-                {userData?.role === 'admin' ? '👑 Admin' : '🌱 User'}
-              </Text>
-            </View>
+            {userData?.role === 'admin' && (
+              <View style={[styles.badge, { backgroundColor: colors.text }]}>
+                <Text style={styles.badgeText}>
+                  👑 Admin
+                </Text>
+              </View>
+            )}
           </View>
 
           {/* Stats Section */}

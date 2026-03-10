@@ -180,10 +180,8 @@ const LandingPage = () => {
       {/* ========== Header ========== */}
       <header>
         <div className="container-pro">
-          <div className="logo-section">
-            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
+          <div className="logo-section" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <img src="/icon.png" alt="OrganiSort Logo" className="w-8 h-8 rounded-full" />
             <span className="logo-text">OrganiSort</span>
           </div>
           <nav className="desktop-nav">
@@ -745,9 +743,7 @@ const LandingPage = () => {
           {/* Top: brand + tagline */}
           <div style={{ paddingTop: '4rem', paddingBottom: '3rem', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <svg className="w-5 h-5" fill="none" stroke="#4ade80" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
+              <img src="/icon.png" alt="OrganiSort" style={{ width: '20px', height: '20px', borderRadius: '50%' }} />
               <span style={{ fontSize: '18px', fontWeight: 900, letterSpacing: '-0.04em', color: '#fff' }}>OrganiSort</span>
             </div>
             <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', fontWeight: 500, maxWidth: '340px', lineHeight: 1.6 }}>
