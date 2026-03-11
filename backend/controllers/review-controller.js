@@ -1,7 +1,6 @@
 const Review = require('../models/Review');
 const axios = require('axios');
-
-const PYTHON_SERVICE_URL = process.env.PYTHON_SERVICE_URL || 'http://localhost:5001';
+const { buildPythonServiceUrl } = require('../utils/python-service-url');
 
 // @desc    Create a new review
 // @route   POST /api/reviews
@@ -22,9 +21,15 @@ const createReview = async (req, res) => {
         let rating = 3;
 
         try {
-            const aiResponse = await axios.post(`${PYTHON_SERVICE_URL}/analyze-sentiment`, {
+            const sentimentUrl = buildPythonServiceUrl('/analyze-sentiment');
+            console.log(`📝 Calling sentiment analysis at: ${sentimentUrl}`);
+            console.log(`📝 Review text: "${comment.substring(0, 100)}..."`);
+
+            const aiResponse = await axios.post(sentimentUrl, {
                 text: comment,
             });
+
+            console.log(`📝 Sentiment response:`, JSON.stringify(aiResponse.data));
 
             if (aiResponse.data && aiResponse.data.success) {
                 sentiment = aiResponse.data.sentiment;
@@ -38,9 +43,17 @@ const createReview = async (req, res) => {
                     case 'very positive': rating = 5; break;
                     default: rating = 3;
                 }
+                console.log(`📝 Mapped sentiment: "${sentiment}" -> rating: ${rating}`);
+            } else {
+                console.warn('⚠️ Sentiment response missing success flag:', JSON.stringify(aiResponse.data));
             }
         } catch (error) {
-            console.error('Error analyzing sentiment with Python Service. Falling back to neutral', error.message);
+            console.error('❌ Error analyzing sentiment with Python Service. Falling back to neutral.');
+            console.error('   Error:', error.message);
+            if (error.response) {
+                console.error('   Response status:', error.response.status);
+                console.error('   Response data:', JSON.stringify(error.response.data));
+            }
             // Continue with saving the review even if sentiment analysis fails
         }
 
