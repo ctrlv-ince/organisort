@@ -26,8 +26,13 @@ except Exception as e:
 # Load HuggingFace Sentiment Model
 try:
     print("⏳ Loading multilingual sentiment analysis model...")
-    # Map 1-5 output labels to our specific sentiments
+    # Map model output labels to our specific sentiments
     sentiment_map = {
+        "very negative": "very negative",
+        "negative": "negative",
+        "neutral": "neutral",
+        "positive": "positive",
+        "very positive": "very positive",
         "1 star": "very negative",
         "2 stars": "negative",
         "3 stars": "neutral",
@@ -287,9 +292,13 @@ def analyze_sentiment():
         result = sentiment_analyzer(text)[0] # pipeline returns a list of dicts
         label = result['label']
         confidence = result['score']
+        
+        print(f"📝 Sentiment Analysis - Input: '{text}'")
+        print(f"   Raw Model Result: {result}")
 
-        # Map '1 star' to '5 stars' to our categories
-        sentiment = sentiment_map.get(label, "neutral")
+        # Map labels to our categories
+        sentiment = sentiment_map.get(str(label).lower(), "neutral")
+        print(f"   Mapped Sentiment: '{sentiment}' (Confidence: {confidence:.2f})")
 
         return jsonify({
             'success': True,
