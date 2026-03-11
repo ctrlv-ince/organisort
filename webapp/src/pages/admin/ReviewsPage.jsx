@@ -156,7 +156,7 @@ const ReviewsPage = () => {
                                         )}
                                         <div>
                                             <p className="font-bold" style={{ color: 'var(--theme-text, #111827)' }}>
-                                                {review.user?.displayName || `${review.user?.firstName} ${review.user?.lastName}` || 'Anonymous User'}
+                                                {review.user?.email || 'Anonymous User'}
                                             </p>
                                             <p className="text-xs font-semibold" style={{ color: 'var(--theme-text-muted, #9ca3af)' }}>
                                                 {new Date(review.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}

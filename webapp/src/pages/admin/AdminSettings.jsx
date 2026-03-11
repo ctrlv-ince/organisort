@@ -403,10 +403,10 @@ const AdminSettings = ({ userData }) => {
                         <div>
                             <h2 className="text-xl font-bold tracking-tight" style={textPrimary}>System Information</h2>
                             <div className="flex flex-wrap gap-8 mt-3 text-sm font-medium" style={textSecondary}>
-                                <p><span className="uppercase tracking-[0.15em] text-[10px] font-bold block mb-1" style={textMuted}>Version</span> 2.1.0 Premium</p>
+                                <p><span className="uppercase tracking-[0.15em] text-[10px] font-bold block mb-1" style={textMuted}>Version</span>1.0.0</p>
                                 <p><span className="uppercase tracking-[0.15em] text-[10px] font-bold block mb-1" style={textMuted}>Environment</span> Production</p>
-                                <p><span className="uppercase tracking-[0.15em] text-[10px] font-bold block mb-1" style={textMuted}>Last Deploy</span> February 2026</p>
-                                <p><span className="uppercase tracking-[0.15em] text-[10px] font-bold block mb-1" style={textMuted}>AI Model</span> OrganicNet v3.2</p>
+                                <p><span className="uppercase tracking-[0.15em] text-[10px] font-bold block mb-1" style={textMuted}>Last Deploy</span> March 2026</p>
+                                <p><span className="uppercase tracking-[0.15em] text-[10px] font-bold block mb-1" style={textMuted}>AI Model</span> OrganiSort 1.0</p>
                             </div>
                         </div>
                         <div className="mt-6 md:mt-0 flex flex-col items-end space-y-2">

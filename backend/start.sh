@@ -2,7 +2,7 @@
 # Start the Python AI service in the background
 echo "Starting Python AI Service..."
 cd python-service
-python app.py &
+PORT=5001 python app.py &
 PYTHON_PID=$!
 cd ..
 
