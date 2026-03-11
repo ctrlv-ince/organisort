@@ -16,7 +16,7 @@ CORS(app)  # Enable CORS for mobile app access
 
 # --- MODEL LOADING ---
 try:
-    model = YOLO('bestv6.pt')
+    model = YOLO('best.pt')
     print("✅ YOLOv8 model loaded successfully.")
     print(f"📋 Model classes: {model.names}")
 except Exception as e:
