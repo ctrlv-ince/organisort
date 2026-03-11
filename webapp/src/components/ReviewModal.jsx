@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PrimaryButton from './PrimaryButton';
 
@@ -7,18 +7,51 @@ const ReviewModal = ({ isOpen, onClose }) => {
     const [submitting, setSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
+    const [hasExistingReview, setHasExistingReview] = useState(false);
+    const [loadingReview, setLoadingReview] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
 
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!comment.trim()) {
-            setError('Please provide a comment for your review.');
+    // Fetch existing review when modal opens
+    useEffect(() => {
+        if (!isOpen) {
+            // Reset states when modal closes
+            setShowConfirm(false);
+            setError('');
             return;
         }
 
+        const fetchExistingReview = async () => {
+            setLoadingReview(true);
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_URL}/api/reviews/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (response.ok && data.success && data.data) {
+                    setComment(data.data.comment);
+                    setHasExistingReview(true);
+                } else {
+                    setComment('');
+                    setHasExistingReview(false);
+                }
+            } catch (err) {
+                console.error('Error fetching existing review:', err);
+            } finally {
+                setLoadingReview(false);
+            }
+        };
+
+        fetchExistingReview();
+    }, [isOpen]);
+
+    const doSubmit = async () => {
         setSubmitting(true);
         setError('');
+        setShowConfirm(false);
 
         try {
             const token = localStorage.getItem('token');
@@ -39,6 +72,7 @@ const ReviewModal = ({ isOpen, onClose }) => {
                     onClose();
                     setSuccess(false);
                     setComment('');
+                    setHasExistingReview(false);
                 }, 3000);
             } else {
                 setError(data.message || 'Failed to submit review');
@@ -49,6 +83,21 @@ const ReviewModal = ({ isOpen, onClose }) => {
         } finally {
             setSubmitting(false);
         }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!comment.trim()) {
+            setError('Please provide a comment for your review.');
+            return;
+        }
+
+        if (hasExistingReview && !showConfirm) {
+            setShowConfirm(true);
+            return;
+        }
+
+        doSubmit();
     };
 
     return (
@@ -76,7 +125,15 @@ const ReviewModal = ({ isOpen, onClose }) => {
                             className="w-full max-w-md rounded-3xl shadow-2xl p-8 pointer-events-auto overflow-hidden relative"
                             style={{ background: 'var(--theme-card, #ffffff)' }}
                         >
-                            {success ? (
+                            {loadingReview ? (
+                                <div className="text-center py-12">
+                                    <svg className="animate-spin h-8 w-8 mx-auto mb-4" style={{ color: 'var(--theme-accent, #15803d)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <p className="text-sm" style={{ color: 'var(--theme-text-secondary, #6b7280)' }}>Loading your review...</p>
+                                </div>
+                            ) : success ? (
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -93,7 +150,7 @@ const ReviewModal = ({ isOpen, onClose }) => {
                             ) : (
                                 <form onSubmit={handleSubmit}>
                                     <div className="flex justify-between items-center mb-6">
-                                        <h2 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>Leave a Review</h2>
+                                        <h2 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--theme-text, #111827)' }}>{hasExistingReview ? 'Edit Your Review' : 'Leave a Review'}</h2>
                                         <button
                                             type="button"
                                             onClick={onClose}
@@ -105,6 +162,24 @@ const ReviewModal = ({ isOpen, onClose }) => {
                                             </svg>
                                         </button>
                                     </div>
+
+                                    {hasExistingReview && !showConfirm && (
+                                        <div className="mb-4 p-4 rounded-xl text-sm font-medium flex items-start gap-3" style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' }}>
+                                            <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            You already have a review. Editing will update your existing review.
+                                        </div>
+                                    )}
+
+                                    {showConfirm && (
+                                        <div className="mb-4 p-4 rounded-xl text-sm font-medium flex items-start gap-3" style={{ background: 'rgba(245, 158, 11, 0.1)', color: '#d97706' }}>
+                                            <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                            </svg>
+                                            <span>Are you sure you want to overwrite your previous review? Click the button again to confirm.</span>
+                                        </div>
+                                    )}
 
                                     {error && (
                                         <div className="mb-4 p-4 rounded-xl text-sm font-medium" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}>
@@ -132,14 +207,14 @@ const ReviewModal = ({ isOpen, onClose }) => {
                                                     border: '1px solid var(--theme-border, #e5e7eb)',
                                                     '--tw-ring-color': 'var(--theme-accent, #15803d)'
                                                 }}
-                                                disabled={submitting}
+                                                disabled={submitting || loadingReview}
                                             />
                                         </div>
 
                                         <PrimaryButton
                                             onClick={handleSubmit}
                                             className="w-full py-4 text-center justify-center mt-2 group"
-                                            disabled={submitting}
+                                            disabled={submitting || loadingReview}
                                         >
                                             {submitting ? (
                                                 <span className="flex items-center">
@@ -151,7 +226,7 @@ const ReviewModal = ({ isOpen, onClose }) => {
                                                 </span>
                                             ) : (
                                                 <span className="flex items-center">
-                                                    Submit Review
+                                                    {showConfirm ? 'Confirm Update' : hasExistingReview ? 'Update Review' : 'Submit Review'}
                                                     <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                                     </svg>
