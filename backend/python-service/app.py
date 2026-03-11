@@ -265,6 +265,7 @@ def health():
     })
 
 @app.route('/analyze-sentiment', methods=['POST'])
+@app.route('/detect/analyze-sentiment', methods=['POST'])
 def analyze_sentiment():
     """
     Perform sentiment analysis on text (supports Taglish/Multilingual).
@@ -301,12 +302,13 @@ def analyze_sentiment():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5001))
     print("🚀 Starting Waste Detection API...")
-    print("📍 Server will run on http://0.0.0.0:5001")
+    print(f"📍 Server will run on http://0.0.0.0:{port}")
     print("💡 Test the API:")
-    print("   curl http://localhost:5001/health")
-    print("   curl http://localhost:5001/detect/health  # legacy-compatible")
-    print("   curl http://localhost:5001/classes")
-    print("   curl -X POST -F 'image=@test.jpg' http://localhost:5001/detect")
-    print("   curl -X POST -F 'image=@test.jpg' -F 'confidence=0.5' http://localhost:5001/detect")
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    print(f"   curl http://localhost:{port}/health")
+    print(f"   curl http://localhost:{port}/detect/health  # legacy-compatible")
+    print(f"   curl http://localhost:{port}/classes")
+    print(f"   curl -X POST -F 'image=@test.jpg' http://localhost:{port}/detect")
+    print(f"   curl -X POST -F 'image=@test.jpg' -F 'confidence=0.5' http://localhost:{port}/detect")
+    app.run(host='0.0.0.0', port=port, debug=True)

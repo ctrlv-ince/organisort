@@ -12,6 +12,7 @@ import AnalyticsPage from './AnalyticsPage';
 import ReportsPage from './ReportsPage';
 import ReviewsPage from './ReviewsPage';
 import AdminSettings from './AdminSettings';
+import WasteCategoriesPage from './WasteCategoriesPage';
 
 const containerVariants = {
   hidden: { opacity: 0 },
