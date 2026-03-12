@@ -560,56 +560,68 @@ const ReportsPage = () => {
                // Get max scans for intensity mapping
                const maxScans = Math.max(...data.dailyTrends.map(d => d.scans), 1);
                
-               // Group dates into week rows (7 days per row)
-               const weeks = [];
-               let currentWeek = [];
-               
-               data.dailyTrends.forEach((day, index) => {
-                 currentWeek.push(day);
-                 if (currentWeek.length === 7 || index === data.dailyTrends.length - 1) {
-                   // pad the last week if necessary
-                   while(currentWeek.length < 7 && index === data.dailyTrends.length - 1) {
-                      currentWeek.push({ empty: true });
-                   }
-                   weeks.push(currentWeek);
-                   currentWeek = [];
-                 }
-               });
+               const startDate = new Date(data.dailyTrends[0].date);
+               const startDayOfWeek = startDate.getDay();
+
+               const paddedDays = [];
+               for(let i = 0; i < startDayOfWeek; i++) {
+                 paddedDays.push({ empty: true });
+               }
+               data.dailyTrends.forEach(day => paddedDays.push(day));
+               while (paddedDays.length % 7 !== 0) {
+                 paddedDays.push({ empty: true });
+               }
+
+               const numWeeks = paddedDays.length / 7;
+               const rowLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
                return (
                   <div className="rounded-[2rem] shadow-sm p-8" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
                     <h3 className="text-2xl font-extrabold mb-6 tracking-tight" style={{ color: 'var(--theme-text)' }}>Timeline Heatmap</h3>
                     <div className="overflow-x-auto">
                       <div className="min-w-full">
-                        <div className="flex gap-1 flex-col">
-                           {weeks.map((week, wIdx) => (
-                             <div key={wIdx} className="flex gap-1 h-6">
-                               {week.map((day, dIdx) => {
-                                 if (day.empty) return <div key={dIdx} className="w-6 flex-shrink-0" />;
-                                 const intensity = day.scans / maxScans;
-                                 return (
-                                   <div
-                                     key={dIdx}
-                                     className="w-6 rounded-sm transition-colors group relative cursor-pointer"
-                                     style={{ backgroundColor: getThemeHeatmapColor(intensity) }}
-                                   >
-                                     <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-[10px] rounded py-1.5 px-3 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 shadow-xl pointer-events-none">
-                                        <div className="font-bold">{day.date}</div>
-                                        <div>{day.scans} Events</div>
-                                     </div>
-                                   </div>
-                                 );
-                               })}
-                             </div>
-                           ))}
+                        <div className="flex gap-1.5">
+                           {/* Y-axis labels */}
+                           <div className="flex flex-col gap-1.5 pr-2">
+                             {rowLabels.map((rl, rIdx) => (
+                               <div key={rIdx} className="h-4 text-[10px] text-gray-400 font-bold leading-4 w-6 pt-0.5 text-right uppercase tracking-widest">
+                                 {rIdx % 2 !== 0 ? rl : ''}
+                               </div>
+                             ))}
+                           </div>
+
+                           {/* Grid columns */}
+                           <div className="flex gap-1.5">
+                             {Array.from({ length: numWeeks }).map((_, wIdx) => (
+                               <div key={wIdx} className="flex flex-col gap-1.5">
+                                 {Array.from({ length: 7 }).map((_, dIdx) => {
+                                   const day = paddedDays[wIdx * 7 + dIdx];
+                                   if (!day || day.empty) return <div key={dIdx} className="w-4 h-4 rounded-sm" style={{ background: 'var(--theme-bg-alt, #f3f4f6)' }} />;
+                                   const intensity = day.scans / maxScans;
+                                   return (
+                                      <div
+                                        key={dIdx}
+                                        className="w-4 h-4 rounded-sm transition-colors group relative cursor-pointer"
+                                        style={{ backgroundColor: getThemeHeatmapColor(intensity) }}
+                                      >
+                                        <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-[10px] rounded py-1.5 px-3 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 shadow-xl pointer-events-none">
+                                           <div className="font-bold">{day.date}</div>
+                                           <div>{day.scans} Events</div>
+                                        </div>
+                                      </div>
+                                   );
+                                 })}
+                               </div>
+                             ))}
+                           </div>
                         </div>
                         {/* Legend */}
-                        <div className="flex items-center gap-1 mt-4">
-                          <span className="text-[10px] text-gray-500 font-bold mr-1">Less</span>
+                        <div className="flex items-center gap-1 mt-6 ml-10">
+                          <span className="text-[10px] text-gray-500 font-bold mr-2 uppercase tracking-widest">Less</span>
                           {[0, 0.25, 0.5, 0.75, 1].map((v, i) => (
                             <div key={i} className="w-4 h-4 rounded-sm" style={{ backgroundColor: getThemeHeatmapColor(v) }}></div>
                           ))}
-                          <span className="text-[10px] text-gray-500 font-bold ml-1">More</span>
+                          <span className="text-[10px] text-gray-500 font-bold ml-2 uppercase tracking-widest">More</span>
                         </div>
                       </div>
                     </div>

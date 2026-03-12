@@ -470,21 +470,21 @@ const AdminDashboard = () => {
                             Last Updated: {new Date(systemHealth.updatedAt).toLocaleString('en-US')}
                           </p>
                         )}
-                        <div className="mt-6 p-5 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-lg border border-slate-700 text-white">
+                        <div className="mt-6 p-5 rounded-2xl shadow-sm border transition-colors" style={{ background: 'var(--theme-bg-alt, #f8fafc)', borderColor: 'var(--theme-border, #e2e8f0)' }}>
                           <div className="flex items-start">
-                            <div className="p-2 bg-white/10 rounded-lg mr-4 border border-white/10 shrink-0">
-                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="p-2 rounded-lg mr-4 border shrink-0 shadow-sm" style={{ background: 'var(--theme-card, #ffffff)', borderColor: 'var(--theme-border, #e2e8f0)' }}>
+                              <svg className="w-6 h-6 transition-colors" fill="none" stroke="var(--theme-text, #111827)" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
                             </div>
                             <div>
-                              <p className="text-base font-bold tracking-tight">AI Model Deployment</p>
-                              <p className="text-sm text-slate-300 font-medium mt-1">45 tracked organic waste classes</p>
+                              <p className="text-base font-bold tracking-tight transition-colors" style={{ color: 'var(--theme-text, #111827)' }}>AI Model Deployment</p>
+                              <p className="text-sm font-medium mt-1 transition-colors" style={{ color: 'var(--theme-text-secondary, #64748b)' }}>45 tracked organic waste classes</p>
                               <div className="flex items-center gap-2 mt-3">
-                                <span className="text-[10px] uppercase tracking-widest font-extrabold bg-green-500/20 text-green-300 px-2 py-1 rounded border border-green-500/30">
+                                <span className="text-[10px] uppercase tracking-widest font-extrabold px-2 py-1 rounded border transition-colors" style={{ background: 'var(--theme-accent-surface, rgba(34,197,94,0.1))', color: 'var(--theme-accent, #16a34a)', borderColor: 'rgba(34,197,94,0.2)' }}>
                                   AVG ACCURACY
                                 </span>
-                                <p className="text-sm font-bold text-white">{(parseFloat(stats.averageConfidence) * 100).toFixed(1)}%</p>
+                                <p className="text-sm font-bold transition-colors" style={{ color: 'var(--theme-text, #111827)' }}>{(parseFloat(stats.averageConfidence || 0) * 100).toFixed(1)}%</p>
                               </div>
                             </div>
                           </div>

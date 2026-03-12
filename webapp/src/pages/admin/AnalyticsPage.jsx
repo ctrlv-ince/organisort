@@ -473,13 +473,13 @@ const AnalyticsPage = () => {
         </h2>
         {trendData.length > 0 ? (
           <div className="overflow-x-auto">
-            <div className="min-w-full inline-flex gap-1 items-end h-56 pb-8">
+            <div className="min-w-full inline-flex gap-1 h-56 pb-8">
               {trendData.map((day, idx) => {
                 const height = (day.scans / trendMax) * 100;
                 return (
-                  <div key={idx} className="flex-1 flex flex-col items-center group min-w-[12px]">
-                    <div className="relative w-full">
-                      <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-2 px-3 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                  <div key={idx} className="flex-1 flex flex-col items-center group min-w-[12px] h-full justify-end">
+                    <div className="relative w-full h-full flex items-end">
+                      <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-2 px-3 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
                         <div className="font-semibold">{new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
                         <div>Scans: {day.scans}</div>
                         <div>Items: {day.items}</div>
@@ -918,12 +918,19 @@ const AnalyticsPage = () => {
           ) : (
             <div className="text-center py-12 text-gray-500">No sparkline data available</div>
           )}
-          {sparklines.length > 0 && (
-            <div className="mt-4 pt-3 border-t border-gray-100 flex justify-between px-1 text-[10px] text-gray-500 font-bold uppercase tracking-widest ml-[124px]">
-              <span>{Math.min(parseInt(timeRange, 10), 14)} Days Ago</span>
-              <span>Today</span>
-            </div>
-          )}
+          {sparklines.length > 0 && (() => {
+            const maxDaysRendered = Math.min(parseInt(timeRange, 10), 14);
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(endDate.getDate() - (maxDaysRendered - 1));
+            
+            return (
+              <div className="mt-4 pt-3 border-t border-gray-100 flex justify-between px-1 text-[10px] text-gray-500 font-bold uppercase tracking-widest ml-[124px]">
+                <span>{startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                <span>{endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+              </div>
+            );
+          })()}
         </div>
       </div>
 
