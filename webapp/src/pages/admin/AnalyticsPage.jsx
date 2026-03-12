@@ -800,6 +800,13 @@ const AnalyticsPage = () => {
                   );
                 })}
               </div>
+              <div className="flex justify-between mt-2 pt-2 border-t border-gray-100 px-1 text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                <span>{new Date(wasteGrowth.weeks[0]).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                {wasteGrowth.weeks.length > 2 && (
+                   <span>{new Date(wasteGrowth.weeks[Math.floor(wasteGrowth.weeks.length / 2)]).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                )}
+                <span>{new Date(wasteGrowth.weeks[wasteGrowth.weeks.length - 1]).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+              </div>
               <div className="flex flex-wrap items-center gap-3 mt-3">
                 {wasteGrowth.types.map((t, i) => (
                   <div key={i} className="flex items-center">
@@ -910,6 +917,12 @@ const AnalyticsPage = () => {
             </div>
           ) : (
             <div className="text-center py-12 text-gray-500">No sparkline data available</div>
+          )}
+          {sparklines.length > 0 && (
+            <div className="mt-4 pt-3 border-t border-gray-100 flex justify-between px-1 text-[10px] text-gray-500 font-bold uppercase tracking-widest ml-[124px]">
+              <span>{Math.min(parseInt(timeRange, 10), 14)} Days Ago</span>
+              <span>Today</span>
+            </div>
           )}
         </div>
       </div>
