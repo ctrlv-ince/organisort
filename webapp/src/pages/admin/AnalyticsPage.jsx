@@ -634,13 +634,13 @@ const AnalyticsPage = () => {
             </svg>
             Confidence Score Distribution
           </h2>
-          <div className="flex items-end gap-2 h-48">
+          <div className="flex gap-2 h-48">
             {confidenceDist.map((bucket, idx) => {
               const height = (bucket.count / confMax) * 100;
               return (
-                <div key={idx} className="flex-1 flex flex-col items-center group">
-                  <div className="relative w-full">
-                    <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                <div key={idx} className="flex-1 flex flex-col items-center group h-full">
+                  <div className="relative w-full h-full flex items-end">
+                    <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
                       {bucket.count} items
                     </div>
                     <div
@@ -692,9 +692,8 @@ const AnalyticsPage = () => {
                           key={hourIdx}
                           className="flex-1 h-5 rounded-sm transition-colors group relative cursor-pointer"
                           style={{ backgroundColor: getThemeHeatmapColor(intensity) }}
-                          title={`${heatmap.dayNames[dayIdx]} ${hourIdx}:00 - ${val} scans`}
                         >
-                          <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-[10px] rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                          <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-[10px] rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
                             {day} {hourIdx}:00 — {val} scans
                           </div>
                         </div>
@@ -730,13 +729,13 @@ const AnalyticsPage = () => {
             Items Per Scan Distribution
           </h2>
           {itemsPerScan.length > 0 ? (
-            <div className="flex items-end gap-3 h-48">
+            <div className="flex gap-3 h-48">
               {itemsPerScan.map((d, idx) => {
                 const height = (d.count / ipsMax) * 100;
                 return (
-                  <div key={idx} className="flex-1 flex flex-col items-center group">
-                    <div className="relative w-full">
-                      <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                  <div key={idx} className="flex-1 flex flex-col items-center group h-full">
+                    <div className="relative w-full h-full flex items-end">
+                      <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
                         {d.count} scans
                       </div>
                       <div
@@ -772,11 +771,11 @@ const AnalyticsPage = () => {
           </h2>
           {wasteGrowth.weeks.length > 0 ? (
             <div>
-              <div className="flex items-end gap-2 h-48">
+              <div className="flex gap-2 h-48 mt-4">
                 {wasteGrowth.weeks.map((week, wIdx) => {
                   let cumHeight = 0;
                   return (
-                    <div key={wIdx} className="flex-1 flex flex-col-reverse group relative">
+                    <div key={wIdx} className="flex-1 flex flex-col-reverse group relative h-full justify-start">
                       {wasteGrowth.types.map((type, tIdx) => {
                         const val = wasteGrowth.data[week]?.[type] || 0;
                         const ht = (val / growthMax) * 100;
@@ -794,7 +793,7 @@ const AnalyticsPage = () => {
                           ></div>
                         );
                       })}
-                      <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-[10px] rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                      <div className="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-[10px] rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
                         Week of {new Date(week).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </div>
                     </div>

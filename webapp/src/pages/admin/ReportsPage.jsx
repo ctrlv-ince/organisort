@@ -384,7 +384,7 @@ const ReportsPage = () => {
             { id: 'summary', label: 'Summary', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
             { id: 'trends', label: 'Trends', icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' },
             { id: 'users', label: 'User Activity', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
-            { id: 'waste', label: 'Waste Composition', icon: null, emoji: '♻️' },
+            { id: 'waste', label: 'Waste Composition', icon: 'M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z' },
           ].map(tab => (
             <button
               key={tab.id}
@@ -535,12 +535,12 @@ const ReportsPage = () => {
               <div className="rounded-[2rem] shadow-sm p-8" style={{ background: 'var(--theme-card, #fff)', border: '1px solid var(--theme-card-border, #f0f0f0)' }}>
                 <h3 className="text-2xl font-extrabold mb-6 tracking-tight" style={{ color: 'var(--theme-text)' }}>Timeline Heatmap</h3>
                 <div className="overflow-x-auto">
-                  <div className="min-w-full inline-flex gap-1 items-end h-40">
+                  <div className="min-w-full inline-flex gap-1 h-40">
                     {data.dailyTrends.map((day, idx) => {
                       const max = Math.max(...data.dailyTrends.map(d => d.scans), 1);
                       const height = (day.scans / max) * 100;
                       return (
-                        <div key={idx} className="flex-1 flex flex-col items-center group min-w-[8px]">
+                        <div key={idx} className="flex-1 flex flex-col items-center group min-w-[8px] h-full">
                           <div className="relative w-full h-full flex items-end">
                             <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs font-bold rounded-lg py-1.5 px-3 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 shadow-xl pointer-events-none">
                               {day.date}: {day.scans} Events
