@@ -17,7 +17,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
-import MapView, { Marker, Circle, UrlTile } from 'react-native-maps';
+import { WebView } from 'react-native-webview';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/src/context/ThemeContext';
@@ -193,6 +193,40 @@ export default function ScanScreen() {
   const handleDirections = (location) => {
     const url = `https://www.openstreetmap.org/directions?from=${userLocation.latitude},${userLocation.longitude}&to=${location.location.coordinates[1]},${location.location.coordinates[0]}`;
     Linking.openURL(url);
+  };
+
+  const generateMapHtml = () => {
+    if (!userLocation) return '';
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+          <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+          <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+          <style>
+              body { padding: 0; margin: 0; }
+              html, body, #map { height: 100%; width: 100%; background-color: #f4f4f5; }
+              .custom-marker { background-color: #10b981; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 4px rgba(0,0,0,0.5); }
+              .user-marker { background-color: #3b82f6; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 4px rgba(0,0,0,0.5); }
+              .leaflet-control-zoom { display: none; }
+          </style>
+      </head>
+      <body>
+          <div id="map"></div>
+          <script>
+              var map = L.map('map', {zoomControl: false}).setView([${userLocation.latitude}, ${userLocation.longitude}], 14);
+              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
+              L.circle([${userLocation.latitude}, ${userLocation.longitude}], { color: 'rgba(16, 185, 129, 0.5)', fillColor: 'rgba(16, 185, 129, 0.1)', fillOpacity: 1, radius: 500 }).addTo(map);
+              L.marker([${userLocation.latitude}, ${userLocation.longitude}], { icon: L.divIcon({className: 'user-marker', iconSize: [16, 16]}) }).addTo(map);
+              ${disposalLocations.map(loc => `
+                var marker_${loc._id} = L.marker([${loc.location.coordinates[1]}, ${loc.location.coordinates[0]}], { icon: L.divIcon({className: 'custom-marker', iconSize: [20, 20]}) }).addTo(map);
+                marker_${loc._id}.on('click', function() { window.ReactNativeWebView.postMessage(JSON.stringify({type: 'markerClick', id: '${loc._id}'})); });
+              `).join('')}
+          </script>
+      </body>
+      </html>
+    `;
   };
 
   const retake = () => {
@@ -470,43 +504,21 @@ export default function ScanScreen() {
             </View>
 
             {userLocation && (
-              <MapView
+              <WebView
                 style={styles.map}
-                initialRegion={{
-                  latitude: userLocation.latitude,
-                  longitude: userLocation.longitude,
-                  latitudeDelta: 0.05,
-                  longitudeDelta: 0.05,
+                source={{ html: generateMapHtml() }}
+                onMessage={(event) => {
+                  try {
+                    const data = JSON.parse(event.nativeEvent.data);
+                    if (data.type === 'markerClick') {
+                      const loc = disposalLocations.find(l => l._id === data.id);
+                      if (loc) setSelectedLocation(loc);
+                    }
+                  } catch (e) {}
                 }}
-                showsUserLocation={true}
-                mapType="none" // Important: disables the default Google/Apple maps
-              >
-                <UrlTile
-                  urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  maximumZ={19}
-                  flipY={false}
-                />
-
-
-                <Circle
-                  center={userLocation}
-                  radius={500}
-                  strokeColor="rgba(16, 185, 129, 0.5)"
-                  fillColor="rgba(16, 185, 129, 0.1)"
-                />
-
-                {disposalLocations.map((location) => (
-                  <Marker
-                    key={location._id}
-                    coordinate={{
-                      latitude: location.location.coordinates[1],
-                      longitude: location.location.coordinates[0],
-                    }}
-                    pinColor="#10b981"
-                    onPress={() => setSelectedLocation(location)}
-                  />
-                ))}
-              </MapView>
+                scrollEnabled={false}
+                bounces={false}
+              />
             )}
 
             {selectedLocation && (
