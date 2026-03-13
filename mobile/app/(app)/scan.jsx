@@ -17,7 +17,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
-import MapView, { Marker, Circle } from 'react-native-maps';
+import MapView, { Marker, Circle, UrlTile } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/src/context/ThemeContext';
@@ -479,7 +479,13 @@ export default function ScanScreen() {
                   longitudeDelta: 0.05,
                 }}
                 showsUserLocation={true}
+                mapType="none" // Important: disables the default Google/Apple maps
               >
+                <UrlTile
+                  urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  maximumZ={19}
+                  flipY={false}
+                />
 
 
                 <Circle
